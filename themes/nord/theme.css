@@ -1,0 +1,19 @@
+/* Nord: the cool greys of an arctic night and a frost-blue accent, after the
+   Nord palette (nordtheme.com, MIT). Colours only: the shapes are the dark theme's. */
+html[data-theme="nord"] {
+  --accent-rgb: 136, 192, 208;
+  --on-accent: #2e3440;
+  --bg: #2e3440;
+  --bg-2: #262a33;
+  --surface: rgba(216, 222, 233, 0.07);
+  --surface-2: rgba(216, 222, 233, 0.12);
+  --surface-solid: #3b4252;
+  --border: rgba(216, 222, 233, 0.08);
+  --text: #eceff4;
+  --muted: #a7b1c2;
+  --danger: #bf616a;
+  --shadow: 0 0.6rem 2rem rgba(16, 19, 25, 0.5);
+  --veil-rgb: 46, 52, 64;
+  --on-tile: #2e3440;
+  --pop-scrim: rgba(46, 52, 64, 0.9);
+}

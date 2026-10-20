@@ -1,0 +1,44 @@
+/* E-ink: ink on paper, like an e-reader. Black and grey only (a mono theme:
+   every light is drawn in ink), outlines in place of shadows and glows, the
+   room's title in Literata, Google's typeface for reading (OFL: OFL.txt). */
+@font-face { font-family: "Kiosk Literata"; src: url("literata.woff2") format("woff2"); font-weight: 600; font-display: block; }
+
+html[data-theme="eink"] {
+  --accent-rgb: 38, 38, 36;
+  --on-accent: #f7f6f2;
+  --bg: #edebe5;
+  --bg-2: #e6e3dc;
+  --surface: rgba(255, 255, 255, 0.55);
+  --surface-2: rgba(0, 0, 0, 0.07);
+  --surface-solid: #f7f6f2;
+  --border: #1d1d1b;
+  --text: #161614;
+  --muted: #56544f;
+  --danger: #262624;
+  --shadow: 0 0 0 transparent;
+  --veil-rgb: 237, 235, 229;
+  --knob: #f7f6f2;
+  --on-tile: #f7f6f2;
+  --scrim: rgba(237, 235, 229, 0.9);
+  --pop-scrim: rgba(237, 235, 229, 0.95);
+  --pop-dim: rgba(237, 235, 229, 0.8);
+  --r: 0.5rem;
+  --r-panel: 0.7rem;
+  --r-inner: 0.35rem;
+  --border-w: 2px;
+  --font-title: "Kiosk Literata", Georgia, "Noto Serif", serif;
+}
+
+/* paper is flat: no glow of colour behind the rooms, the tiles or the lights */
+html[data-theme="eink"] .glow,
+html[data-theme="eink"] .tile::before,
+html[data-theme="eink"].shape-round .views::before { display: none; }
+html[data-theme="eink"] .tile.on .tile-icon, html[data-theme="eink"] .pop-power { box-shadow: none; }
+/* the dial's knob: a ring of ink */
+html[data-theme="eink"] .dial-knob .knob { stroke: var(--text); stroke-width: 0.35; }
+/* a light that is on is outlined in ink, one that is off in grey */
+html[data-theme="eink"] .tile { border-color: #c9c5bc; }
+html[data-theme="eink"] .tile.on { border-color: var(--border); }
+/* a picture in shades of grey, the cards on it solid paper with their outlines */
+html[data-theme="eink"] .paper img { filter: grayscale(1) contrast(1.1); }
+html[data-theme="eink"] .with-wallpaper { --surface: rgba(247, 246, 242, 0.92); --border: #1d1d1b; }

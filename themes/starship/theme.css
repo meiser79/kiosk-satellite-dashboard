@@ -1,0 +1,114 @@
+/* Starship: after the consoles of a television starship. Black, with
+   blocks and pills of flat colour, orange, lilac, blue and red; each light
+   a panel in an elbow of colour, the colours taking turns; the rail a
+   column of coloured blocks; a bar of colours under the header;
+   everything in capitals, in Antonio (OFL: OFL.txt). */
+@font-face { font-family: "Kiosk Antonio"; src: url("antonio.woff2") format("woff2"); font-weight: 100 700; font-display: block; size-adjust: 112%; }
+
+html[data-theme="starship"] {
+  --accent-rgb: 255, 153, 0;
+  --on-accent: #000000;
+  --bg: #000000;
+  --bg-2: #000000;
+  --surface: #000000;
+  --surface-2: #1d1d24;
+  --surface-solid: #000000;
+  --border: #9999cc;
+  --text: #ffcc99;
+  --muted: #9a9ac8;
+  --danger: #cc4444;
+  --shadow: 0 0 0 transparent;
+  --veil-rgb: 0, 0, 0;
+  --knob: #ffcc99;
+  --on-tile: #000000;
+  --scrim: rgba(0, 0, 0, 0.88);
+  --pop-scrim: rgba(0, 0, 0, 0.94);
+  --pop-dim: rgba(0, 0, 0, 0.7);
+  --r: 0;
+  --r-panel: 0;
+  --r-inner: 0.3rem;
+  --font: "Kiosk Antonio", "Roboto Condensed", "Arial Narrow", sans-serif;
+  /* the theme's own colours */
+  --lc-orange: #ff9900;
+  --lc-peach: #ffcc99;
+  --lc-lilac: #cc99cc;
+  --lc-blue: #9999cc;
+  --lc-red: #cc6666;
+  --lc-sky: #99ccff;
+}
+html[data-theme="starship"] body { text-transform: uppercase; letter-spacing: 0.04em; }
+html[data-theme="starship"] button { text-transform: inherit; }   /* the browser's own rule for buttons keeps their case */
+html[data-theme="starship"] .glow, html[data-theme="starship"].shape-round .views::before { display: none; }
+html[data-theme="starship"] .title { color: var(--lc-orange); font-weight: 700; }
+html[data-theme="starship"] .clock { color: var(--lc-peach); font-weight: 400; }
+/* under the header, a bar of colours with round ends */
+html[data-theme="starship"].shape-wide .top::after {
+  content: ""; grid-column: 1 / -1; height: 0.55rem; border-radius: 999px; margin-top: 0.2rem;
+  background: linear-gradient(90deg, var(--lc-lilac) 0 22%, #000 22% 22.5%, var(--lc-orange) 22.5% 58%, #000 58% 58.5%, var(--lc-blue) 58.5% 84%, #000 84% 84.5%, var(--lc-red) 84.5%);
+}
+
+/* -------------------------------------------- pills of flat colour */
+html[data-theme="starship"] .chip, html[data-theme="starship"] .pop-actions button, html[data-theme="starship"] .tab,
+html[data-theme="starship"] .fav-switch button, html[data-theme="starship"] .media-btn, html[data-theme="starship"] .menu-handle, html[data-theme="starship"] .pop-tab {
+  background: var(--lc-blue); color: #000000; border: 0; font-weight: 700;
+}
+html[data-theme="starship"] .chip.on, html[data-theme="starship"] .tab.active, html[data-theme="starship"] .pop-actions button.on, html[data-theme="starship"] .fav-switch button.on,
+html[data-theme="starship"] .media-btn.play, html[data-theme="starship"] .room-off, html[data-theme="starship"] .room-card.current .room-icon,
+html[data-theme="starship"] .ring-item.pressed, html[data-theme="starship"] .ring-close.pressed, html[data-theme="starship"] .menu-item.pressed { background: var(--accent); color: #000000; }
+html[data-theme="starship"] .tabs { background: none; padding: 0; gap: 0.3rem; }
+html[data-theme="starship"] .pop-close { background: var(--lc-red); color: #000000; border-radius: 999px; width: 3rem; }
+html[data-theme="starship"] .power { color: #000000; }
+html[data-theme="starship"].shape-round .bar.off .power, html[data-theme="starship"] .popover.off .pop-power { background: var(--lc-blue); color: #000000; }
+
+/* ---------------------- a light: a panel in an elbow of colour */
+html[data-theme="starship"] .lights > :nth-child(4n+1) { --lc: var(--lc-orange); }
+html[data-theme="starship"] .lights > :nth-child(4n+2) { --lc: var(--lc-lilac); }
+html[data-theme="starship"] .lights > :nth-child(4n+3) { --lc: var(--lc-blue); }
+html[data-theme="starship"] .lights > :nth-child(4n+4) { --lc: var(--lc-red); }
+html[data-theme="starship"].shape-wide .tile {
+  background: #000000; border: 0; border-top: 0.55rem solid var(--lc); border-left: 1.4rem solid var(--lc);
+  border-radius: 1.8rem 0 0 0.4rem; padding: 0.7rem 0.4rem 0.6rem 0.8rem;
+}
+html[data-theme="starship"].shape-wide .tile::before { display: none; }
+html[data-theme="starship"].shape-wide .tile:not(.on) { --lc: #3a3a4a; }
+html[data-theme="starship"] .tile-name { color: var(--lc-peach); font-weight: 700; }
+html[data-theme="starship"] .tile-icon { background: none; color: var(--lc-blue); }
+html[data-theme="starship"].shape-wide .tile.on .tile-icon { background: none; color: rgb(var(--tile-rgb)); }
+html[data-theme="starship"] .tile-more { background: var(--lc); color: #000000; border-radius: 999px; width: 2.6rem; }
+html[data-theme="starship"] .tile-slider { background: #1d1d24; border-radius: 999px; }
+html[data-theme="starship"] .tile-slider .fill { background: rgb(var(--tile-rgb)); }
+html[data-theme="starship"] .tile-slider .tile-state { color: #000000; mix-blend-mode: normal; }
+html[data-theme="starship"] .tile:not(.on) .tile-slider .tile-state { color: var(--muted); }
+/* on the Spot, round lamps in their own colour */
+html[data-theme="starship"].shape-round .tile-icon { background: #1d1d24; color: var(--lc-blue); }
+html[data-theme="starship"].shape-round .tile.on .tile-icon { background: rgb(var(--tile-rgb)); color: #000000; box-shadow: none; }
+
+/* ------------------------------------------ the dial: a ring of blocks */
+html[data-theme="starship"] .dial-track { stroke: #26262f; stroke-linecap: butt; stroke-dasharray: 0.031 0.004; }
+html[data-theme="starship"] .dial-fill { stroke-linecap: butt; }
+html[data-theme="starship"] .dial-knob .knob { d: path("M -1.4 -0.7 H 1.4 V 0.7 H -1.4 Z"); fill: var(--lc-peach); stroke: #000000; stroke-width: 0.2; }
+html[data-theme="starship"] .dial.rim .dial-knob .knob { transform: scale(1.7); }
+html[data-theme="starship"] .bar-icon { background: none; }
+
+/* ------------------------------ the rail: a column of coloured blocks */
+html[data-theme="starship"] .menu-panel { background: none; border: 0; box-shadow: none; padding: 0; gap: 0.3rem; border-radius: 0; }
+html[data-theme="starship"] .menu-item { border-radius: 0.2rem; color: #000000; background: var(--lc-lilac); width: calc(var(--rail-item) + 0.6rem); }
+html[data-theme="starship"] .menu-item:nth-child(3n+2) { background: var(--lc-blue); }
+html[data-theme="starship"] .menu-item:nth-child(3n+3) { background: var(--lc-peach); }
+html[data-theme="starship"] .menu-item:first-child { border-radius: 1.6rem 0.2rem 0.2rem 0.2rem; }
+html[data-theme="starship"] .menu-item:last-child { border-radius: 0.2rem 0.2rem 0.2rem 1.6rem; }
+html[data-theme="starship"] .menu-item .more { background: #000000; color: var(--lc-peach); }
+html[data-theme="starship"] .ring-item { background: #000000; border: 0.25rem solid var(--lc-lilac); color: var(--lc-peach); }
+html[data-theme="starship"] .ring-item .icon { color: var(--lc-lilac); }
+html[data-theme="starship"] .ring-close { background: var(--lc-red); color: #000000; border: 0; }
+
+/* --------------------- the panels: an elbow of lilac round the top left */
+html[data-theme="starship"].shape-wide .popover, html[data-theme="starship"].shape-wide .room-go {
+  background: #000000; border: 0; border-top: 0.55rem solid var(--lc-lilac); border-left: 1.4rem solid var(--lc-lilac); border-radius: 1.8rem 0 0 0.4rem;
+}
+html[data-theme="starship"].shape-round .room-go { background: #000000; border: 0.25rem solid var(--lc-lilac); }
+html[data-theme="starship"] .room-card.current .room-go { border-color: var(--lc-orange); box-shadow: none; }
+html[data-theme="starship"] .room-icon { background: var(--lc-blue); color: #000000; }
+html[data-theme="starship"] .pop-name, html[data-theme="starship"] .room-name { color: var(--lc-orange); font-weight: 700; }
+html[data-theme="starship"] .slider:not(.gradient) { background: #1d1d24; border: 0; }
+html[data-theme="starship"] .toast, html[data-theme="starship"] .status:not(.error) { background: var(--lc-orange); color: #000000; border: 0; font-weight: 700; }

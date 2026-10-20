@@ -1,0 +1,69 @@
+# Kiosk dashboard for Kiosk Satellite
+
+[![Checks](https://github.com/sylvertom/kiosk-satellite-dashboard/actions/workflows/checks.yml/badge.svg)](https://github.com/sylvertom/kiosk-satellite-dashboard/actions/workflows/checks.yml)
+
+A fast, touch-first Home Assistant dashboard for Echo devices running
+[Kiosk Satellite](https://github.com/jxlarrea/kiosk-satellite). One view per room with
+its sensors, mode chips, a brightness dial, light tiles that are sliders themselves, a
+detail panel for colour and effects, a media card, a room menu behind the room title, and
+a menu for the kiosk's own features with your Music Assistant favourites. It is plain
+HTML, CSS and JavaScript with no build step and no dependencies, so it loads in a blink
+where the Home Assistant frontend takes seconds.
+
+![The dashboard on an Echo Spot, an Echo Show 5 and an Echo Show 8](docs/images/demo.gif)
+
+| Echo Spot (480×480, round) | Echo Show 5 (960×480) | Echo Show 8 (1280×800) |
+| --- | --- | --- |
+| ![Spot](docs/images/spot-bedroom.png) | ![Show 5](docs/images/show5-bedroom.png) | ![Show 8](docs/images/show8-living.png) |
+| ![Spot favourites](docs/images/spot-menu-music.png) | ![Show 5 rooms](docs/images/show5-rooms.png) | ![Show 8 detail panel](docs/images/show8-popover-more.png) |
+
+| Synthwave | Starship | Aqua | CRT |
+| --- | --- | --- | --- |
+| <img src="docs/images/themes/synthwave-spot.webp" width="180" alt="Synthwave on an Echo Spot"> | <img src="docs/images/themes/starship-spot.webp" width="180" alt="Starship on an Echo Spot"> | <img src="docs/images/themes/aqua-spot.webp" width="180" alt="Aqua on an Echo Spot"> | <img src="docs/images/themes/crt-spot.webp" width="180" alt="CRT on an Echo Spot"> |
+
+Twelve themes, from e-ink to an early 2000s desktop: the [theme gallery](docs/theme-gallery.md)
+shows them all.
+
+*(Demo and screenshots from the mock Home Assistant in `tools/`, with the example configuration.)*
+
+## Highlights
+
+- **One page for every kiosk.** The room comes from the kiosk's name in Kiosk Satellite,
+  the layout from the screen: the round Echo Spot gets its own, with the dial along the
+  rim of the screen.
+- **Made for fingers.** Drag to dim, tap to toggle, long-press for colour, white,
+  effects and WLED palettes; swipe through a room's lights on the Spot.
+- **Rooms at a glance.** The room menu says how many lights each room has on and turns
+  them off, one room or the whole house.
+- **The kiosk's own features.** Kiosk Satellite's screensaver, intercom, cameras and
+  more, Home Assistant scripts, and Music Assistant favourites with their covers, played
+  on the room's speakers.
+- **Light and honest.** Subscribes to just the entities on screen and shows what Home
+  Assistant reports; [themes](docs/theme-gallery.md) to choose from (and to add), an accent colour that can follow
+  the room's light, and a picture behind each room if you like.
+
+## Quick start
+
+1. Copy this folder to `/config/www/kiosk/` on your Home Assistant.
+2. Copy `config.example.js` to `config.js` and replace every entity marked
+   `// <-- entity` with yours, and each picture marked `// <-- your picture` (or drop it).
+3. Check it in a browser: `http://<ha>:8123/local/kiosk/index.html?device=Echo+Spot+Bedroom`.
+4. Make it the kiosk's start page through Kiosk Satellite's remote API.
+
+The [setup guide](docs/setup.md) goes through each step.
+
+## Documentation
+
+- [Setup](docs/setup.md): installing, making it the start page, updating.
+- [Configuration](docs/configuration.md): rooms, devices, menu, favourites, icons.
+- [Theme gallery](docs/theme-gallery.md): every theme on the Show and on the Spot.
+- [Themes](docs/themes.md): how a theme is made, and how to add one.
+- [Features](docs/features.md): what each screen does.
+- [Security](docs/security.md): why the page can sit in `www/`, and how it signs in.
+- [Development](docs/development.md): how the code is organised, the mock Home Assistant
+  and the check suite.
+
+## License
+
+[MIT](LICENSE). The icons are [Material Design Icons](https://pictogrammers.com/library/mdi/)
+by Pictogrammers, under the Apache License 2.0.

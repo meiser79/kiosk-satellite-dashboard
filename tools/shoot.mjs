@@ -1,0 +1,39 @@
+#!/usr/bin/env node
+// The check suite. Drives headless Chrome over the DevTools protocol against
+// tools/mock-ha.mjs: loads the page as each kiosk, taps, drags and
+// long-presses with touch events, checks the mock's states and saves
+// screenshots (to screenshots/, which git ignores). With --docs it also
+// refreshes the few in docs/images. The checks live in tools/checks/, one
+// file per part of the page. Needs Google Chrome (or CHROME=<path>).
+// No dependencies.
+// Usage: node tools/mock-ha.mjs &  then  node tools/shoot.mjs [--docs] [outdir]
+import { reset, finish } from './checks/harness.mjs';
+import { bedroomSpot, livingSpot } from './checks/spot.mjs';
+import { insideKioskSatellite } from './checks/kiosk-satellite.mjs';
+import { bedroomShow5, livingShow8 } from './checks/show.mjs';
+import { lightsOff, mainWithoutMembers, sevenRooms } from './checks/rooms.mjs';
+import { noPlayer, ringSizes } from './checks/menus.mjs';
+import { signIn, noConfig } from './checks/sign-in.mjs';
+import { accentFollowsLight, pictures, themes } from './checks/theme.mjs';
+
+await reset();
+await bedroomSpot();
+await livingSpot();
+await insideKioskSatellite();
+await bedroomShow5();
+await livingShow8();
+await reset();
+await lightsOff();
+await reset();
+await mainWithoutMembers();
+await reset();
+await sevenRooms();
+await noPlayer();
+await ringSizes();
+await signIn();
+await noConfig();
+await reset();
+await accentFollowsLight();
+await pictures();
+await themes();
+await finish();

@@ -1,0 +1,163 @@
+/* The round screen: Echo Spot (480×480, circular). */
+
+/* One fixed arrangement, placed in percent of the circle from top to bottom:
+   a column of the title, sensors and modes; the main slot with its large
+   power button; the light pages, their dots, and the menu handle. No clock. */
+.shape-round .app { background: #000; }
+.shape-round .glow { display: none; }
+.shape-round .views {
+  inset: auto; left: 50%; top: 50%; width: 100vmin; height: 100vmin; transform: translate(-50%, -50%);
+  border-radius: 50%; overflow: hidden; background: linear-gradient(160deg, var(--bg) 0%, var(--bg-2) 100%);
+}
+/* a picture, and a theme's moving background, cut to the circle like the views */
+.shape-round .wallpaper, .shape-round .scene { inset: auto; left: 50%; top: 50%; width: 100vmin; height: 100vmin; transform: translate(-50%, -50%); border-radius: 50%; overflow: hidden; }
+.shape-round .with-wallpaper .views, .shape-round .with-scene .views { background: none; }
+.shape-round .views::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(60% 50% at 20% 0%, rgba(var(--accent-rgb), 0.16), transparent 70%);
+}
+.shape-round .controls { display: contents; }
+/* the header: a column centred in its band, closing up when a row is missing */
+.shape-round .top {
+  position: absolute; top: 6.5%; bottom: 58.5%; left: 0; right: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.65rem;
+}
+.shape-round .title { font-size: 1.85rem; }
+.shape-round .title-btn { margin: 0; padding: 0.1rem 0.3rem 0.1rem 0.7rem; }
+/* the title's line keeps room below its letters for descenders: the sensors
+   sit that much higher, to look as far from the title as from the modes */
+.shape-round .sensors { gap: 1rem; font-size: 1.05rem; margin: 0.1rem 0 0.5rem; }
+.shape-round .modes { gap: 1.15rem; }
+.shape-round .modes .chip { flex: none; width: 2.8rem; height: 2.8rem; padding: 0; border-radius: var(--r-round); }
+.shape-round .modes .chip .name { display: none; }
+.shape-round .modes .chip .icon { font-size: 1.35rem; }
+/* the tops of the main slot and of the light strip under it */
+.shape-round .view { --main: 45.5vmin; --strip: 61vmin; }
+/* the main slot: a large power button, the light's name and state, in the
+   middle 68% of a band across the screen. A swipe across it brings in the
+   room's next light; only the rim dims. What slides aside fades away at the
+   rim's inner edge, as in the strip below. */
+.shape-round .main {
+  position: absolute; left: 0; right: 0; top: var(--main); height: 4.4rem;
+  -webkit-mask-image: radial-gradient(circle at 50% calc(50vmin - var(--main)), #000 44.6vmin, transparent 46.4vmin);
+  mask-image: radial-gradient(circle at 50% calc(50vmin - var(--main)), #000 44.6vmin, transparent 46.4vmin);
+}
+.shape-round .main .bar { position: absolute; left: 16%; right: 16%; top: 0; bottom: 0; }
+.shape-round .bar { display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+.shape-round .power {
+  flex: none; width: 4.4rem; height: 4.4rem; border-radius: var(--r-round); display: flex; align-items: center; justify-content: center;
+  background: var(--accent); color: var(--on-accent); font-size: 2.1rem; transition: background 0.25s, color 0.25s, transform 0.12s var(--ease);
+}
+.shape-round .bar.off .power { background: var(--surface-2); color: var(--muted); }
+.shape-round .power.pressed { transform: scale(0.9); }
+.shape-round .bar .name { font-size: 1.35rem; }
+.shape-round .bar .state { font-size: 0.95rem; }
+/* faint arrows either side of a slot that swipes (a tap on one steps too) */
+.shape-round .main.swipes .bar { padding: 0 1.9rem; }
+.shape-round .main-arrow {
+  position: absolute; top: 50%; width: 1.9rem; height: 3rem; margin-top: -1.5rem; z-index: 1;
+  display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--muted); opacity: 0.45; transition: opacity 0.2s;
+}
+.shape-round .main-arrow[data-dir="-1"] { left: 16%; }
+.shape-round .main-arrow[data-dir="1"] { right: 16%; }
+.shape-round .main-arrow.pressed { opacity: 1; }
+.shape-round .main.swiping .main-arrow { opacity: 0; }
+/* a swipe pulls the light shown aside and brings the next one (.peek) in
+   alongside, like a carousel: each sits --x off the middle (set by js/view.js),
+   dimmed and shrunk a little with --away, 0 in the middle to 1 a light's
+   width out, where the others wait. Let go, both glide on from there. */
+.shape-round .main .bar:not(.current) { transform: translateX(calc(var(--side, 0) * 100%)) scale(0.9); }
+.shape-round .main .bar.peek { visibility: visible; transition-delay: 0s; }
+.shape-round .main.swiping .bar {
+  transition: none; opacity: calc(1 - 0.5 * var(--away, 0));
+  transform: translateX(var(--x, 0px)) scale(calc(1 - 0.1 * var(--away, 0)));
+}
+/* the rim: the main light's level along the edge of the screen. Its stroke
+   width is also in js/controls.js (RIM_R), which puts the arc half of it inside the edge. */
+.dial.rim { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.dial.rim .dial-track, .dial.rim .dial-fill { stroke-width: 3.6; }
+.dial.rim .dial-hit { stroke-width: 9; }
+.dial.rim .dial-knob .knob { transform: scale(1.35); stroke-width: 0.33; }
+/* the lights: a strip of round buttons, the name under each, three in view
+   between two 16% ends (which grow to centre a shorter strip). It comes to
+   rest with a button, or the media card, in the middle; what scrolls out
+   fades away at the rim's inner edge (46.4vmin from the centre of the
+   screen, which is 50vmin − --strip above the strip). The card needs the
+   band's height; the buttons sit lower, clear of the main slot. The dots
+   follow the strip, nearer to it than to the menu handle under them. */
+.shape-round .lights {
+  position: absolute; top: var(--strip); left: 0; right: 0; height: 24.5%;
+  display: flex; gap: 0; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; touch-action: pan-x; align-items: flex-start;
+  -webkit-mask-image: radial-gradient(circle at 50% calc(50vmin - var(--strip)), #000 44.6vmin, transparent 46.4vmin);
+  mask-image: radial-gradient(circle at 50% calc(50vmin - var(--strip)), #000 44.6vmin, transparent 46.4vmin);
+}
+.shape-round .lights::-webkit-scrollbar { display: none; }
+.shape-round .lights::before, .shape-round .lights::after { content: ""; flex: 1 0 16%; }
+.shape-round .lights > .tile { flex: none; width: calc(68% / 3); margin-top: 1.9rem; scroll-snap-align: center; }
+.shape-round .lights > .media { flex: none; width: 68%; margin-top: 0.6rem; scroll-snap-align: center; }   /* clear of the rim */
+.shape-round .tile { background: none; border: 0; padding: 0; overflow: visible; align-items: center; gap: 0.35rem; }
+.shape-round .tile::before { display: none; }
+.shape-round .tile-icon { width: 3.2rem; height: 3.2rem; font-size: 1.5rem; }
+.shape-round .tile.on .tile-icon { background: rgb(var(--tile-rgb)); color: var(--on-tile); box-shadow: 0 0 1.1rem rgba(var(--tile-rgb), 0.4); }
+.shape-round .tile.pressed { transform: none; }
+.shape-round .tile.pressed .tile-icon { transform: scale(0.92); }
+.shape-round .tile-more, .shape-round .tile-slider, .shape-round .tile-extra, .shape-round .tile > .tile-state { display: none; }
+.shape-round .tile-text { margin: 0; justify-content: center; }
+.shape-round .tile-name { font-size: 0.72rem; text-align: center; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.15; }
+.shape-round .tile:not(.on) .tile-name { color: var(--muted); }
+.shape-round .with-wallpaper .tile:not(.on) .tile-icon { background: var(--surface); box-shadow: var(--float); }   /* solid on a picture */
+.shape-round .media { padding: 0.6rem; row-gap: 0.25rem; }
+.shape-round .media-sub { display: none; }
+.shape-round .media.compact .media-art { width: 3.4rem; height: 3.4rem; }
+.shape-round .media-transport { gap: 0.3rem; }
+.shape-round .view > .dots { position: absolute; top: calc(var(--strip) + 23.5vmin); left: 0; right: 0; }
+/* the popover: no card, the menus' dark backdrop (a light one for the light
+   theme's dark text), and like the menus' rows, the controls solid on it,
+   larger than on the card. A column 70% wide from 6.4% down to just above
+   the tab that closes it: the light's name alone, then the power button and
+   the brightness slider, then the rest, all 1.25rem apart. The Colour tab
+   fits; the first row and the swatches are narrower, where the circle is.
+   Longer tabs scroll, fading out at the bottom over padding that stays
+   empty when they fit; scrolled to the end, their last control (the
+   swatches excepted) stands a little higher, inside the rim. */
+.shape-round .popover-backdrop { align-items: flex-start; background: var(--pop-scrim); }
+.shape-round .popover {
+  width: 70vmin; max-height: 82.6vmin; margin-top: 6.4vmin; padding: 0; align-items: center;
+  background: none; border: 0; border-radius: 0; box-shadow: none;
+}
+.shape-round .popover .slider, .shape-round .popover .tabs, .shape-round .popover .chip:not(.on) { background-color: var(--surface-solid); }
+.shape-round .pop-icon, .shape-round .pop-state, .shape-round .pop-close, .shape-round .pop-actions { display: none; }
+.shape-round .pop-head { max-width: 46vmin; margin-bottom: 0.75rem; }
+.shape-round .pop-text { align-items: center; }
+.shape-round .pop-name { font-size: 1.4rem; }
+.shape-round .pop-body {
+  width: 100%; padding: 0.5rem 0 1.25rem;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 0.5rem, #000 calc(100% - 1.25rem), transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 0.5rem, #000 calc(100% - 1.25rem), transparent);
+}
+.shape-round .pop-main { width: 66vmin; margin: 0 auto; }
+.shape-round .pop-main > .slider { flex: 1; width: auto; min-width: 0; }
+.shape-round .pop-power {
+  display: flex; flex: none; width: 3.6rem; height: 3.6rem; border-radius: var(--r-round); align-items: center; justify-content: center; font-size: 1.75rem;
+  background: rgb(var(--tile-rgb)); color: var(--on-tile); box-shadow: 0 0 1.1rem rgba(var(--tile-rgb), 0.4);
+  transition: background 0.25s, color 0.25s, box-shadow 0.25s, transform 0.12s var(--ease);
+}
+.shape-round .popover.off .pop-power { background: var(--surface-2); color: var(--muted); box-shadow: none; }
+.shape-round .pop-power.pressed { transform: scale(0.9); }
+.shape-round .popover .slider { height: 3rem; }
+.shape-round .popover .slider.big { height: 3.6rem; }
+.shape-round .popover .slider .label, .shape-round .popover .slider .value { font-size: 0.95rem; }
+.shape-round .popover .tabs { margin-top: 1.25rem; padding: 0.25rem; }
+.shape-round .popover .tab { height: 2.4rem; font-size: 0.9rem; }
+.shape-round .popover .tab .icon { font-size: 1.15rem; }
+.shape-round .popover .pane { margin-top: 1.25rem; gap: 1.25rem; }
+.shape-round .popover .pane > :last-child:not(.swatches) { margin-bottom: 1rem; }
+.shape-round .popover .control { gap: 0.5rem; }
+.shape-round .popover .chip.sm { height: 2.4rem; padding: 0 1rem; font-size: 0.85rem; }
+.shape-round .popover .wrap { gap: 0.55rem; }
+.shape-round .swatches { width: 67.6vmin; gap: 1.2vmin; margin: 0 auto; }   /* 7.4vmin each */
+.shape-round .pane .wrap { justify-content: center; }
+.shape-round .control-label { text-align: center; font-size: 0.75rem; }
+.shape-round .pop-tab { display: flex; }
+.shape-round .status { bottom: 20%; max-width: 80vmin; white-space: normal; text-align: center; }
+.shape-round .toast { bottom: 26%; }

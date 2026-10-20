@@ -1,0 +1,65 @@
+/* Matrix: green code falling behind the rooms (rain.js), the rooms on black
+   glass over it, everything in green and glowing a little, what is on lit
+   from within rather than a slab of green, in Share Tech
+   Mono (OFL: OFL-share-tech-mono.txt) with the falling characters in Noto
+   Sans JP (OFL: OFL-noto-sans-jp.txt). Mono: every light is green. */
+@font-face { font-family: "Kiosk Share Tech Mono"; src: url("share-tech-mono.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "Kiosk Matrix Glyphs"; src: url("katakana.woff2") format("woff2"); font-display: block; unicode-range: U+FF61-FF9F; }
+
+html[data-theme="matrix"] {
+  --accent-rgb: 0, 255, 65;
+  --on-accent: #001a07;
+  --bg: #000000;
+  --bg-2: #000000;
+  --surface: rgba(0, 12, 3, 0.8);
+  --surface-2: rgba(0, 255, 65, 0.1);
+  --surface-solid: #010d04;
+  --border: rgba(0, 255, 65, 0.35);
+  --text: #c8ffd4;
+  --muted: #3fcf68;
+  --danger: #d92b2b;
+  --shadow: 0 0 1.2rem rgba(0, 255, 65, 0.15);
+  --veil-rgb: 0, 0, 0;
+  --knob: #c8ffd4;
+  --on-tile: #001a07;
+  --scrim: rgba(0, 0, 0, 0.85);
+  --pop-scrim: rgba(0, 0, 0, 0.92);
+  --pop-dim: rgba(0, 0, 0, 0.6);
+  --r: 0.3rem;
+  --r-panel: 0.4rem;
+  --r-pill: 0.3rem;
+  --r-inner: 0.2rem;
+  --font: "Kiosk Share Tech Mono", ui-monospace, monospace;
+}
+
+html[data-theme="matrix"] body { text-shadow: 0 0 0.35rem rgba(0, 255, 65, 0.45); }
+html[data-theme="matrix"] .glow, html[data-theme="matrix"].shape-round .views::before { display: none; }
+/* the rain, mirrored and dimmed; on the Spot, where the text sits right on
+   it, dimmer still in the middle of the screen */
+html[data-theme="matrix"] .scene canvas { display: block; width: 100%; height: 100%; transform: scaleX(-1); opacity: 0.6; }
+html[data-theme="matrix"].shape-round .scene canvas {
+  -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.35) 25%, #000 72%);
+  mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.35) 25%, #000 72%);
+}
+/* a picture in the code's green, darker */
+html[data-theme="matrix"] .paper img { filter: grayscale(1) sepia(1) hue-rotate(80deg) saturate(2.5) brightness(0.55); }
+/* the dial glowing, its level a trail of code: dark where it starts, bright
+   at its head, a bright block */
+html[data-theme="matrix"] .dial-groove { display: block; stroke: rgba(0, 255, 65, 0.16); stroke-width: 7; }
+html[data-theme="matrix"] .dial.rim .dial-groove { stroke-width: 5; }
+html[data-theme="matrix"] .dial-track { stroke: rgba(0, 255, 65, 0.18); }
+html[data-theme="matrix"] .dial-grad-a { stop-color: #0a5c20; }
+html[data-theme="matrix"] .dial-knob .knob { d: path("M -0.9 -0.9 H 0.9 V 0.9 H -0.9 Z"); stroke: #001a07; }
+html[data-theme="matrix"] .dial.rim .dial-knob .knob { transform: scale(1.7); }
+/* what is on: dark green glass edged and lit in bright green, the screen's
+   one green kept for lines, text and the code */
+html[data-theme="matrix"] .chip.on, html[data-theme="matrix"] .power, html[data-theme="matrix"] .tab.active, html[data-theme="matrix"] .pop-actions button.on,
+html[data-theme="matrix"] .fav-switch button.on, html[data-theme="matrix"] .room-off, html[data-theme="matrix"] .room-card.current .room-icon,
+html[data-theme="matrix"] .media-btn.play, html[data-theme="matrix"] .menu-item.pressed, html[data-theme="matrix"] .menu-handle.pressed, html[data-theme="matrix"] .pop-tab.pressed,
+html[data-theme="matrix"] .ring-item.pressed, html[data-theme="matrix"] .ring-close.pressed, html[data-theme="matrix"] .tile-more.pressed,
+html[data-theme="matrix"].shape-round .tile.on .tile-icon, html[data-theme="matrix"] .pop-power {
+  background: #063d14; color: #a6ffbc; border-color: transparent;
+  box-shadow: inset 0 0 0 0.1rem rgb(var(--accent-rgb)), inset 0 0 0.9rem rgba(0, 255, 65, 0.35), 0 0 0.9rem rgba(0, 255, 65, 0.3);
+}
+html[data-theme="matrix"].shape-round .bar.off .power { box-shadow: inset 0 0 0 1px var(--border); }
+html[data-theme="matrix"] .ring-item.pressed .icon { color: inherit; }

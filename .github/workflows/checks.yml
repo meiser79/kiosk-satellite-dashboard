@@ -1,0 +1,43 @@
+# The check suite (docs/development.md) on every push to main and every pull request: the
+# mock Home Assistant, then headless Chrome through tools/shoot.mjs. On macOS, where the
+# suite was written: the page's font is the system's, and the checks that measure text
+# (names fitting their buttons, the header's modes) count on its widths. GitHub's macOS
+# runners have Google Chrome where the harness looks for it.
+name: Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:   # a newer push stops the run of the one before
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: macos-latest
+    timeout-minutes: 30   # a run that hangs fails, instead of holding the runner for hours
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .tool-versions
+      - name: Start the mock Home Assistant
+        run: |
+          node tools/mock-ha.mjs > mock.log 2>&1 &
+          for i in $(seq 50); do curl -sf http://127.0.0.1:8123/__states > /dev/null && exit 0; sleep 0.2; done
+          cat mock.log; exit 1
+      - name: Run the checks
+        run: node tools/shoot.mjs
+      - name: Keep the screenshots and the mock's log
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: screenshots
+          path: |
+            screenshots/
+            mock.log

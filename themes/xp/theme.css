@@ -1,0 +1,190 @@
+/* XP: after the look of a desktop of the early 2000s. Its wallpaper,
+   bliss.jpg next to this file when you put it there (it is not part of the
+   repository), else a blue sky drawn over a green hill; each light a small
+   window, its name on a blue title bar, its level a shining bar; buttons
+   that shine, the green of a start button for what is on, and the Spot's
+   menu tab that start button itself; the dial a trough with a trackbar's
+   thumb; the Spot's menu the start menu, round; the Show's clock in the
+   corner of a taskbar; the detail panel a window with a red close button;
+   notices in a yellow balloon. Text that
+   sits on the desktop is white with a shadow, like a desktop icon's name. */
+html[data-theme="xp"] {
+  --accent-rgb: 45, 127, 45;
+  --on-accent: #ffffff;
+  --bg: #ece9d8;
+  --bg-2: #d8d2bd;
+  --surface: #ece9d8;
+  --surface-2: rgba(0, 0, 0, 0.08);
+  --surface-solid: #ece9d8;
+  --border: #7f9db9;
+  --text: #000000;
+  --muted: #4b4b4b;
+  --danger: #c1272d;
+  --shadow: 0.2rem 0.3rem 0.7rem rgba(0, 0, 0, 0.35);
+  --veil-rgb: 0, 30, 80;
+  --knob: #f4f3ee;
+  --scrim: rgba(0, 25, 80, 0.55);
+  --pop-scrim: rgba(236, 233, 216, 0.96);
+  --pop-dim: rgba(0, 20, 70, 0.35);
+  --r: 0.45rem;
+  --r-panel: 0.55rem;
+  --r-pill: 0.2rem;
+  --r-inner: 0.2rem;
+  --font: Tahoma, Verdana, "Segoe UI", system-ui, sans-serif;
+  --font-title: "Trebuchet MS", Tahoma, system-ui, sans-serif;
+  /* the theme's own: a title bar, a button, the shine on a coloured one, a window's close button */
+  --xp-bar: linear-gradient(180deg, #0997ff 0%, #0053ee 9%, #0050ee 45%, #0066ff 88%, #0a4fd6 100%);
+  --xp-button: linear-gradient(180deg, #ffffff 0%, #f3f2ec 55%, #d6d0c5 100%);
+  --xp-shine: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.12) 50%, rgba(0, 0, 0, 0.04) 51%, rgba(0, 0, 0, 0.16) 100%);
+  --xp-close: linear-gradient(180deg, #e9967a 0%, #d8562b 45%, #c3380c 100%);
+}
+
+/* ------------------------------------------------------------ the desktop */
+html[data-theme="xp"].shape-wide .app,
+html[data-theme="xp"].shape-round .views {
+  background:
+    url("bliss.jpg") center 35% / cover no-repeat,
+    radial-gradient(18% 7% at 72% 22%, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0) 100%),
+    radial-gradient(14% 5% at 30% 30%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 100%),
+    radial-gradient(150% 62% at 22% 118%, #63b331 0%, #4c9b23 58%, #3d8a1c 66.5%, rgba(61, 138, 28, 0) 67.5%),
+    radial-gradient(110% 55% at 95% 122%, #74c140 0%, #58a82b 60%, rgba(88, 168, 43, 0) 61.5%),
+    linear-gradient(180deg, #2a68d4 0%, #4f8fe6 38%, #9cc5f2 68%, #d6e8fb 100%);
+}
+html[data-theme="xp"].shape-round .with-wallpaper .views { background: none; }
+html[data-theme="xp"] .glow, html[data-theme="xp"].shape-round .views::before { display: none; }
+/* on the desktop, white text with a shadow; in the windows and on the buttons, black */
+html[data-theme="xp"] .view { --text: #ffffff; --muted: #eef4ff; color: var(--text); text-shadow: 0.06rem 0.08rem 0.12rem rgba(0, 0, 0, 0.8); }
+html[data-theme="xp"] .view .chip, html[data-theme="xp"] .view .slider, html[data-theme="xp"] .view .media,
+html[data-theme="xp"].shape-wide .view .tile { --text: #000000; --muted: #4b4b4b; text-shadow: none; }
+html[data-theme="xp"] .view .sensor.on { color: #c6f7a8; }
+/* the dial: a white trough edged in blue-grey, the level shining in it, a trackbar's thumb */
+html[data-theme="xp"] .dial-groove { display: block; stroke: #7f9db9; stroke-width: 6.4; }
+html[data-theme="xp"] .dial-track { stroke: #ffffff; stroke-width: 5.6; }
+html[data-theme="xp"] .dial-fill { stroke-width: 4.2; }
+html[data-theme="xp"] .dial-shine { display: block; stroke: rgba(255, 255, 255, 0.55); stroke-width: 1.4; }
+html[data-theme="xp"] .dial-grad-a, html[data-theme="xp"] .dial-grad-b { stop-color: rgb(var(--accent-rgb)); }
+html[data-theme="xp"] .dial.rim .dial-groove { stroke-width: 4.4; }
+html[data-theme="xp"] .dial.rim .dial-track { stroke-width: 3.6; }
+html[data-theme="xp"] .dial.rim .dial-fill { stroke-width: 2.6; }
+html[data-theme="xp"] .dial.rim .dial-shine { stroke-width: 0.9; }
+html[data-theme="xp"] .dial-knob .knob { d: path("M 1.2 -0.8 L 1.2 0.8 L -0.4 0.8 L -1.2 0 L -0.4 -0.8 Z"); fill: #f7f6f1; stroke: #1c5180; stroke-width: 0.16; stroke-linejoin: round; }
+html[data-theme="xp"] .dial.rim .dial-knob .knob { transform: scale(1.8); }
+
+/* ------------------------------------------------------------ buttons */
+html[data-theme="xp"] .chip, html[data-theme="xp"] .pop-actions button, html[data-theme="xp"] .menu-handle, html[data-theme="xp"] .pop-tab,
+html[data-theme="xp"] .media-btn, html[data-theme="xp"] .tile-icon, html[data-theme="xp"] .room-icon {
+  background: var(--xp-button); border: 1px solid #003c74; color: #000000;
+}
+html[data-theme="xp"] .menu-handle, html[data-theme="xp"] .tile-icon { color: #1f3f8f; }
+/* what is on: the colour, shining */
+html[data-theme="xp"] .chip.on, html[data-theme="xp"] .power, html[data-theme="xp"] .tab.active, html[data-theme="xp"] .pop-actions button.on,
+html[data-theme="xp"] .fav-switch button.on, html[data-theme="xp"] .room-off, html[data-theme="xp"] .media-btn.play, html[data-theme="xp"] .room-card.current .room-icon,
+html[data-theme="xp"] .menu-item.pressed {
+  background-color: var(--accent); background-image: var(--xp-shine); color: var(--on-accent); border: 1px solid rgba(0, 0, 0, 0.35);
+}
+html[data-theme="xp"] .bar-icon { background: var(--xp-button); border: 1px solid #003c74; text-shadow: none; }
+html[data-theme="xp"] .bar.off .bar-icon { color: #4b4b4b; }
+html[data-theme="xp"] .tile.on .tile-icon, html[data-theme="xp"] .pop-power { background-color: rgb(var(--tile-rgb)); background-image: var(--xp-shine); color: var(--on-tile); }
+html[data-theme="xp"].shape-round .bar.off .power, html[data-theme="xp"] .popover.off .pop-power { background: var(--xp-button); color: #4b4b4b; border: 1px solid #003c74; }
+
+/* ------------------------------------------- a light: a small window */
+html[data-theme="xp"].shape-wide .tile {
+  padding-top: 2.6rem; border: 0.2rem solid #0a4fd6; border-top: 0; border-radius: 0.55rem 0.55rem 0.15rem 0.15rem;
+  background: var(--xp-bar) top / 100% 2.1rem no-repeat, #ece9d8; box-shadow: var(--shadow);
+}
+html[data-theme="xp"].shape-wide .tile::before { display: none; }
+html[data-theme="xp"].shape-wide .tile.on { border-color: #0a4fd6; }
+html[data-theme="xp"].shape-wide .tile-text { position: absolute; left: 0.6rem; right: 2.5rem; top: 0; height: 2.1rem; margin: 0; align-items: center; }
+html[data-theme="xp"].shape-wide .tile-name { color: #ffffff; font-family: var(--font-title); font-weight: 700; text-shadow: 0.06rem 0.06rem 0 #0f1089; }
+html[data-theme="xp"].shape-wide .tile-extra { color: #d8e6ff; }
+html[data-theme="xp"].shape-wide .tile-slider, html[data-theme="xp"].shape-wide .tile > .tile-state { margin-top: auto; }
+/* its button in the title bar, as a window's */
+html[data-theme="xp"] .tile-more {
+  top: 0.32rem; right: 0.35rem; width: 1.45rem; height: 1.45rem; border-radius: 0.2rem; border: 1px solid #ffffff; font-size: 1rem;
+  background: linear-gradient(180deg, #73a5f9 0%, #2c6be7 45%, #1455e0 100%); color: #ffffff;
+}
+html[data-theme="xp"] .tile-more.pressed { background: linear-gradient(180deg, #3f78e9, #1240b8); }
+/* its level: a shining bar in its colour */
+html[data-theme="xp"] .tile-slider { background: #ffffff; border: 1px solid #686868; border-radius: 0.2rem; }
+html[data-theme="xp"] .tile-slider .fill {
+  inset: 0.18rem; border-radius: 0.1rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.12)),
+    linear-gradient(90deg, rgba(var(--tile-rgb), 0.55), rgb(var(--tile-rgb)));
+}
+
+/* ---------------------------------------- the Spot's menu tab: start */
+html[data-theme="xp"] .menu-handle {
+  border: 0; color: #ffffff; box-shadow: 0.1rem 0.15rem 0.3rem rgba(0, 0, 0, 0.45);
+  background: linear-gradient(180deg, #5fbf5f 0%, #3c9a3c 12%, #389838 50%, #2e852e 88%, #286f28 100%);
+}
+html[data-theme="xp"] .menu-handle .icon { display: none; }
+html[data-theme="xp"] .menu-handle::after { content: "start"; font: italic 700 1.25rem var(--font-title); text-shadow: 0.06rem 0.08rem 0.1rem rgba(0, 0, 0, 0.6); }
+html[data-theme="xp"] .menu-handle.pressed, html[data-theme="xp"] .menu-handle.open { background: linear-gradient(180deg, #2f7f2f, #3a9a3a 60%, #4fae4f); }
+
+/* -------------------------------- the Spot's menu: the start menu, round */
+/* Over the start menu's blue, its pale panel ringed by its orange line; on
+   it the menu's items, as the start menu has them: no button around them,
+   each icon in a colour of its own, the name in bold blue, the one pressed
+   lit in the blue of a selection. A folder carries the green arrow of "All
+   Programs". In the middle, a window's red close button, or in a folder the
+   green round Back of a folder window. The room menu opens over the blue too. */
+html[data-theme="xp"].shape-round .backdrop {
+  background: radial-gradient(60% 40% at 30% 8%, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0) 70%),
+    linear-gradient(180deg, #3d88f3 0%, #2563dc 20%, #1b56d1 70%, #1244b4 100%);
+}
+html[data-theme="xp"] .ring::before {
+  --plate: calc(2 * var(--r) + var(--size) + 1.4rem);   /* the ring's buttons and a margin round them */
+  content: ""; position: absolute; left: 0; top: 0; width: var(--plate); height: var(--plate); margin: calc(var(--plate) / -2); border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, #f3f7fd 50%, #d3e5fa 100%);
+  box-shadow: 0 0 0 0.22rem #f0a046, 0 0 0 0.3rem #c46a17, 0 0.5rem 1.5rem rgba(0, 0, 0, 0.45);
+}
+html[data-theme="xp"] .ring-item { background: none; border: 0; box-shadow: none; color: #00136b; font-weight: 700; }
+html[data-theme="xp"] .ring-item:nth-child(5n + 1) .icon { color: #1c5fd8; }
+html[data-theme="xp"] .ring-item:nth-child(5n + 2) .icon { color: #2c8f2c; }
+html[data-theme="xp"] .ring-item:nth-child(5n + 3) .icon { color: #e07800; }
+html[data-theme="xp"] .ring-item:nth-child(5n + 4) .icon { color: #c3380c; }
+html[data-theme="xp"] .ring-item:nth-child(5n + 5) .icon { color: #6a3fb8; }
+html[data-theme="xp"] .ring-item.pressed { background: #316ac5; color: #ffffff; }
+html[data-theme="xp"] .ring-item.pressed .icon { color: inherit; }
+html[data-theme="xp"] .ring-item.with-cover.pressed { box-shadow: 0 0 0 0.2rem #316ac5; }
+html[data-theme="xp"] .more { border-radius: 0.15rem; background: linear-gradient(180deg, #5fbf5f, #2e852e); color: #ffffff; }
+html[data-theme="xp"] .ring-close { border: 1px solid #ffffff; border-radius: 0.35rem; color: #ffffff; background: var(--xp-close); box-shadow: 0.06rem 0.1rem 0.3rem rgba(0, 0, 0, 0.35); }
+html[data-theme="xp"] .ring-close.pressed { background: linear-gradient(180deg, #b7330b, #d8562b 60%, #e07a55); }
+html[data-theme="xp"] .ring-close.back { border-radius: 50%; background: radial-gradient(circle at 35% 30%, #a8e48c 0%, #4cae3a 45%, #2b7d22 100%); }
+html[data-theme="xp"] .ring-close.back.pressed { background: radial-gradient(circle at 35% 30%, #4cae3a 0%, #2b7d22 70%); }
+
+/* --------------------------------- the Show's clock: the taskbar's corner */
+html[data-theme="xp"].shape-wide .clock {
+  padding: 0.3rem 0.9rem; font-size: 2rem; border: 1px solid #095bc9; border-radius: 0.2rem;
+  background: linear-gradient(180deg, #0c59b9 0%, #139ee9 8%, #18b9f4 40%, #0f8ee6 92%, #0d7ad0 100%);
+  box-shadow: inset 0.06rem 0 0.06rem #18bbff;
+}
+
+/* --------------------------------------------- the rail: the taskbar */
+html[data-theme="xp"] .menu-panel {
+  background: linear-gradient(90deg, #1941a5 0%, #245edb 14%, #3f8cf3 32%, #245edb 72%, #1941a5 100%);
+  border: 1px solid #0c2c80; border-radius: 0.35rem;
+}
+html[data-theme="xp"] .menu-item { color: #ffffff; border-radius: 0.25rem; }
+html[data-theme="xp"] .menu-item.active { color: #b9f0a0; }
+
+/* ------------------------------------------- the detail panel: a window */
+html[data-theme="xp"].shape-wide .popover {
+  padding: 0 0.9rem 0.9rem; overflow: hidden;
+  border: 0.2rem solid #0a4fd6; border-top: 0; border-radius: 0.6rem 0.6rem 0.15rem 0.15rem;
+}
+html[data-theme="xp"].shape-wide .pop-head { margin: 0 -0.9rem 0.9rem; padding: 0.4rem 0.4rem 0.4rem 0.7rem; background: var(--xp-bar); }
+html[data-theme="xp"].shape-wide .pop-icon { width: 2rem; height: 2rem; font-size: 1.2rem; }
+html[data-theme="xp"].shape-wide .pop-name { color: #ffffff; font-family: var(--font-title); font-weight: 700; text-shadow: 0.06rem 0.06rem 0 #0f1089; }
+html[data-theme="xp"].shape-wide .pop-state { color: #d8e6ff; }
+html[data-theme="xp"] .pop-close {
+  width: 1.7rem; height: 1.7rem; border-radius: 0.22rem; border: 1px solid #ffffff; color: #ffffff; font-size: 1.1rem;
+  background: var(--xp-close);
+}
+/* tabs as a window's, the one shown lit along its top */
+html[data-theme="xp"] .tabs { background: none; padding: 0; gap: 0.1rem; border-radius: 0; border-bottom: 1px solid #919b9c; }
+html[data-theme="xp"] .tab { border: 1px solid #919b9c; border-bottom: 0; border-radius: 0.25rem 0.25rem 0 0; background: linear-gradient(180deg, #ffffff, #ecebe5); color: #000000; }
+html[data-theme="xp"] .tab.active { background: #fcfcfe; color: #000000; border-color: #919b9c; box-shadow: inset 0 0.18rem 0 #e68b2c; }
+
+/* --------------------------------------------- a notice: the balloon */
+html[data-theme="xp"] .toast, html[data-theme="xp"] .status:not(.error) { background: #ffffe1; color: #000000; border: 1px solid #000000; border-radius: 0.5rem; }

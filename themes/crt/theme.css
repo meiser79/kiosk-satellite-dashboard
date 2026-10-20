@@ -1,0 +1,51 @@
+/* Amber CRT: an old terminal's amber phosphor on black, in VT323 (OFL:
+   OFL.txt), the text glowing, scan lines across the screen and its corners
+   darker; a cursor blinks after the clock, and the dial's knob is a cursor's
+   block. Mono: every light glows amber. */
+@font-face { font-family: "Kiosk VT323"; src: url("vt323.woff2") format("woff2"); font-display: block; size-adjust: 118%; }
+
+html[data-theme="crt"] {
+  --accent-rgb: 255, 176, 0;
+  --on-accent: #1a0e00;
+  --bg: #0c0702;
+  --bg-2: #120a02;
+  --surface: rgba(255, 176, 0, 0.06);
+  --surface-2: rgba(255, 176, 0, 0.13);
+  --surface-solid: #1b1105;
+  --border: rgba(255, 176, 0, 0.32);
+  --text: #ffbf47;
+  --muted: #c48d2c;
+  --danger: #e8590c;
+  --shadow: 0 0 1.4rem rgba(255, 150, 0, 0.14);
+  --veil-rgb: 12, 7, 2;
+  --lift: 0 0 0.5rem rgba(0, 0, 0, 0.9);
+  --knob: #ffd98a;
+  --on-tile: #1a0e00;
+  --scrim: rgba(6, 3, 0, 0.85);
+  --pop-scrim: rgba(8, 5, 1, 0.93);
+  --r: 0.25rem;
+  --r-panel: 0.35rem;
+  --r-pill: 0.25rem;
+  --r-round: 0.25rem;
+  --r-inner: 0.2rem;
+  --font: "Kiosk VT323", "Droid Sans Mono", ui-monospace, monospace;
+  font-synthesis: none;   /* VT323 has one weight: no smeared bold */
+}
+
+/* the phosphor glows */
+html[data-theme="crt"] body { text-shadow: 0 0 0.3rem rgba(255, 160, 0, 0.5); }
+/* scan lines, and the tube's corners in shadow, over the rooms and the menus */
+html[data-theme="crt"] .app::after {
+  content: ""; position: absolute; inset: 0; z-index: 10; pointer-events: none;
+  background:
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0 2px, transparent 2px 5px),
+    radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.55) 100%);
+}
+/* the dial's knob: a cursor's block, across the arc */
+html[data-theme="crt"] .dial-knob .knob { d: path("M -0.8 -1.2 H 0.8 V 1.2 H -0.8 Z"); stroke: #1a0e00; }
+html[data-theme="crt"] .dial.rim .dial-knob .knob { transform: scale(1.7); }
+/* a cursor after the clock */
+@keyframes crt-blink { 50% { opacity: 0; } }
+html[data-theme="crt"] .clock::after { content: "_"; animation: crt-blink 1.2s steps(1, end) infinite; }
+/* a picture in amber */
+html[data-theme="crt"] .paper img { filter: grayscale(1) sepia(1) saturate(3) hue-rotate(-10deg) brightness(0.75); }

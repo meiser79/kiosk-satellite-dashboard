@@ -1,0 +1,134 @@
+/* Aqua: after the look of a desktop of the early 2000s, all water and
+   glass. Grey pinstripes; buttons like drops of gel, blue for what is on,
+   in its light's colour for a lamp; each light a pinstriped window, three
+   coloured buttons on the left of its title bar, the green one opening its
+   details; a light's level a striped bar
+   of gel; the dial a tube of gel in a groove, a bead of glass for its
+   knob; the rail a glass dock; the detail panel a window, the red button
+   closing it; notices in a dark rounded box. */
+html[data-theme="aqua"] {
+  --accent-rgb: 29, 110, 214;
+  --on-accent: #ffffff;
+  --bg: #ececec;
+  --bg-2: #e2e2e2;
+  --surface: rgba(255, 255, 255, 0.92);
+  --surface-2: rgba(0, 0, 0, 0.07);
+  --surface-solid: #f6f6f6;
+  --border: #a5a5a5;
+  --text: #000000;
+  --muted: #555555;
+  --danger: #d23b2f;
+  --shadow: 0 0.5rem 1.4rem rgba(0, 0, 0, 0.32);
+  --veil-rgb: 236, 236, 236;
+  --knob: #fbfbfb;
+  --scrim: rgba(40, 40, 40, 0.45);
+  --pop-scrim: rgba(240, 240, 240, 0.96);
+  --pop-dim: rgba(40, 40, 40, 0.3);
+  --r: 0.7rem;
+  --r-panel: 0.8rem;
+  --r-inner: 0.4rem;
+  --font: "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", system-ui, sans-serif;
+  /* the theme's own: the shine on a drop of gel, a white button */
+  --aqua-gel: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.35) 46%, rgba(255, 255, 255, 0) 52%, rgba(255, 255, 255, 0.12) 75%, rgba(255, 255, 255, 0.45) 100%);
+  --aqua-button: linear-gradient(180deg, #ffffff 0%, #f1f1f1 48%, #dcdcdc 52%, #f4f4f4 100%);
+  --aqua-drop: inset 0 -0.15rem 0.35rem rgba(255, 255, 255, 0.45), 0 0.1rem 0.25rem rgba(0, 0, 0, 0.3);
+}
+
+/* ---------------------------------------------------------- the desktop */
+html[data-theme="aqua"].shape-wide .app,
+html[data-theme="aqua"].shape-round .views { background: repeating-linear-gradient(180deg, #f3f3f3 0 4px, #e1e1e1 4px 8px); }
+html[data-theme="aqua"].shape-round .with-wallpaper .views { background: none; }
+html[data-theme="aqua"] .glow, html[data-theme="aqua"].shape-round .views::before { display: none; }
+html[data-theme="aqua"] .title, html[data-theme="aqua"] .clock { text-shadow: 0 0.06rem 0 rgba(255, 255, 255, 0.9); }
+
+/* ------------------------------------------------------- drops of gel */
+html[data-theme="aqua"] .chip, html[data-theme="aqua"] .pop-actions button, html[data-theme="aqua"] .menu-handle, html[data-theme="aqua"] .pop-tab,
+html[data-theme="aqua"] .media-btn, html[data-theme="aqua"] .tile-icon, html[data-theme="aqua"] .tile-more, html[data-theme="aqua"] .room-icon,
+html[data-theme="aqua"] .ring-item, html[data-theme="aqua"] .ring-close {
+  background: var(--aqua-button); border: 1px solid #8e8e8e; color: #1a1a1a; box-shadow: 0 0.08rem 0.2rem rgba(0, 0, 0, 0.25);
+}
+html[data-theme="aqua"] .chip.on, html[data-theme="aqua"] .power, html[data-theme="aqua"] .tab.active, html[data-theme="aqua"] .pop-actions button.on,
+html[data-theme="aqua"] .fav-switch button.on, html[data-theme="aqua"] .room-off, html[data-theme="aqua"] .media-btn.play, html[data-theme="aqua"] .room-card.current .room-icon,
+html[data-theme="aqua"] .ring-item.pressed, html[data-theme="aqua"] .ring-close.pressed, html[data-theme="aqua"] .menu-item.pressed, html[data-theme="aqua"] .tile-more.pressed {
+  background-color: var(--accent); background-image: var(--aqua-gel); color: var(--on-accent);
+  border: 1px solid rgba(0, 0, 0, 0.4); box-shadow: var(--aqua-drop); text-shadow: 0 -0.05rem 0 rgba(0, 0, 0, 0.35);
+}
+html[data-theme="aqua"] .tile.on .tile-icon, html[data-theme="aqua"] .pop-power {
+  background-color: rgb(var(--tile-rgb)); background-image: var(--aqua-gel); color: var(--on-tile); border: 1px solid rgba(0, 0, 0, 0.35); box-shadow: var(--aqua-drop);
+}
+html[data-theme="aqua"].shape-round .bar.off .power, html[data-theme="aqua"] .popover.off .pop-power { background: var(--aqua-button); color: #555555; border: 1px solid #8e8e8e; }
+/* the dial: a tube of gel in a grey groove, a bead of glass for its knob */
+html[data-theme="aqua"] .dial-groove { display: block; stroke: #8c8c8c; stroke-width: 6.2; }
+html[data-theme="aqua"] .dial-track { stroke: #e6e6e6; stroke-width: 5.5; }
+html[data-theme="aqua"] .dial-fill { stroke-width: 5.5; }
+html[data-theme="aqua"] .dial-shine { display: block; stroke: rgba(255, 255, 255, 0.7); stroke-width: 1.7; }
+html[data-theme="aqua"] .dial-grad-a { stop-color: #6aaef2; }
+html[data-theme="aqua"] .dial-grad-b { stop-color: rgb(var(--accent-rgb)); }
+html[data-theme="aqua"] .dial.rim .dial-groove { stroke-width: 4.2; }
+html[data-theme="aqua"] .dial.rim .dial-track, html[data-theme="aqua"] .dial.rim .dial-fill { stroke-width: 3.6; }
+html[data-theme="aqua"] .dial.rim .dial-shine { stroke-width: 1.1; }
+html[data-theme="aqua"] .dial-knob .knob { transform: scale(3.6); fill: #eef5fe; stroke: #2d6bc4; stroke-width: 0.2; }
+html[data-theme="aqua"] .dial.rim .dial-knob .knob { transform: scale(1.8); }
+
+/* ------------------------------------------------ a light: a window */
+html[data-theme="aqua"].shape-wide .tile {
+  padding-top: 2.5rem; border: 1px solid #8f8f8f; border-radius: 0.55rem 0.55rem 0.3rem 0.3rem; box-shadow: 0 0.35rem 1rem rgba(0, 0, 0, 0.25);
+  background:
+    linear-gradient(#9a9a9a, #9a9a9a) 0 1.9rem / 100% 1px no-repeat,
+    linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(0, 0, 0, 0.06)) 0 0 / 100% 1.9rem no-repeat,
+    repeating-linear-gradient(180deg, #f7f7f7 0 2px, #ececec 2px 4px);
+}
+html[data-theme="aqua"].shape-wide .tile.on { border-color: #7a7a7a; }
+/* its red and yellow buttons, for the look; the green one is its button for the details */
+html[data-theme="aqua"].shape-wide .tile::before {
+  opacity: 1; border-radius: inherit;
+  background:
+    radial-gradient(circle at 1rem 0.95rem, #ffc9c0 0, #f2564a 0.3rem, #c42a1f 0.46rem, #9c2219 0.5rem, rgba(156, 34, 25, 0) 0.54rem),
+    radial-gradient(circle at 2.3rem 0.95rem, #fff1c0 0, #f6be3a 0.3rem, #c48a0e 0.46rem, #a5770f 0.5rem, rgba(165, 119, 15, 0) 0.54rem);
+}
+html[data-theme="aqua"].shape-wide .tile-more {
+  left: 3.06rem; right: auto; top: 0.42rem; width: 1.06rem; height: 1.06rem; font-size: 0; box-shadow: none;
+  background: radial-gradient(circle at 50% 30%, #d7f7c0 0%, #5ec43f 45%, #2f8a1a 100%); border: 1px solid #2c7a19;
+}
+html[data-theme="aqua"].shape-wide .tile-more::before { content: ""; position: absolute; inset: -0.7rem; }   /* a finger-sized hit area */
+html[data-theme="aqua"].shape-wide .tile-more.pressed { background: radial-gradient(circle at 50% 30%, #a6e08c, #2f8a1a); border-color: #1d5a10; }
+html[data-theme="aqua"].shape-wide .tile-name { color: #222222; text-shadow: 0 0.06rem 0 rgba(255, 255, 255, 0.8); }
+/* its level: a striped bar of gel in its colour */
+html[data-theme="aqua"] .tile-slider { background: linear-gradient(180deg, #d9d9d9, #f4f4f4); border: 1px solid #9c9c9c; box-shadow: inset 0 0.08rem 0.15rem rgba(0, 0, 0, 0.2); }
+html[data-theme="aqua"] .tile-slider .fill {
+  background: var(--aqua-gel), repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0 0.45rem, rgba(255, 255, 255, 0) 0.45rem 0.9rem), rgb(var(--tile-rgb));
+}
+
+/* ------------------------------------------------- the rail: the dock */
+html[data-theme="aqua"] .menu-panel {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.85) 45%, rgba(255, 255, 255, 0.55));
+  border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 0.6rem; box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+html[data-theme="aqua"] .menu-item { color: #2a2a2a; }
+/* the small black triangle by what is open */
+html[data-theme="aqua"] .menu-item.active::after { content: ""; position: absolute; right: -0.35rem; top: 50%; margin-top: -0.3rem; border: 0.3rem solid transparent; border-right-color: #111111; }
+
+/* ---------------------------------------- the detail panel: a window */
+html[data-theme="aqua"].shape-wide .popover { padding: 0 0.9rem 0.9rem; overflow: hidden; border-color: #8a8a8a; }
+html[data-theme="aqua"].shape-wide .pop-head {
+  margin: 0 -0.9rem 0.9rem; padding: 0.45rem 0.8rem; border-bottom: 1px solid #9a9a9a;
+  background: linear-gradient(180deg, #ebebeb 0%, #d5d5d5 50%, #c9c9c9 100%);
+}
+html[data-theme="aqua"].shape-wide .pop-name { text-shadow: 0 0.06rem 0 rgba(255, 255, 255, 0.8); }
+html[data-theme="aqua"].shape-wide .pop-text { align-items: center; text-align: center; }
+html[data-theme="aqua"] .slider:not(.gradient) .fill { background: var(--aqua-gel), rgba(var(--accent-rgb), 0.4); }
+html[data-theme="aqua"].shape-wide .pop-icon { width: 2rem; height: 2rem; font-size: 1.2rem; }
+/* the three buttons of a window, on the left: red closes it, the other two are for the look */
+html[data-theme="aqua"].shape-wide .pop-close {
+  order: -1; width: 1.1rem; height: 1.1rem; margin-right: 2.7rem; font-size: 0; position: relative;
+  background: radial-gradient(circle at 50% 30%, #ffc2b8 0%, #f2564a 45%, #c42a1f 100%); border: 1px solid #9c2219;
+}
+html[data-theme="aqua"].shape-wide .pop-close::before, html[data-theme="aqua"].shape-wide .pop-close::after {
+  content: ""; position: absolute; top: -1px; width: 1.1rem; height: 1.1rem; border-radius: 50%;
+}
+html[data-theme="aqua"].shape-wide .pop-close::before { left: 1.25rem; background: radial-gradient(circle at 50% 30%, #fff1b8 0%, #f6be3a 45%, #c48a0e 100%); border: 1px solid #a5770f; }
+html[data-theme="aqua"].shape-wide .pop-close::after { left: 2.55rem; background: radial-gradient(circle at 50% 30%, #d7f7b8 0%, #5ec43f 45%, #2f8a1a 100%); border: 1px solid #2c7a19; }
+html[data-theme="aqua"].shape-wide .pop-close::before, html[data-theme="aqua"].shape-wide .pop-close::after { pointer-events: none; }
+
+/* ------------------------------------------- a notice: the dark box */
+html[data-theme="aqua"] .toast, html[data-theme="aqua"] .status:not(.error) { background: rgba(20, 20, 20, 0.82); color: #ffffff; border: 0; border-radius: 0.7rem; }

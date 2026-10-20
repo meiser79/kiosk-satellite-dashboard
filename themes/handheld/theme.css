@@ -1,0 +1,60 @@
+/* Handheld: the greens of an old pocket console's screen, square corners,
+   hard shadows, a faint grid of pixels over it all, a direction pad for the
+   dial's knob, in Pixelify Sans (OFL: OFL.txt). Mono: every light is drawn
+   in green. */
+@font-face { font-family: "Kiosk Pixelify Sans"; src: url("pixelify-sans.woff2") format("woff2"); font-weight: 400 700; font-display: block; }
+
+html[data-theme="handheld"] {
+  --accent-rgb: 48, 98, 48;
+  --on-accent: #d4e88a;
+  --bg: #9bbc0f;
+  --bg-2: #8fb20c;
+  --surface: rgba(202, 222, 120, 0.35);
+  --surface-2: rgba(15, 56, 15, 0.14);
+  --surface-solid: #b4cf3c;
+  --border: #0f380f;
+  --text: #092409;
+  --muted: #1f4a1f;
+  --danger: #0f380f;
+  --shadow: 0.3rem 0.3rem 0 rgba(15, 56, 15, 0.55);
+  --veil-rgb: 155, 188, 15;
+  --lift: 0 0 0.4rem rgba(155, 188, 15, 0.9);
+  --knob: #d4e88a;
+  --on-tile: #d4e88a;
+  --scrim: rgba(139, 172, 15, 0.88);
+  --pop-scrim: rgba(155, 188, 15, 0.95);
+  --pop-dim: rgba(139, 172, 15, 0.75);
+  --r: 0;
+  --r-panel: 0;
+  --r-pill: 0;
+  --r-round: 0;
+  --r-inner: 0;
+  --border-w: 0.15rem;
+  --font: "Kiosk Pixelify Sans", system-ui, sans-serif;
+}
+
+/* a flat screen: no glow of colour, square ends to the dial */
+html[data-theme="handheld"] .glow,
+html[data-theme="handheld"] .tile::before,
+html[data-theme="handheld"].shape-round .views::before { display: none; }
+html[data-theme="handheld"] .tile.on .tile-icon, html[data-theme="handheld"] .pop-power { box-shadow: none; }
+html[data-theme="handheld"] .dial-track, html[data-theme="handheld"] .dial-fill { stroke-linecap: butt; }
+html[data-theme="handheld"] .dial-knob .knob {
+  d: path("M -0.4 -1.2 H 0.4 V -0.4 H 1.2 V 0.4 H 0.4 V 1.2 H -0.4 V 0.4 H -1.2 V -0.4 H -0.4 Z");
+  stroke: #0f380f; stroke-linejoin: miter;
+}
+html[data-theme="handheld"] .dial.rim .dial-knob .knob { transform: scale(1.8); }
+html[data-theme="handheld"] .clock { min-width: 2.48em; }   /* as wide as its widest time, its digits not all as wide */
+/* a light that is on is outlined in the darkest green, one that is off faintly */
+html[data-theme="handheld"] .tile { border-color: rgba(15, 56, 15, 0.3); }
+html[data-theme="handheld"] .tile.on { border-color: var(--border); }
+/* the grid of the screen's pixels, over the rooms and the menus */
+html[data-theme="handheld"] .app::after {
+  content: ""; position: absolute; inset: 0; z-index: 10; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(15, 56, 15, 0.09) 1px, transparent 1px) 0 0 / 5px 5px,
+    linear-gradient(180deg, rgba(15, 56, 15, 0.09) 1px, transparent 1px) 0 0 / 5px 5px;
+}
+/* a picture in greens, the cards on it the screen's own */
+html[data-theme="handheld"] .paper img { filter: grayscale(1) sepia(1) hue-rotate(45deg) saturate(2) brightness(0.9); }
+html[data-theme="handheld"] .with-wallpaper { --surface: rgba(180, 207, 60, 0.92); --border: #0f380f; }

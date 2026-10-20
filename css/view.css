@@ -1,0 +1,206 @@
+/* The room view: header, mode chips, sliders, the brightness dial, the main
+   control, light tiles and the media card. wide.css and round.css arrange
+   them for each shape. */
+
+/* ------------------------------------------------------------- header */
+/* Left: the room title with the sensors under it. Middle: the modes. Right: the clock. */
+.top {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "title modes clock" "sensors modes clock";
+  align-items: center; column-gap: 1.3rem; row-gap: 0.3rem; min-width: 0;
+}
+.title { grid-area: title; margin: 0; display: flex; font-family: var(--font-title); font-size: 1.9rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; white-space: nowrap; }
+.title-btn {
+  display: inline-flex; align-items: center; gap: 0.1rem; font-weight: inherit; letter-spacing: inherit;
+  padding: 0.15rem 0.25rem 0.15rem 0.6rem; margin: -0.15rem 0 -0.15rem -0.6rem; border-radius: var(--r-inner);
+  transition: background 0.2s, transform 0.12s var(--ease);
+}
+span.title-btn { cursor: default; }
+.title-btn .icon { font-size: 0.85em; color: var(--muted); }
+.title-btn.pressed { background: var(--surface-2); transform: scale(0.97); }
+.sensors { grid-area: sensors; display: flex; align-items: center; gap: 1rem; color: var(--muted); font-size: 0.95rem; min-width: 0; }
+.sensor { display: inline-flex; align-items: center; gap: 0.25rem; white-space: nowrap; transition: color 0.3s; }
+.sensor .icon { font-size: 1.15em; }
+.sensor.on { color: var(--accent); }
+.modes { grid-area: modes; display: flex; align-items: center; justify-content: center; gap: 0.6rem; min-width: 0; }
+.clock { grid-area: clock; text-align: right; font-family: var(--font-title); font-size: 2.4rem; font-weight: 400; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* -------------------------------------------------------------- chips */
+.chip {
+  height: 2.5rem; border-radius: var(--r-pill); padding: 0 0.95rem; min-width: 0;
+  background: var(--surface); color: var(--muted); border: var(--border-w) solid var(--border);
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  font-size: 0.85rem; font-weight: 500; white-space: nowrap;
+  transition: background 0.22s, color 0.22s, border-color 0.22s, transform 0.12s var(--ease);
+}
+.chip .icon { font-size: 1.15rem; }
+.chip .name { overflow: hidden; text-overflow: ellipsis; }
+.chip.on { background: var(--accent); color: var(--on-accent); border-color: transparent; }
+.chip.pending .icon { animation: pulse 0.8s ease-in-out infinite; }
+.chip.sm { height: 2rem; padding: 0 0.75rem; font-size: 0.75rem; gap: 0.3rem; flex: none; }
+.chip.pressed { transform: scale(0.95); }
+.modes .chip { flex: 0 1 auto; height: 3rem; padding: 0 1.2rem; font-size: 0.95rem; gap: 0.5rem; }
+.modes .chip .icon { font-size: 1.35rem; }
+.modes.icons .chip .name { display: none; }   /* set by js/view.js when the names do not fit */
+
+/* ------------------------------------------------------------ sliders */
+.slider {
+  position: relative; overflow: hidden; width: 100%; height: 2.7rem; border-radius: var(--r-pill); padding: 0 0.95rem;
+  display: flex; align-items: center; background: var(--surface); border: var(--border-w) solid var(--border); touch-action: none;
+}
+.slider .fill {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 100%; border-radius: inherit;
+  background: rgba(var(--accent-rgb), 0.3); transform: translateX(calc((var(--p, 0) - 1) * 100%));   /* slides in from the left */
+  transition: transform 0.18s var(--ease);
+}
+.dragging .fill { transition: none; }
+.slider > * { position: relative; }
+.slider.big { height: 3.3rem; }
+.slider .label { flex: 1; font-size: 0.85rem; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.slider .value { font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.slider.gradient { background: var(--grad, var(--surface)); border-color: rgba(255, 255, 255, 0.12); }
+.slider.gradient .label, .slider.gradient .value { color: #fff; background: rgba(0, 0, 0, 0.42); padding: 0.22rem 0.55rem; border-radius: var(--r-pill); flex: none; }
+.slider.gradient .label { margin-right: auto; }
+.slider .thumb {
+  position: absolute; top: 0.3rem; bottom: 0.3rem; width: 0.5rem; border-radius: var(--r-pill); left: var(--x, 0%);
+  transform: translateX(-50%); background: var(--knob); box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35);
+  transition: left 0.15s var(--ease);
+}
+.dragging .thumb { transition: none; }
+.unavailable { opacity: 0.45; }
+
+/* --------------------------------------------------------------- dial */
+/* A brightness arc with a knob; --p is the level. In the main card it is a
+   gauge, on the Spot it is the rim of the screen (.rim). The stroke of the
+   invisible .dial-hit path is what takes the finger. The knob is a circle of
+   radius one around its centre, the x axis pointing out of the arc,
+   scaled up here: a theme can give it another shape with `d: path(…)`.
+   Hidden unless a theme shows them: a groove under the track (wider, for
+   an edge) and a shine along the level (narrower, for a gloss). */
+.dial { position: relative; }
+.dial svg { display: block; width: 100%; height: 100%; overflow: visible; touch-action: none; pointer-events: none; }
+.dial-hit { fill: none; stroke: transparent; stroke-width: 11; stroke-linecap: round; pointer-events: stroke; cursor: pointer; }
+.dial-track, .dial-fill { fill: none; stroke-width: 3.2; stroke-linecap: round; }
+.dial-track { stroke: var(--surface-2); }
+.dial-fill { stroke: url(#dial-grad); stroke-dasharray: var(--p, 0) 1; transition: stroke-dasharray 0.18s var(--ease); }
+.dial-groove, .dial-shine { display: none; fill: none; stroke-linecap: round; pointer-events: none; }
+.dial-shine { stroke: rgba(255, 255, 255, 0.5); stroke-width: 1; stroke-dasharray: var(--p, 0) 1; transition: stroke-dasharray 0.18s var(--ease); }
+.dial-grad-a { stop-color: rgba(var(--accent-rgb), 0.55); }
+.dial-grad-b { stop-color: rgb(var(--accent-rgb)); }
+.dial-knob { transform: rotate(calc(120deg + var(--p, 0) * 300deg)); transform-origin: 50px 50px; transform-box: view-box; transition: transform 0.18s var(--ease); }
+.dial-knob .knob { transform: scale(3.2); fill: var(--knob); stroke: rgba(0, 0, 0, 0.35); stroke-width: 0.25; transition: fill 0.3s; }
+.dial-hit.dragging ~ .dial-fill, .dial-hit.dragging ~ .dial-shine, .dial-hit.dragging ~ .dial-knob { transition: none; }
+.off .dial-knob .knob, .bar.off .dial-knob .knob { fill: var(--muted); }
+
+/* ------------------------------------------------------- main control */
+/* Wide: the dial alone; in its middle the light's icon, name and state as
+   the button that toggles. Round: a power button beside the name (round.css). */
+.bar { position: relative; min-height: 0; touch-action: none; }
+.bar-icon {
+  width: 3.2rem; height: 3.2rem; border-radius: var(--r-round); display: flex; align-items: center; justify-content: center;
+  background: rgba(var(--accent-rgb), 0.22); color: var(--accent); font-size: 1.6rem; transition: background 0.3s, color 0.3s;
+}
+.bar.off .bar-icon { background: var(--surface-2); color: var(--muted); }
+.bar-text { min-width: 0; display: flex; flex-direction: column; gap: 0.2rem; }
+.bar .name { font-size: 1.25rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar .state { font-size: 0.9rem; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.shape-wide .bar { display: grid; grid-template-rows: minmax(0, 1fr); }
+.dial.gauge { width: 100%; height: 100%; min-height: 0; }
+.dial-centre {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 58%; padding: 0.6rem; border-radius: var(--r);
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center; transition: background 0.2s, transform 0.12s var(--ease);
+}
+.dial-centre .bar-text { align-items: center; max-width: 100%; }
+.dial-centre.pressed { background: var(--surface-2); transform: translate(-50%, -50%) scale(0.96); }
+/* with the media card on screen: a row, the ring small beside the name */
+.controls.with-media .bar { display: block; }
+.controls.with-media .dial.gauge { display: flex; align-items: center; gap: 0.6rem; height: auto; }
+.controls.with-media .dial.gauge > svg { width: 5.4rem; height: 5.4rem; flex: none; }
+.controls.with-media .dial-centre { position: static; transform: none; width: auto; flex: 1; flex-direction: row; justify-content: flex-start; text-align: left; gap: 0.8rem; padding: 0.5rem 0.8rem; }
+.controls.with-media .dial-centre.pressed { transform: scale(0.98); }
+.controls.with-media .dial-centre .bar-text { align-items: flex-start; }
+/* the main slot: its lights stacked, the current one shown. The others wait
+   faded out, a slot's width away on the side they come in from (--side, set
+   by js/view.js; 0 crossfades in place), hidden from touch as well. */
+.main { position: relative; }
+.main .bar:not(:first-child) { position: absolute; inset: 0; }
+.main .bar { transition: opacity 0.3s, transform 0.3s var(--ease), visibility 0s 0.3s; }
+.main .bar:not(.current) { opacity: 0; visibility: hidden; transform: translateX(calc(var(--side, 0) * 100%)) scale(0.96); }
+.main .bar.current { transition-delay: 0s; }
+
+/* -------------------------------------------------------------- tiles */
+.lights { display: grid; gap: 0.75rem; align-content: start; }
+.tile {
+  --tile-rgb: var(--accent-rgb);
+  position: relative; overflow: hidden; min-width: 0; border-radius: var(--r);
+  background: var(--surface); border: var(--border-w) solid var(--border); color: var(--muted);
+  padding: 0.9rem 0.95rem 0.95rem; text-align: left;
+  display: flex; flex-direction: column; gap: 0.5rem;
+  transition: transform 0.14s var(--ease), border-color 0.3s;
+}
+.tile::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(110% 95% at 12% 0%, rgba(var(--tile-rgb), 0.34), transparent 62%);
+  opacity: 0; transition: opacity 0.35s;
+}
+.tile.on::before { opacity: 1; }
+.tile.on { border-color: rgba(var(--tile-rgb), 0.28); }
+.tile > * { position: relative; }
+.tile-icon {
+  width: 2.5rem; height: 2.5rem; border-radius: var(--r-round); display: flex; align-items: center; justify-content: center; flex: none;
+  background: var(--surface-2); color: var(--muted); font-size: 1.45rem; transition: background 0.3s, color 0.3s, transform 0.14s var(--ease);
+}
+.tile.on .tile-icon { background: rgba(var(--tile-rgb), 0.24); color: rgb(var(--tile-rgb)); }
+.tile-more {
+  position: absolute; top: 0.7rem; right: 0.7rem; width: 2.2rem; height: 2.2rem; border-radius: var(--r-round);
+  display: flex; align-items: center; justify-content: center; background: var(--surface-2); color: var(--muted); font-size: 1.1rem;
+  transition: transform 0.12s var(--ease), background 0.2s;
+}
+.tile-more.pressed { transform: scale(0.9); background: var(--accent); color: var(--on-accent); }
+.tile-text { margin-top: auto; display: flex; align-items: baseline; gap: 0.35rem; min-width: 0; }
+.tile-name { font-size: 0.95rem; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile-extra { font-size: 0.8rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile-extra:empty { display: none; }
+.tile-state { font-size: 0.8rem; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* the pill at the bottom of a light tile is a slider for that light */
+.tile-slider { position: relative; overflow: hidden; height: 2.5rem; border-radius: var(--r-pill); background: var(--surface-2); touch-action: none; }
+.tile-slider .fill {
+  position: absolute; inset: 0; border-radius: inherit;
+  background: linear-gradient(90deg, rgba(var(--tile-rgb), 0.35), rgba(var(--tile-rgb), 0.8));
+  transform: translateX(calc((var(--p, 0) - 1) * 100%)); transition: transform 0.18s var(--ease);
+}
+.tile-slider .tile-state { position: absolute; left: 0.95rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem; font-weight: 600; color: var(--text); }
+.tile.pressed { transform: scale(0.975); }
+.view.solo .lights { display: none; }   /* a room with a single light: its main light alone */
+
+/* -------------------------------------------------------------- media */
+.media {
+  border-radius: var(--r); background: var(--surface); border: var(--border-w) solid var(--border); padding: 0.85rem;
+  display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "art info" "art transport" "volume volume" "sources sources";
+  column-gap: 0.85rem; row-gap: 0.6rem; align-items: center;
+  opacity: 0; transform: scale(0.97); transition: opacity 0.3s, transform 0.3s var(--ease);
+}
+.media.show { opacity: 1; transform: none; }
+.media-art {
+  grid-area: art; width: 5rem; height: 5rem; border-radius: var(--r-inner); background: var(--surface-2); overflow: hidden;
+  display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 2rem; position: relative;
+}
+.media-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.4s; }
+.media-art.has-art img { opacity: 1; }
+.media-info { grid-area: info; min-width: 0; align-self: end; }
+.media-title { font-size: 0.95rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.media-sub { font-size: 0.75rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 0.15rem; }
+.media-transport { grid-area: transport; display: flex; align-items: center; gap: 0.5rem; align-self: start; }
+.media-btn {
+  width: 2.3rem; height: 2.3rem; border-radius: var(--r-round); display: flex; align-items: center; justify-content: center;
+  background: var(--surface-2); color: var(--text); font-size: 1.3rem; transition: transform 0.12s var(--ease), background 0.2s;
+}
+.media-btn.play { width: 2.7rem; height: 2.7rem; background: var(--accent); color: var(--on-accent); font-size: 1.6rem; }
+.media-btn.pressed { transform: scale(0.92); }
+.media-btn.pwr { margin-left: auto; color: var(--muted); }
+.media-volume { grid-area: volume; }
+.media-volume .slider { height: 2.2rem; }
+.media-sources { grid-area: sources; }
+.media.compact { grid-template-areas: "art info" "art transport"; padding: 0.7rem; }
+.media.compact .media-art { width: 4rem; height: 4rem; }
+.media.compact .media-volume, .media.compact .media-sources { display: none; }
+.media.off .media-art { color: var(--muted); }

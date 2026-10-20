@@ -1,0 +1,126 @@
+/* Kiosk dashboard. Sized in rem so one layout fits every screen: 1rem follows
+   the short side of the screen (about 16px on a 480px side, 24px on 800px).
+   Every animation moves only transform and opacity, which stays smooth on the
+   small GPU of an Echo Show. */
+
+/* ------------------------------------------------------------- tokens */
+/* The dark palette, then the light one (data-scheme, set by js/theme.js
+   from themes/themes.js). A theme of themes/ starts from one of them and
+   changes what it needs under html[data-theme="<its name>"]; docs/themes.md
+   lists them. The accent fades to its next colour, the light's when it
+   follows one (registered so that its three numbers can be animated), but
+   not while the theme loads. */
+@property --accent-rgb { syntax: '<number>#'; inherits: true; initial-value: 242, 175, 72; }
+:root {
+  --accent-rgb: 242, 175, 72;         /* the theme's; js/theme.js sets config.js's, or the light's */
+  --accent: rgb(var(--accent-rgb));
+  --on-accent: #1d1406;
+  --bg: #121110;
+  --bg-2: #1b1917;
+  --surface: rgba(255, 255, 255, 0.065);
+  --surface-2: rgba(255, 255, 255, 0.11);
+  --surface-solid: #221f1c;
+  --border: rgba(255, 255, 255, 0.07);
+  --text: #f4f1ec;
+  --muted: #9d968d;
+  --danger: #c8503d;
+  --shadow: 0 0.6rem 2rem rgba(0, 0, 0, 0.5);
+  --veil-rgb: 18, 17, 16;             /* over a background picture */
+  --lift: 0 0.05rem 0.6rem rgba(0, 0, 0, 0.6);
+  --knob: #fff;                       /* the dial's knob, a slider's thumb */
+  --on-tile: #1a1613;                 /* an icon on a button in its light's colour */
+  --scrim: rgba(0, 0, 0, 0.8);        /* behind the menus */
+  --pop-scrim: rgba(0, 0, 0, 0.8);    /* behind the Spot's detail panel, its text on it */
+  --pop-dim: rgba(0, 0, 0, 0.55);     /* behind the Show's detail panel, a card */
+  /* shapes: how round each kind of thing is */
+  --r: 1.3rem;                        /* cards: tiles, the media card, the room cards */
+  --r-panel: 1.7rem;                  /* the detail panel */
+  --r-pill: 999px;                    /* chips, sliders, tabs, rows, the menu's tab */
+  --r-round: 50%;                     /* round buttons and icons */
+  --r-inner: 0.9rem;                  /* covers, the title's button */
+  --border-w: 1px;
+  --font: system-ui, Roboto, "Segoe UI", sans-serif;
+  --font-title: var(--font);          /* the room's title, the clock */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  font-size: clamp(12px, 3.4vmin, 24px);
+  transition: --accent-rgb 0.6s ease;
+}
+html.theme-loading { transition: none; }
+html[data-scheme="light"] {
+  --accent-rgb: 156, 93, 14;          /* a deeper amber, legible on the light background */
+  --on-accent: #ffffff;
+  --bg: #f3f1ec;
+  --bg-2: #e7e2da;
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-2: rgba(0, 0, 0, 0.065);
+  --surface-solid: #ffffff;
+  --border: rgba(0, 0, 0, 0.06);
+  --text: #1d1a16;
+  --muted: #71695f;
+  --shadow: 0 0.6rem 2rem rgba(40, 30, 10, 0.18);
+  --veil-rgb: 243, 241, 236;
+  --lift: 0 0 0.6rem rgba(243, 241, 236, 0.9);
+  --pop-scrim: rgba(243, 241, 236, 0.92);
+}
+
+/* A mono theme (themes/themes.js) has one colour: its accent stands for
+   every light's own (set on the tile and the panel by js/controls.js and
+   js/popover.js). Its text has that colour too, so a tile's level is a
+   light fill with an edge, under the text rather than as dark as it. */
+html.mono .tile, html.mono .popover { --tile-rgb: var(--accent-rgb) !important; }
+html.mono .tile-slider .fill { background: rgba(var(--tile-rgb), 0.22); box-shadow: inset -0.15rem 0 0 rgb(var(--tile-rgb)); }
+
+/* -------------------------------------------------------------- reset */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  margin: 0; height: 100%; background: var(--bg); color: var(--text);
+  font-family: var(--font); line-height: 1.2;
+  overflow: hidden; overscroll-behavior: none; touch-action: manipulation;
+  user-select: none; -webkit-user-select: none;
+}
+button, a { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; text-decoration: none; }
+.icon { display: inline-block; width: 1em; height: 1em; fill: currentColor; vertical-align: -0.125em; flex: none; }
+[hidden] { display: none !important; }
+.hscroll { display: flex; gap: 0.4rem; overflow-x: auto; touch-action: pan-x; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.hscroll::-webkit-scrollbar { display: none; }
+.ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(0.8rem); } }
+@keyframes pulse { 50% { opacity: 0.35; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+.rise { animation: rise 0.5s var(--ease) both; animation-delay: calc(var(--i, 0) * 45ms); }
+@media (prefers-reduced-motion: reduce) { .rise { animation: none; } * { transition-duration: 0s !important; } }
+
+/* ---------------------------------------------------------------- app */
+.app { position: fixed; inset: 0; background: linear-gradient(160deg, var(--bg) 0%, var(--bg-2) 100%); }
+.glow {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(55% 45% at 0% 0%, rgba(var(--accent-rgb), 0.16), transparent 70%),
+    radial-gradient(45% 40% at 100% 100%, rgba(var(--accent-rgb), 0.09), transparent 70%);
+}
+/* The rooms' pictures, one layer each, crossfading on a change of room;
+   over each a veil of the theme's colour, --fade strong (js/theme.js). On a
+   picture the panels are more solid and the text stands out from it. */
+.wallpaper { position: absolute; inset: 0; pointer-events: none; }
+.paper { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s; }
+.paper img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.paper::after { content: ""; position: absolute; inset: 0; background: rgba(var(--veil-rgb), var(--fade, 0.5)); }
+.paper.show { opacity: 1; }
+/* A theme's moving background, when its script runs one (js/theme.js),
+   over the pictures and under the rooms. */
+.scene { position: absolute; inset: 0; overflow: hidden; pointer-events: none; display: none; }
+.scene.on { display: block; }
+.with-wallpaper { --surface: rgba(var(--veil-rgb), 0.76); --border: rgba(255, 255, 255, 0.1); --float: 0 0.3rem 1.2rem rgba(0, 0, 0, 0.3); }
+html[data-scheme="light"] .with-wallpaper { --surface: rgba(255, 255, 255, 0.88); --border: rgba(0, 0, 0, 0.07); --float: 0 0.3rem 1.2rem rgba(40, 30, 10, 0.14); }
+.with-wallpaper .tile, .with-wallpaper .chip, .with-wallpaper .media { box-shadow: var(--float); }
+.with-wallpaper .title, .with-wallpaper .sensors, .with-wallpaper .clock, .with-wallpaper .bar-text, .shape-round .with-wallpaper .tile-name { text-shadow: var(--lift); }
+.views { position: absolute; inset: 0; }
+/* Inactive views stay in the DOM but are hidden from sight and from touch
+   (visibility, not only pointer-events: a child may set its own pointer-events). */
+.view {
+  position: absolute; inset: 0; opacity: 0; transform: translateY(0.6rem); visibility: hidden;
+  transition: opacity 0.25s var(--ease), transform 0.25s var(--ease), visibility 0s 0.25s;
+}
+.view.active { opacity: 1; transform: none; visibility: visible; transition-delay: 0s; }
+.view:not(.active) .rise { animation: none; }

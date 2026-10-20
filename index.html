@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-scheme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>Kiosk</title>
+<!-- Home Assistant caches /local/ files: after editing one, bump its ?v= here
+     (all of them after an update). The order matters: later files build on earlier ones. -->
+<link rel="stylesheet" href="css/base.css?v=1.0.0">
+<link rel="stylesheet" href="css/view.css?v=1.0.0">
+<link rel="stylesheet" href="css/menus.css?v=1.0.0">
+<link rel="stylesheet" href="css/popover.css?v=1.0.0">
+<link rel="stylesheet" href="css/wide.css?v=1.0.0">
+<link rel="stylesheet" href="css/round.css?v=1.0.0">
+</head>
+<body>
+<div id="app" class="app" hidden>
+  <div class="wallpaper" id="wallpaper" aria-hidden="true"></div>   <!-- the rooms' pictures, filled by js/theme.js -->
+  <div class="scene" id="scene" aria-hidden="true"></div>   <!-- a theme's moving background (js/theme.js) -->
+  <div class="glow" aria-hidden="true"></div>
+  <main class="views" id="views"></main>
+  <div class="backdrop" id="backdrop" hidden></div>
+  <nav class="menu" id="menu" aria-label="Kiosk menu"></nav>
+  <button class="menu-handle" id="menu-handle" aria-label="Menu" hidden></button>
+  <nav class="room-menu" id="room-menu" aria-label="Rooms" hidden></nav>
+  <nav class="room-menu" id="folder-menu" aria-label="Menu folder" hidden></nav>   <!-- the Show's menu folders: cards like the rooms' -->
+</div>
+
+<button class="status" id="status" hidden></button>
+<div class="toast" id="toast" hidden></div>
+
+<div class="popover-backdrop" id="popover" hidden>
+  <div class="popover" role="dialog" aria-modal="true">
+    <div class="pop-head">
+      <span class="pop-icon" id="pop-icon"></span>
+      <span class="pop-text"><span class="pop-name" id="pop-name"></span><span class="pop-state" id="pop-state"></span></span>
+      <button class="pop-close" id="pop-close" aria-label="Close"></button>
+    </div>
+    <div class="pop-body" id="pop-body"></div>
+  </div>
+  <button class="pop-tab" id="pop-tab" aria-label="Close"></button>
+</div>
+
+<script src="config.js?v=1.0.0"></script>   <!-- yours: a copy of config.example.js -->
+<script src="themes/themes.js?v=1.0.0"></script>   <!-- the themes; their files load from js/theme.js -->
+<script src="js/icons.js?v=1.0.0"></script>
+<script src="js/ha.js?v=1.0.0"></script>
+<script src="js/core.js?v=1.0.0"></script>
+<script src="js/live.js?v=1.0.0"></script>
+<script src="js/theme.js?v=1.0.0"></script>
+<script src="js/touch.js?v=1.0.0"></script>
+<script src="js/overlays.js?v=1.0.0"></script>
+<script src="js/controls.js?v=1.0.0"></script>
+<script src="js/media.js?v=1.0.0"></script>
+<script src="js/view.js?v=1.0.0"></script>
+<script src="js/room-menu.js?v=1.0.0"></script>
+<script src="js/favorites.js?v=1.0.0"></script>
+<script src="js/menu.js?v=1.0.0"></script>
+<script src="js/popover.js?v=1.0.0"></script>
+<script src="js/main.js?v=1.0.0"></script>
+</body>
+</html>
