@@ -22,7 +22,11 @@ jobs:
           echo "VERSION=$version" >> "$GITHUB_ENV"
           found=$(grep -ho '?v=[0-9][0-9.]*' index.html themes/themes.js | sort -u)
           [ "$found" = "?v=$version" ] || { echo "index.html and themes/themes.js are not all at $version: node tools/release.mjs $version"; exit 1; }
-          awk -v v="$version" '/^## /{on = ($2 == v)} on && !/^## /' CHANGELOG.md > notes.md
+          # the section, each item on one line (a release page breaks lines where the file
+          # does), its links to the docs made to point at this version's
+          awk -v v="$version" '/^## /{on = ($2 == v)} on && !/^## /' CHANGELOG.md \
+            | awk 'NR > 1 && /^  [^ ]/ { sub(/^ +/, ""); line = line " " $0; next } NR > 1 { print line } { line = $0 } END { print line }' \
+            | sed -E "s#\]\((docs/)#](https://github.com/$GITHUB_REPOSITORY/blob/$GITHUB_REF_NAME/\1#g" > notes.md
           grep -q '[^[:space:]]' notes.md || { echo "CHANGELOG.md has no section for $version"; exit 1; }
       - name: Zip the files for Home Assistant
         run: |

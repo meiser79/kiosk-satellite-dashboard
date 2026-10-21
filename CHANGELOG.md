@@ -7,29 +7,33 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
 
 ## Unreleased
 
+## 1.1.0 - 2026-10-21
+
 ### Added
 
-- **Settings** in the kiosk's menu: pick the theme and turn Follow the light on or off on
-  the kiosk itself, which keeps the choice. To have it, add
-  `{ name: 'Settings', icon: 'cog-outline', settings: true }` to `menu` in your
-  `config.js` ([Configuration](docs/configuration.md#settings)).
-- Settings says which version of the dashboard the kiosk runs.
-- Each release comes with a zip of the files to copy to Home Assistant.
-- **Alerts** and **showWhen** on sensors: a sensor can show only while a state holds (the
-  CO2 level above 1000 ppm), and `alerts` lists values of the house that every room shows,
-  in the warning colour, while they need attention (the front door left open)
-  ([Configuration](docs/configuration.md#shown-when),
+- **Settings** in the kiosk's menu: pick the theme (it switches at once), turn Follow the
+  light on or off, and see which version the kiosk runs. The kiosk keeps the choice. To
+  have it, add `{ name: 'Settings', icon: 'cog-outline', settings: true }` to `menu` in
+  your `config.js` ([Settings](docs/configuration.md#settings)).
+- **Alerts**: `alerts` lists values of the house that every room shows first in its
+  header, in the warning colour, while they need attention, such as the front door left
+  open. On the Spot an alert has the row to itself
+  ([Alerts](docs/configuration.md#alerts),
   [#3](https://github.com/sylvertom/kiosk-satellite-dashboard/issues/3)).
-- The media card's `showWhen` can now test the player's own state, a list of states, any
-  state but some, or a number.
+- **showWhen on sensors**: a sensor can show only while a state holds, such as the CO2
+  level above 1000 ppm: one state or a list, any but some, above or below a number, of
+  its own entity or another's. The media card's `showWhen` takes the same forms
+  ([Shown when](docs/configuration.md#shown-when)).
+- Each release comes with a zip of the files to copy to Home Assistant.
 
 ### Changed
 
-- Echo Show: the menu on the right sits in the height under the clock, which a long menu
-  reached on the Show 5.
 - Setup: the page goes into Kiosk Satellite as a custom page, picked like any dashboard,
   instead of through its remote API
-  ([#2](https://github.com/sylvertom/kiosk-satellite-dashboard/issues/2)).
+  ([Setup](docs/setup.md#3-make-it-the-kiosks-start-page),
+  [#2](https://github.com/sylvertom/kiosk-satellite-dashboard/issues/2)).
+- Echo Show: the menu on the right sits in the height under the clock, which a long menu
+  reached on the Show 5.
 
 ## 1.0.0 - 2026-10-20
 
