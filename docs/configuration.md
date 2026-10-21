@@ -149,6 +149,8 @@ changed on the kiosk itself, without editing `config.js`:
   try another. *Back* returns to Settings.
 - **Follow the light** turns `followLight` on or off. A mono theme keeps its own colour,
   so the entry is faded with one.
+- **Version** says which release of the dashboard the kiosk runs (on the Spot, with a
+  tap), the one to give in a bug report.
 
 The kiosk keeps what is set, in its browser's storage, over `theme.name`, its own theme
 in `devices` and `followLight`. A setting that matches `config.js` is not kept: picking

@@ -45,7 +45,8 @@ shows them all.
 
 ## Quick start
 
-1. Copy this folder to `/config/www/kiosk/` on your Home Assistant.
+1. Unzip the latest [release](https://github.com/sylvertom/kiosk-satellite-dashboard/releases)
+   in `/config/www/` on your Home Assistant: it holds the `kiosk/` folder.
 2. Copy `config.example.js` to `config.js` and replace every entity marked
    `// <-- entity` with yours, and each picture marked `// <-- your picture` (or drop it).
 3. Check it in a browser: `http://<ha>:8123/local/kiosk/index.html?device=Echo+Spot+Bedroom`.
@@ -61,8 +62,11 @@ The [setup guide](docs/setup.md) goes through each step.
 - [Themes](docs/themes.md): how a theme is made, and how to add one.
 - [Features](docs/features.md): what each screen does.
 - [Security](docs/security.md): why the page can sit in `www/`, and how it signs in.
-- [Development](docs/development.md): how the code is organised, the mock Home Assistant
-  and the check suite.
+- [Development](docs/development.md): how the code is organised, the mock Home Assistant,
+  the check suite and releases.
+- [Changelog](CHANGELOG.md): what each release changes.
+
+Found a bug or have an idea? [Open an issue](https://github.com/sylvertom/kiosk-satellite-dashboard/issues/new/choose).
 
 ## License
 

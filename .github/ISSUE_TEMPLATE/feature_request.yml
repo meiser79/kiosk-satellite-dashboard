@@ -1,0 +1,11 @@
+name: An idea
+description: Something the dashboard could do, or do better.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like the kiosk to do?
+      description: What you would do on it, on which device, and how you do it today.
+    validations:
+      required: true

@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: A security problem
+    url: https://github.com/sylvertom/kiosk-satellite-dashboard/security/advisories/new
+    about: Report it privately, not in a public issue (docs/security.md says how the page signs in).

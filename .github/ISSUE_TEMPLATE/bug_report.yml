@@ -1,0 +1,52 @@
+name: Something does not work
+description: The dashboard shows or does something wrong, on a kiosk or in a browser.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you saw, and what you expected instead.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Dashboard version
+      description: Settings > Version on the kiosk, or the release you copied.
+      placeholder: 1.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      options:
+        - Echo Spot
+        - Echo Show 5
+        - Echo Show 8
+        - Another Echo
+        - A browser on a computer, tablet or phone
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Kiosk Satellite and Home Assistant versions
+      placeholder: Kiosk Satellite 1.x, Home Assistant 2026.x
+  - type: input
+    id: theme
+    attributes:
+      label: Theme
+      placeholder: dark
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Drop a picture here, if it shows the problem.
+  - type: textarea
+    id: config
+    attributes:
+      label: The part of config.js involved
+      description: The room, device or menu item concerned. It holds no token, but take out anything you would rather not share.
+      render: js

@@ -1,7 +1,11 @@
 // Checks of Settings in the menu: following the light turned off and on, the list of themes, a theme switched in
 // place as it would show on a fresh page, its scene, and what the kiosk keeps.
+import { readFileSync } from 'node:fs';
 import { sleep, check, openPage, RING_FITS, failPictures, slowFile, load } from './harness.mjs';
 import { ACCENT, accent, near } from './theme.mjs';
+
+// The version index.html asks js/settings.js at, which Settings says.
+const VERSION = readFileSync(new URL('../../index.html', import.meta.url), 'utf8').match(/js\/settings\.js\?v=([^"]+)"/)[1];
 
 // What Settings keeps on the kiosk: none of it, for the checks that follow.
 const forget = (p) => p.eval(`localStorage.removeItem('kiosk.theme'), localStorage.removeItem('kiosk.followLight'), true`);
@@ -31,7 +35,7 @@ const sceneLooks = (p) => p.eval(`(() => { const s = document.getElementById('sc
   for (let i = 0; i < d.length; i += 16) { g += d[i + 1] * d[i + 3]; b += d[i + 2] * d[i + 3]; }
   return b > g * 1.2 ? 'synthwave' : g > b * 1.2 ? 'matrix' : 'unclear'; })()`);
 
-// 15. Settings on the Spot: a ring of two in the menu; following the light turned off and on again; the list of
+// 15. Settings on the Spot: a ring of three in the menu, Version saying the version; following the light turned off and on again; the list of
 // themes in the room list's place, a theme switched in place, the list left open; scenes kept for their theme; Back;
 // what the kiosk keeps across a reload; a mono theme and following the light.
 export async function settingsSpot() {
@@ -51,10 +55,13 @@ export async function settingsSpot() {
   const ring = await p.eval(`(() => { const items = [...document.querySelectorAll('#menu .ring-item')], mid = document.querySelector('#menu .ring-close');
     return { names: items.map((e) => e.textContent).join(), back: mid.classList.contains('back'), follow: items[1] && items[1].className + ' ' + items[1].getAttribute('aria-pressed'),
       themeIcon: items[0] && items[0].querySelector('svg path').getAttribute('d') === KIOSK_ICONS['weather-night'], themeMore: !!(items[0] && items[0].querySelector('.more')) }; })()`);
-  check(ring.names === 'Theme,Follow the light' && ring.back, `spot: Settings opens a ring of Theme and Follow the light, Back in the middle (got ${ring.names})`);
+  check(ring.names === 'Theme,Follow the light,Version' && ring.back, `spot: Settings opens a ring of Theme, Follow the light and Version, Back in the middle (got ${ring.names})`);
   check(ring.themeIcon && ring.themeMore && /\bon\b/.test(ring.follow) && ring.follow.endsWith('true'), `spot: Theme bears the dark theme's icon and an arrow, Follow the light is on, as config.js says (got ${ring.follow})`);
-  check(await p.eval(RING_FITS), 'spot: both inside the rim, apart, their names in their buttons');
+  check(await p.eval(RING_FITS), 'spot: the three inside the rim, apart, their names in their buttons');
   await p.shot('spot-settings.png');
+  await p.tapSel('#menu .ring-item[aria-label="Version"]');
+  check(await p.waitFor(`document.getElementById('toast').textContent === 'Kiosk dashboard ${VERSION}'`) && await p.eval(`document.getElementById('menu').classList.contains('open')`),
+    `spot: a tap on Version says the dashboard's version, ${VERSION}, the ring still open`);
   await p.tapSel('#menu .ring-item[aria-label="Follow the light"]');
   await sleep(300);
   let a = await accent(p);
@@ -112,7 +119,7 @@ export async function settingsSpot() {
   // Back (scrolled to, at the top of the list): the Settings ring again; Follow the light faded, with Matrix
   await tapCard(p, 'Back');
   await sleep(400);
-  check(await p.eval(ringNames) === 'Theme,Follow the light' && await p.eval(`document.getElementById('menu').classList.contains('open') && document.querySelector('#menu .ring-close').classList.contains('back')`) && await p.waitFor(`document.getElementById('folder-menu').hidden`),
+  check(await p.eval(ringNames) === 'Theme,Follow the light,Version' && await p.eval(`document.getElementById('menu').classList.contains('open') && document.querySelector('#menu .ring-close').classList.contains('back')`) && await p.waitFor(`document.getElementById('folder-menu').hidden`),
     'spot: Back brings Settings\' ring back, the list gone');
   check(await p.eval(`(() => { const f = document.querySelector('#menu .ring-item[aria-label="Follow the light"]'); return f.classList.contains('idle') && !f.classList.contains('on') && document.querySelector('#menu .ring-item[aria-label="Theme"] svg path').getAttribute('d') === KIOSK_ICONS.pill; })()`),
     'spot: with Matrix, Follow the light is faded and Theme bears Matrix\'s icon');
@@ -175,7 +182,7 @@ const LOOK = `(() => { const h = document.documentElement, cs = (sel) => getComp
     scene: document.getElementById('scene').classList.contains('on') + ' ' + document.getElementById('app').classList.contains('with-scene'),
     fonts: [...document.fonts].filter((f) => f.status !== 'loaded').map((f) => f.family + ' ' + f.status).join() }; })()`;
 
-// 16. Settings on the Show: a grid of Theme and Follow the light, the list of themes in its place and Back from
+// 16. Settings on the Show: a grid of Theme, Follow the light and Version, the list of themes in its place and Back from
 // it; then every theme switched in place, which looks as it does on a fresh page.
 export async function settingsShow() {
   failPictures(true);   // the theme's own background, not the rooms' pictures
@@ -186,9 +193,11 @@ export async function settingsShow() {
   await p.tapSel('#menu .menu-item[aria-label="Settings"]');
   await sleep(400);
   const theme0 = await card(p, 'Theme'), follow0 = await card(p, 'Follow the light');
-  check(await folderOpen(p) && await p.eval(cardNames) === 'Back,Theme,Follow the light' && await p.eval(`document.querySelector('#menu .menu-item[aria-label="Settings"]').classList.contains('active')`),
-    `show 5: Settings on the rail opens Back, Theme and Follow the light, its button marked (got ${await p.eval(cardNames)})`);
-  check(theme0.state === 'Dark' && follow0.state === 'On' && /\bon\b/.test(follow0.cls), `show 5: they say the theme on screen and that following the light is on (got ${theme0.state}, ${follow0.state})`);
+  check(await folderOpen(p) && await p.eval(cardNames) === 'Back,Theme,Follow the light,Version' && await p.eval(`document.querySelector('#menu .menu-item[aria-label="Settings"]').classList.contains('active')`),
+    `show 5: Settings on the rail opens Back, Theme, Follow the light and Version, its button marked (got ${await p.eval(cardNames)})`);
+  const version0 = await card(p, 'Version');
+  check(theme0.state === 'Dark' && follow0.state === 'On' && /\bon\b/.test(follow0.cls) && version0.state === VERSION,
+    `show 5: they say the theme on screen, that following the light is on, and the version (got ${theme0.state}, ${follow0.state}, ${version0.state})`);
   await p.shot('show5-settings.png');
   await tapCard(p, 'Follow the light');
   const follow1 = await card(p, 'Follow the light');
@@ -209,7 +218,7 @@ export async function settingsShow() {
   await p.shot('show5-settings-light.png');
   await p.tapSel('#folder-menu .room-card.back .room-go');
   await sleep(300);
-  check(await p.eval(cardNames) === 'Back,Theme,Follow the light' && (await card(p, 'Theme')).state === 'Light' && await folderOpen(p), 'show 5: Back brings Settings back, Theme saying Light');
+  check(await p.eval(cardNames) === 'Back,Theme,Follow the light,Version' && (await card(p, 'Theme')).state === 'Light' && await folderOpen(p), 'show 5: Back brings Settings back, Theme saying Light');
   await p.tapSel('#folder-menu .room-card.back .room-go');
   check(await p.waitFor(`document.getElementById('folder-menu').hidden`) && !(await p.eval(`document.querySelector('#menu .menu-item[aria-label="Settings"]').classList.contains('active')`)), 'show 5: Back again closes it');
 

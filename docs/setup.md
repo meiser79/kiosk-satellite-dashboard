@@ -6,10 +6,12 @@ optional: without it, the menu just has no favourites.
 
 ## 1. Copy the folder
 
-Copy this folder to `/config/www/kiosk/` on your Home Assistant. Only `index.html`,
-`css/`, `js/`, `themes/` and your `config.js` are needed there; `docs/` and `tools/`
-can stay behind. If `www/` did not exist yet, restart Home Assistant once so it starts
-serving `/local/`.
+Download the zip of the latest
+[release](https://github.com/sylvertom/kiosk-satellite-dashboard/releases) and unzip it in
+`/config/www/` on your Home Assistant: it holds the `kiosk/` folder, with `index.html`,
+`css/`, `js/`, `themes/` and `config.example.js`. (From a copy of the repository, those
+are the ones to copy to `/config/www/kiosk/`; `docs/` and `tools/` can stay behind.) If
+`www/` did not exist yet, restart Home Assistant once so it starts serving `/local/`.
 
 ## 2. Write your `config.js`
 
@@ -68,7 +70,8 @@ use **Clear cache** instead.
 
 ## Updating
 
-Copy the new `index.html`, `css/`, `js/` and `themes/` over the old ones; your
-`config.js` stays, and so does a picture of yours in `themes/xp/`.
-The new `index.html` comes with new `?v=` versions, so the kiosks fetch the new files. If
-the new version adds options, `config.example.js` shows them.
+[CHANGELOG.md](../CHANGELOG.md) says what each release changes, and what to add to
+`config.js` for something new. Unzip the release's zip over the old folder: it has no
+`config.js`, so yours stays, and so does a picture of yours in `themes/xp/`.
+The new `index.html` comes with new `?v=` versions, so the kiosks fetch the new files;
+Settings > Version on a kiosk says which release it runs.

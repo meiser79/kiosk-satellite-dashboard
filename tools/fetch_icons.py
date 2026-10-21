@@ -25,7 +25,7 @@ volume-medium volume-low volume-off apple cast-connected open-in-new
 monitor-shimmer lightning-bolt-outline circle-small desk account-voice cellphone-sound
 shower toilet eyedropper-variant palette-outline snowflake
 book-open-page-variant-outline monitor gamepad-variant-outline image-filter-hdr
-water-outline cogs rocket-launch-outline pill weather-sunset
+water-outline cogs rocket-launch-outline pill weather-sunset information-outline
 """.split()
 
 here = pathlib.Path(__file__).resolve().parent.parent
