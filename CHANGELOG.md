@@ -20,6 +20,9 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
 
 - Echo Show: the menu on the right sits in the height under the clock, which a long menu
   reached on the Show 5.
+- Setup: the page goes into Kiosk Satellite as a custom page, picked like any dashboard,
+  instead of through its remote API
+  ([#2](https://github.com/sylvertom/kiosk-satellite-dashboard/issues/2)).
 
 ## 1.0.0 - 2026-10-20
 
