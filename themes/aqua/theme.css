@@ -48,8 +48,8 @@ html[data-theme="aqua"] .ring-item, html[data-theme="aqua"] .ring-close {
   background: var(--aqua-button); border: 1px solid #8e8e8e; color: #1a1a1a; box-shadow: 0 0.08rem 0.2rem rgba(0, 0, 0, 0.25);
 }
 html[data-theme="aqua"] .chip.on, html[data-theme="aqua"] .power, html[data-theme="aqua"] .tab.active, html[data-theme="aqua"] .pop-actions button.on,
-html[data-theme="aqua"] .fav-switch button.on, html[data-theme="aqua"] .room-off, html[data-theme="aqua"] .media-btn.play, html[data-theme="aqua"] .room-card.current .room-icon,
-html[data-theme="aqua"] .ring-item.pressed, html[data-theme="aqua"] .ring-close.pressed, html[data-theme="aqua"] .menu-item.pressed, html[data-theme="aqua"] .tile-more.pressed {
+html[data-theme="aqua"] .fav-switch button.on, html[data-theme="aqua"] .room-off, html[data-theme="aqua"] .media-btn.play, html[data-theme="aqua"] .room-card.current .room-icon, html[data-theme="aqua"] .room-card.on .room-icon,
+html[data-theme="aqua"] .ring-item.pressed, html[data-theme="aqua"] .ring-item.on, html[data-theme="aqua"] .ring-close.pressed, html[data-theme="aqua"] .menu-item.pressed, html[data-theme="aqua"] .tile-more.pressed {
   background-color: var(--accent); background-image: var(--aqua-gel); color: var(--on-accent);
   border: 1px solid rgba(0, 0, 0, 0.4); box-shadow: var(--aqua-drop); text-shadow: 0 -0.05rem 0 rgba(0, 0, 0, 0.35);
 }

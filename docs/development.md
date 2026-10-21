@@ -21,7 +21,7 @@ Node.js 22 or later, and Google Chrome for the checks; Python 3 only to add icon
 | `js/ha.js` | The Home Assistant connection: sign-in, WebSocket, subscriptions, service calls |
 | `js/core.js` | Creates `window.Kiosk`: configuration, DOM and state helpers, colours, toast |
 | `js/live.js` | Watching entities, redrawing in one frame, holding values in flight, service calls |
-| `js/theme.js` | The theme and its files, its scene, the accent and the light it follows, the rooms' background pictures |
+| `js/theme.js` | The theme and its files, switching to another in place, its scene, the accent and the light it follows, what Settings keeps on the kiosk, the rooms' background pictures |
 | `js/touch.js` | Press, long-press, drag and swipe; the slider |
 | `js/overlays.js` | The backdrop the menus open over |
 | `js/controls.js` | Sensors, mode chips, the dial, the main control, light tiles |
@@ -29,15 +29,19 @@ Node.js 22 or later, and Google Chrome for the checks; Python 3 only to add icon
 | `js/view.js` | Building the room views, switching between them, the clock |
 | `js/room-menu.js` | The room menu, and the lights it counts and turns off |
 | `js/favorites.js` | Music Assistant favourites |
+| `js/settings.js` | Settings in the menu: its entries, the list of themes, the version |
 | `js/menu.js` | The menu: its items, the Spot's ring, the Show's rail and folders, links |
 | `js/popover.js` | The detail panel and its tabs |
 | `js/main.js` | Boot: which kiosk, which room, which shape; the status pill |
 | `tools/mock-ha.mjs` | A stand-in for Home Assistant |
 | `tools/shoot.mjs` | The check suite: runs the files in `tools/checks/` in order |
 | `tools/checks/harness.mjs` | Headless Chrome, touch input, the mock's test hooks, shared helpers |
-| `tools/checks/*.mjs` | The checks, by part of the page: the Spot, the Show, Kiosk Satellite, the room menu, the menu, signing in, the themes |
+| `tools/checks/*.mjs` | The checks, by part of the page: the Spot, the Show, Kiosk Satellite, the room menu, the menu, signing in, the themes, Settings |
 | `tools/fetch_icons.py` | Adds icons to `js/icons.js` |
+| `tools/release.mjs` | Prepares a release: every `?v=` and the changelog at its version ([Changes and releases](#changes-and-releases)) |
 | `.github/workflows/checks.yml` | The check suite on GitHub, for every push to `main` and every pull request |
+| `.github/workflows/release.yml` | A release's zip and draft on GitHub, for every version tag pushed |
+| `.github/ISSUE_TEMPLATE/`, `.github/pull_request_template.md` | What an issue and a pull request ask for |
 
 ## How the code fits together
 
@@ -132,7 +136,11 @@ rim reaching the edge and the swipe through its lights, sensors going unavailabl
 theme on both shapes (its files loaded, its text legible on its background, no layer much
 larger than the screen, a clock of one width), a scene whose script comes after the page
 has shown, a kiosk's own theme, a name in the address that is not a theme, the accent
-following the light the dial controls (and staying legible on both schemes), the rooms'
+following the light the dial controls (and staying legible on both schemes), Settings on
+both shapes (following the light turned off and on, the version, the list of themes, every theme
+switched in place looking as on a fresh page, a scene stopped and started again, a theme
+picked before the last one's files have come, what the kiosk keeps across a reload, a
+kept theme since removed, a kiosk's own theme as its default), the rooms'
 pictures (each room's own, none, one that does not load), the login round-trip, a token
 in the address being ignored, a login's token renewed before it runs out and when Home
 Assistant refuses it, and a refused kiosk token.
@@ -147,11 +155,27 @@ the Spot's graphics memory).
 (it never removes any). The list at the top of the script is the set the page itself
 uses.
 
-## Shipping a change
+## Changes and releases
 
-Bump every `?v=` in `index.html` and `themes/themes.js` to a version they have never
-had, so that kiosks fetch the new files:
+Each change goes on a branch of its own and into `main` through a pull request, which
+runs the checks; `Fixes #12` in its description closes the issue it answers. A change
+that someone using or setting up the kiosk would notice adds a line under **Unreleased**
+in [CHANGELOG.md](../CHANGELOG.md), saying what they will see, and what to add to
+`config.js` if anything. Leave the `?v=` alone: the release sets them all.
+
+A release is numbered `major.minor.patch`: a fix bumps the last number, something new the
+middle one. For 1.2.0:
 
 ```sh
-sed -i.bak -E 's/\?v=[0-9.]+/?v=1.1.0/g' index.html themes/themes.js && rm index.html.bak themes/themes.js.bak
+git switch -c release-1.2.0 main
+node tools/release.mjs 1.2.0          # every ?v= to 1.2.0; Unreleased becomes 1.2.0
+git commit -am "Release 1.2.0" && git push -u origin release-1.2.0
+# once its pull request is merged:
+git switch main && git pull && git tag v1.2.0 && git push origin v1.2.0
 ```
+
+Every file asked for at a version it never had is what makes the kiosks fetch them again,
+and Settings shows that version. The tag starts `.github/workflows/release.yml`: it checks
+that the files and the changelog are at that version, zips the `kiosk/` folder to copy to
+`/config/www/` and drafts the GitHub release with the changelog's section as its notes.
+Read the draft on GitHub and publish it.

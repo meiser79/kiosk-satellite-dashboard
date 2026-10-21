@@ -1,0 +1,35 @@
+# A release, when a version's tag (v1.2.0) is pushed (docs/development.md): checks that
+# index.html and CHANGELOG.md are at that version (node tools/release.mjs 1.2.0), zips
+# the kiosk/ folder to copy to Home Assistant's /config/www/ and drafts the GitHub
+# release with the changelog's section as its notes. Publish the draft on GitHub.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check the version
+        run: |
+          version=${GITHUB_REF_NAME#v}
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          found=$(grep -ho '?v=[0-9][0-9.]*' index.html themes/themes.js | sort -u)
+          [ "$found" = "?v=$version" ] || { echo "index.html and themes/themes.js are not all at $version: node tools/release.mjs $version"; exit 1; }
+          awk -v v="$version" '/^## /{on = ($2 == v)} on && !/^## /' CHANGELOG.md > notes.md
+          grep -q '[^[:space:]]' notes.md || { echo "CHANGELOG.md has no section for $version"; exit 1; }
+      - name: Zip the files for Home Assistant
+        run: |
+          mkdir -p dist/kiosk
+          cp -R index.html config.example.js css js themes LICENSE dist/kiosk/
+          (cd dist && zip -qr "../kiosk-satellite-dashboard-$VERSION.zip" kiosk)
+      - name: Draft the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --draft --verify-tag --title "$VERSION" --notes-file notes.md "kiosk-satellite-dashboard-$VERSION.zip"

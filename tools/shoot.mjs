@@ -15,6 +15,7 @@ import { lightsOff, mainWithoutMembers, sevenRooms } from './checks/rooms.mjs';
 import { noPlayer, ringSizes } from './checks/menus.mjs';
 import { signIn, noConfig } from './checks/sign-in.mjs';
 import { accentFollowsLight, pictures, themes } from './checks/theme.mjs';
+import { settingsSpot, settingsShow } from './checks/settings.mjs';
 
 await reset();
 await bedroomSpot();
@@ -36,4 +37,7 @@ await reset();
 await accentFollowsLight();
 await pictures();
 await themes();
+await reset();
+await settingsSpot();
+await settingsShow();
 await finish();

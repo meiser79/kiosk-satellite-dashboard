@@ -17,8 +17,11 @@ A static Home Assistant dashboard for Echo devices running Kiosk Satellite. Read
   and the checks: when an option changes, update `config.example.js`,
   `docs/configuration.md`, `tools/mock-ha.mjs` and `tools/shoot.mjs` together.
 - **Checks.** After a change, run `node tools/mock-ha.mjs &` then `node tools/shoot.mjs`:
-  every check must pass. Add checks for new behaviour. Bump the `?v=` of the files you
-  changed in `index.html`.
+  every check must pass. Add checks for new behaviour.
+- **Changes and releases.** One branch and one pull request per change. Add a line under
+  **Unreleased** in `CHANGELOG.md` for what someone using or setting up the kiosk would
+  notice. Leave every `?v=` alone: `tools/release.mjs` sets them all for a release
+  (docs/development.md).
 - **Screenshots.** `screenshots/` is ignored by git. Refresh `docs/images/` only on
   purpose, with `node tools/shoot.mjs --docs`.
 - **Security.** The page talks only to the Home Assistant that serves it: never take an

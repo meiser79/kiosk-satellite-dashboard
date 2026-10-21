@@ -88,7 +88,7 @@ export async function bedroomShow5() {
   // Folders on the rail: Music opens a grid of cards in the room menu's place, Back first, its rail button marked.
   // Back, a tap outside, the rail button again or picking an item closes it.
   const folderNames = `[...document.querySelectorAll('#folder-menu .room-card .room-name')].map((e) => e.textContent).join()`;
-  check(await p.eval(`[...document.querySelectorAll('#menu .menu-item.folder')].map((e) => e.getAttribute('aria-label')).join() === 'Find my phone,Music' && document.querySelectorAll('#menu .menu-item.folder .more svg').length === 2`), 'show 5: Find my phone and Music are folders on the rail, a small arrow in their corner');
+  check(await p.eval(`[...document.querySelectorAll('#menu .menu-item.folder')].map((e) => e.getAttribute('aria-label')).join() === 'Find my phone,Music,Settings' && document.querySelectorAll('#menu .menu-item.folder .more svg').length === 3`), 'show 5: Find my phone, Music and Settings are folders on the rail, a small arrow in their corner');
   await p.tapSel('#menu .menu-item[aria-label="Music"]');
   check(await p.waitFor(`document.getElementById('folder-menu').classList.contains('open')`), 'show 5: Music on the rail opens its folder');
   await p.waitFor(`${folderNames} === ${JSON.stringify(`Back,${RADIOS},Music Assistant`)}`);

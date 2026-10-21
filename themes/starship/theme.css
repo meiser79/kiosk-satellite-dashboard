@@ -53,8 +53,8 @@ html[data-theme="starship"] .fav-switch button, html[data-theme="starship"] .med
   background: var(--lc-blue); color: #000000; border: 0; font-weight: 700;
 }
 html[data-theme="starship"] .chip.on, html[data-theme="starship"] .tab.active, html[data-theme="starship"] .pop-actions button.on, html[data-theme="starship"] .fav-switch button.on,
-html[data-theme="starship"] .media-btn.play, html[data-theme="starship"] .room-off, html[data-theme="starship"] .room-card.current .room-icon,
-html[data-theme="starship"] .ring-item.pressed, html[data-theme="starship"] .ring-close.pressed, html[data-theme="starship"] .menu-item.pressed { background: var(--accent); color: #000000; }
+html[data-theme="starship"] .media-btn.play, html[data-theme="starship"] .room-off, html[data-theme="starship"] .room-card.current .room-icon, html[data-theme="starship"] .room-card.on .room-icon,
+html[data-theme="starship"] .ring-item.pressed, html[data-theme="starship"] .ring-item.on, html[data-theme="starship"] .ring-close.pressed, html[data-theme="starship"] .menu-item.pressed { background: var(--accent); color: #000000; }
 html[data-theme="starship"] .tabs { background: none; padding: 0; gap: 0.3rem; }
 html[data-theme="starship"] .pop-close { background: var(--lc-red); color: #000000; border-radius: 999px; width: 3rem; }
 html[data-theme="starship"] .power { color: #000000; }
@@ -100,6 +100,7 @@ html[data-theme="starship"] .menu-item:last-child { border-radius: 0.2rem 0.2rem
 html[data-theme="starship"] .menu-item .more { background: #000000; color: var(--lc-peach); }
 html[data-theme="starship"] .ring-item { background: #000000; border: 0.25rem solid var(--lc-lilac); color: var(--lc-peach); }
 html[data-theme="starship"] .ring-item .icon { color: var(--lc-lilac); }
+html[data-theme="starship"] .ring-item.on .icon { color: inherit; }
 html[data-theme="starship"] .ring-close { background: var(--lc-red); color: #000000; border: 0; }
 
 /* --------------------- the panels: an elbow of lilac round the top left */
@@ -107,7 +108,7 @@ html[data-theme="starship"].shape-wide .popover, html[data-theme="starship"].sha
   background: #000000; border: 0; border-top: 0.55rem solid var(--lc-lilac); border-left: 1.4rem solid var(--lc-lilac); border-radius: 1.8rem 0 0 0.4rem;
 }
 html[data-theme="starship"].shape-round .room-go { background: #000000; border: 0.25rem solid var(--lc-lilac); }
-html[data-theme="starship"] .room-card.current .room-go { border-color: var(--lc-orange); box-shadow: none; }
+html[data-theme="starship"] .room-card.current .room-go, html[data-theme="starship"] .room-card.on .room-go { border-color: var(--lc-orange); box-shadow: none; }
 html[data-theme="starship"] .room-icon { background: var(--lc-blue); color: #000000; }
 html[data-theme="starship"] .pop-name, html[data-theme="starship"] .room-name { color: var(--lc-orange); font-weight: 700; }
 html[data-theme="starship"] .slider:not(.gradient) { background: #1d1d24; border: 0; }

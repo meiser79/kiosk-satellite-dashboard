@@ -2,15 +2,15 @@
 // every theme of themes/themes.js.
 import { sleep, check, openPage, failPictures, pictureReferers, mockStates, activeRoom, load, reset, slowFile, BASE } from './harness.mjs';
 
-const ACCENT = '242,175,72';   // the dark theme's, as config.example.js sets none
+export const ACCENT = '242,175,72';   // the dark theme's, as config.example.js sets none
 // The accent as the page paints it, once it and what takes it have faded to it.
-const accent = async (p) => { await sleep(1000); return p.eval(`getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb').replace(/\\s/g, '')`); };
+export const accent = async (p) => { await sleep(1000); return p.eval(`getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb').replace(/\\s/g, '')`); };
 const hsl = (rgb) => {
   const [r, g, b] = rgb.split(',').map((v) => v / 255), max = Math.max(r, g, b), min = Math.min(r, g, b), c = max - min;
   const h = !c ? 0 : max === r ? ((g - b) / c + 6) % 6 : max === g ? (b - r) / c + 2 : (r - g) / c + 4;
   return { h: h * 60, l: (max + min) / 2 };
 };
-const near = (rgb, hue, by = 8) => rgb !== ACCENT && Math.abs(((hsl(rgb).h - hue + 540) % 360) - 180) <= by;
+export const near = (rgb, hue, by = 8) => rgb !== ACCENT && Math.abs(((hsl(rgb).h - hue + 540) % 360) - 180) <= by;
 const lum = (rgb) => rgb.split(',').map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }).reduce((a, v, i) => a + v * [0.2126, 0.7152, 0.0722][i], 0);
 const lightOn = (p, entity, data) => p.eval(`Kiosk.lightOn(${JSON.stringify(entity)}, ${JSON.stringify(data)}), true`);
 
