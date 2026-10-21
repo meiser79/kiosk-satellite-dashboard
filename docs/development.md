@@ -36,7 +36,7 @@ Node.js 22 or later, and Google Chrome for the checks; Python 3 only to add icon
 | `tools/mock-ha.mjs` | A stand-in for Home Assistant |
 | `tools/shoot.mjs` | The check suite: runs the files in `tools/checks/` in order |
 | `tools/checks/harness.mjs` | Headless Chrome, touch input, the mock's test hooks, shared helpers |
-| `tools/checks/*.mjs` | The checks, by part of the page: the Spot, the Show, Kiosk Satellite, the room menu, the menu, signing in, the themes, Settings |
+| `tools/checks/*.mjs` | The checks, by part of the page: the Spot, the Show, Kiosk Satellite, the room menu, the menu, signing in, the themes, Settings, the alerts |
 | `tools/fetch_icons.py` | Adds icons to `js/icons.js` |
 | `tools/release.mjs` | Prepares a release: every `?v=` and the changelog at its version ([Changes and releases](#changes-and-releases)) |
 | `.github/workflows/checks.yml` | The check suite on GitHub, for every push to `main` and every pull request |
@@ -132,7 +132,9 @@ back to the light's level), the Spot's room list and the Show's room grid with t
 light counts, a room's power button (which leaves another room's light on), a main light whose
 members Home Assistant does not list, and *All lights off*, both with seven rooms, the office room, the header on
 every screen (including one too narrow for its mode names), the Spot's arrangement, its
-rim reaching the edge and the swipe through its lights, sensors going unavailable, every
+rim reaching the edge and the swipe through its lights, sensors going unavailable, a
+sensor shown only while its showWhen holds (every form of it), the house's alerts (in every
+room, alone in the Spot's row, first on the Show, in each theme's warning colour), every
 theme on both shapes (its files loaded, its text legible on its background, no layer much
 larger than the screen, a clock of one width), a scene whose script comes after the page
 has shown, a kiosk's own theme, a name in the address that is not a theme, the accent

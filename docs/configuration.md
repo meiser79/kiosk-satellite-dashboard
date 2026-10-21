@@ -10,6 +10,7 @@ theme:       { name: 'dark', accent?: '#f2af48', followLight?: true, background?
 menu:        { items: [{ name, icon, shape?: 'round' | 'wide', link | script | items | settings, favorites? }] }
 devices:     { '<Kiosk Satellite device name>': '<room key>' | { room: '<room key>', theme?: '<theme>' } }
 defaultRoom: '<room key>'
+alerts:      [{ entity, icon, on?, unit?, digits?, showWhen? }]
 rooms:       { <key>: { title, icon, sensors, modes, main, lights, media, player, background?, fade? } }
 ```
 
@@ -67,7 +68,7 @@ The order of `rooms` is the order in the room menu. Each room has:
 | Key | What it is |
 | --- | --- |
 | `title`, `icon` | Shown in the header and in the room menu |
-| `sensors` | Small read-only values in the header. One without a value is left out |
+| `sensors` | Small read-only values in the header. One without a value is left out, and one with a `showWhen` is shown only while it holds |
 | `modes` | Toggle chips in the header: anything with on/off. The header has room for three or four |
 | `main` | The room's main light, usually a light group: the dial on the Show, the power button and rim on the Spot. The room menu counts the lights of its group that are on, and its power button turns those off (see *Groups* below) |
 | `lights` | Light tiles: tap toggles, long-press (or the dots) opens the detail panel. A room with one light needs no tiles: `main` alone is enough |
@@ -78,7 +79,7 @@ The order of `rooms` is the order in the room menu. Each room has:
 The entries:
 
 ```js
-sensors: { entity, icon, unit, digits }
+sensors: { entity, icon, unit, digits, showWhen? }
          { entity, icon, iconOff, on: 'Present', off: 'Away' }     // a binary sensor
 modes:   { entity, name, icon }
          { entity, name, icon, turnOn: 'script.a', turnOff: 'script.b' }
@@ -102,6 +103,35 @@ player:  'media_player.x'
 - **Other rooms' lights.** A tile can be another room's `main` light, such as the
   kitchen's lights shown in the living room: it counts in its own room only, and only
   that room's power button turns it off.
+
+### Shown when
+
+`showWhen` on a sensor (or an alert, or the media card) shows it only while a state
+holds, of its own entity or of another one named with `entity`:
+
+```js
+showWhen: { state: 'on' }                  // 'on' when not given; or a list: ['open', 'opening']
+showWhen: { not: ['idle', 'off'] }         // any state but these
+showWhen: { above: 1000 }                  // a number above, below, or both
+showWhen: { entity: 'input_boolean.guests', state: 'on' }   // another entity's state
+```
+
+The example's living room shows its CO2 level only above 1000 ppm.
+
+### Alerts
+
+`alerts`, at the top level, lists values of the house that every room shows while they
+need attention, such as the front door left open. Each is written like a sensor and shows
+while its `showWhen` holds, or while its own entity is `on` when it has none. Alerts come
+first in the header, in the theme's warning colour; on the Spot an alert has the row to
+itself while it shows.
+
+```js
+alerts: [
+  { entity: 'binary_sensor.front_door', icon: 'door-open', on: 'Front door open' },
+  { entity: 'sensor.freezer_temperature', icon: 'snowflake', unit: '°', showWhen: { above: -12 } },
+],
+```
 
 ## Menu
 

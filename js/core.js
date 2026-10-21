@@ -74,7 +74,17 @@ window.Kiosk = (() => {
     const fx = a.effect && a.effect !== 'None' && a.effect !== 'Solid' ? a.effect : null;
     return `${pctOf(st)}%` + (k ? ` · ${k}K` : '') + (fx ? ` · ${fx}` : '');
   }
-  const matches = (cond) => !cond || !cond.entity || (states[cond.entity] && states[cond.entity].state === (cond.state ?? 'on'));
+  // Whether a showWhen holds: its entity (or the element's own) in the state
+  // given, 'on' unless said (or one of a list), in any but those given with
+  // `not`, or above / below a number. No showWhen: always.
+  function matches(cond, own) {
+    if (!cond) return true;
+    const st = states[cond.entity || own];
+    if (!st) return false;
+    const n = parseFloat(st.state), among = (list) => [].concat(list).includes(st.state);
+    if (cond.above != null || cond.below != null) return !isNaN(n) && !(n <= cond.above) && !(n >= cond.below);
+    return cond.not != null ? !among(cond.not) : among(cond.state ?? 'on');
+  }
   // The members of a light group, once Home Assistant has said who they are.
   const groupMembers = (st) => (st && Array.isArray(st.attributes.entity_id) && st.attributes.entity_id.length > 1 ? st.attributes.entity_id : null);
 

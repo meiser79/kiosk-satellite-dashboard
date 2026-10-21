@@ -27,6 +27,7 @@
 /* the title's line keeps room below its letters for descenders: the sensors
    sit that much higher, to look as far from the title as from the modes */
 .shape-round .sensors { gap: 1rem; font-size: 1.05rem; margin: 0.1rem 0 0.5rem; }
+.shape-round .sensors.alerting .sensor:not(.alert) { display: none; }   /* an alert has the row to itself */
 .shape-round .modes { gap: 1.15rem; }
 .shape-round .modes .chip { flex: none; width: 2.8rem; height: 2.8rem; padding: 0; border-radius: var(--r-round); }
 .shape-round .modes .chip .name { display: none; }

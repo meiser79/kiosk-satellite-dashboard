@@ -6,7 +6,7 @@
   'use strict';
   const K = window.Kiosk;
   const { CFG, HA, $, KS, params, root, icon, esc, lookup, applyTheme } = K;
-  const { render, buildView, showView, startClock, views, buildRoomMenu, buildMenu, followPlayer, menuFavoriteKinds, loadFavorites, closeOverlay, closePopover } = K;
+  const { render, sensorIds, buildView, showView, startClock, views, buildRoomMenu, buildMenu, followPlayer, menuFavoriteKinds, loadFavorites, closeOverlay, closePopover } = K;
 
   /* ------------------------------------------------------------- status */
   const statusEl = $('status');
@@ -38,9 +38,9 @@
     return square && Math.min(w, h) <= 640 ? 'round' : 'wide';
   }
   function entityIds() {
-    const ids = [];
+    const ids = (CFG.alerts || []).flatMap(sensorIds);
     for (const r of Object.values(CFG.rooms || {})) {
-      for (const s of r.sensors || []) ids.push(s.entity);
+      for (const s of r.sensors || []) ids.push(...sensorIds(s));
       for (const c of r.modes || []) ids.push(c.entity);
       if (r.main) ids.push(r.main.entity);
       for (const l of r.lights || []) { ids.push(l.entity); for (const c of l.controls || []) ids.push(c); }

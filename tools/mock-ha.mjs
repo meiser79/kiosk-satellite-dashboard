@@ -69,6 +69,7 @@ light('light.bedroom_lights', true, 117, { entity_id: ['light.bedroom_ceiling', 
 set('sensor.living_room_temperature', '21.8', { unit_of_measurement: '°C' });
 set('sensor.living_room_humidity', '44', { unit_of_measurement: '%' });
 set('binary_sensor.living_room_presence', 'off', { device_class: 'occupancy' });
+set('sensor.living_room_co2', '640', { unit_of_measurement: 'ppm', device_class: 'carbon_dioxide' });
 set('input_boolean.projector', 'off');
 set('script.projector_on', 'off');
 set('script.projector_off', 'off');
@@ -80,6 +81,8 @@ light('light.kitchen', false, null);
 wled('light.tv_strip', 'TV strip', true, [64, 120, 255]);
 wled('light.shelf_strip', 'Shelf strip', false, [255, 140, 40]);
 light('light.downstairs', true, 150, { entity_id: ['light.living_room', 'light.dining_room', 'light.kitchen', 'light.tv_strip', 'light.shelf_strip'] });
+// the house
+set('binary_sensor.front_door', 'off', { device_class: 'door' });
 // office
 set('sensor.office_temperature', '20.6', { unit_of_measurement: '°C' });
 set('sensor.office_humidity', '51', { unit_of_measurement: '%' });
