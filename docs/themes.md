@@ -2,8 +2,9 @@
 
 A theme is a name in [`themes/themes.js`](../themes/themes.js) and, for most, a folder
 next to it. `config.js` picks one with `theme.name`, a kiosk can have its own (see
-[Devices](configuration.md#devices)), and `?theme=<name>` in the address tries one
-without changing anything. The [theme gallery](theme-gallery.md) shows each of them on
+[Devices](configuration.md#devices)), [Settings](configuration.md#settings) in the menu
+picks another on the kiosk itself, and `?theme=<name>` in the address tries one without
+changing anything. The [theme gallery](theme-gallery.md) shows each of them on
 the Show and on the Spot.
 
 **XP's wallpaper** is `themes/xp/bliss.jpg`, a picture you put there yourself: it is
@@ -33,10 +34,12 @@ pickers of the detail panel keep their colours.
    ```
 
 3. Add it to `themes/themes.js`, with its scheme and its files (and `mono: true` for a
-   theme of one colour):
+   theme of one colour). `icon` and `name` are how Settings lists it: an icon the page
+   has (see [Icons](configuration.md#icons)), a palette when not set, and its key
+   capitalised when it has no `name`:
 
    ```js
-   sunset: { scheme: 'dark', files: ['sunset/theme.css?v=0.1.0'] },
+   sunset: { scheme: 'dark', icon: 'palette', files: ['sunset/theme.css?v=0.1.0'] },
    ```
 
 4. Try it: `index.html?theme=sunset`. Then pick it in `config.js`.
@@ -95,7 +98,9 @@ a `min-width` (in `em`) as wide as its widest time, or the header moves every mi
 value the theme uses in several rules goes in a custom property named after it (`--xp-bar`,
 `--brass`). To give one part of the page other colours, set the tokens on it, and its
 `color` as well, as text otherwise keeps the colour it takes from `body`: XP writes
-white on its hill this way, black in its windows.
+white on its hill this way, black in its windows. A rule for what is on (`.chip.on`,
+`.room-card.current`, a ring button `.pressed`) also covers a setting that is on, in
+Settings: `.room-card.on`, `.ring-item.on`.
 
 **The dial's knob** is a path drawn around its centre, a circle of radius 1, the x axis
 pointing out of the arc; the page scales it up (3.2 on the Show's dial, 1.35 on the
@@ -145,7 +150,9 @@ window.Kiosk.addScene((host, { still }) => {
 ```
 
 The page runs the scene once the theme has loaded and while the page is in sight: hidden,
-it stops it and empties the layer, shown again, it starts it afresh. `still` is true when
+it stops it and empties the layer, shown again, it starts it afresh. Another theme picked
+in Settings stops it too; the page keeps it, and starts it afresh when its theme is picked
+again (its script runs once). `still` is true when
 the device asks for less motion: the scene then draws once and stays as it is (a scene
 moved by CSS stops its animation under `@media (prefers-reduced-motion: reduce)`). On the
 Spot the layer is cut to the round screen. A scene runs all day on a kiosk: keep it to one
@@ -162,6 +169,7 @@ The check suite (see [Development](development.md#the-check-suite)) opens every 
 `themes/themes.js` on the Spot and on the Show, checks that its files load and that its
 text stands out from its background, that no layer of the page is much larger than the
 screen, that the Show's clock keeps one width, that a theme with a scene moves it (and
-stops it while the page is hidden, and when less motion is asked for), and saves a screenshot of
+stops it while the page is hidden, and when less motion is asked for), that Settings switches
+the Show to it in place as it shows on a fresh page, and saves a screenshot of
 each, `theme-<name>-spot.png` and `theme-<name>-show.png`; with `--docs`, the gallery's
 pictures too.

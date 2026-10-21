@@ -39,7 +39,8 @@ shows them all.
   more, Home Assistant scripts, and Music Assistant favourites with their covers, played
   on the room's speakers.
 - **Light and honest.** Subscribes to just the entities on screen and shows what Home
-  Assistant reports; [themes](docs/theme-gallery.md) to choose from (and to add), an accent colour that can follow
+  Assistant reports; [themes](docs/theme-gallery.md) to choose from (and to add), in
+  `config.js` or from Settings on the kiosk itself, an accent colour that can follow
   the room's light, and a picture behind each room if you like.
 
 ## Quick start

@@ -10,6 +10,7 @@
   const { makeSensor, makeChip, RIM_R, makeDial, makeBar, makeTile, makeMedia } = K;
 
   const views = {};
+  const fits = [];   // each header's fitting of its modes
   let activeKey = null;
 
   function buildView(key, room, canSwitch) {
@@ -41,11 +42,14 @@
     modes.hidden = !modes.children.length;
     top.appendChild(rise(modes));
     // Modes whose names do not fit show their icons alone. The room they get
-    // depends on the rest of the header (a sensor value arriving, a resize).
-    new ResizeObserver(() => {
+    // depends on the rest of the header (a sensor value arriving, a resize)
+    // and on the theme's typeface (js/theme.js fits them again after a switch).
+    const fit = () => {
       modes.classList.remove('icons');
       setClass(modes, 'icons', [...modes.querySelectorAll('.name')].some((n) => n.scrollWidth > n.clientWidth));
-    }).observe(modes);
+    };
+    new ResizeObserver(fit).observe(modes);
+    fits.push(fit);
     if (shape !== 'round') top.appendChild(rise(el('time', 'clock')));
     view.appendChild(top);
 
@@ -225,5 +229,7 @@
     addEventListener('kiosksatellite:screenon', tick);
   }
 
-  Object.assign(K, { views, buildView, showView, activeRoom, startClock });
+  const fitHeaders = () => fits.forEach((fit) => fit());
+
+  Object.assign(K, { views, buildView, showView, activeRoom, startClock, fitHeaders });
 })();

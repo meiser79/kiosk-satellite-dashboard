@@ -2,7 +2,8 @@
 
 Every theme of [`themes/themes.js`](../themes/themes.js), on an Echo Show 8 and an Echo
 Spot. Add `?theme=<name>` to the page's address to try one; `theme.name` in `config.js`
-picks it, and a kiosk can have its own ([Configuration](configuration.md#theme)).
+picks it, a kiosk can have its own ([Configuration](configuration.md#theme)), and
+[Settings](configuration.md#settings) in the menu picks another on the kiosk itself.
 [Themes](themes.md) says how they are made, and how to make yours.
 
 Each theme is dark or light. A *mono* theme has one colour, which stands for every

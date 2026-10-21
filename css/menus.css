@@ -13,14 +13,14 @@
 
 /* --------------------------------------------------------------- menu */
 /* Wide screens: a rail of round buttons on the right edge, always there,
-   half-way down: the header runs above it, the rest of the view keeps clear
-   of it (see wide.css). Round screen: a ring in the middle of the
-   screen, out of sight until the tab at the bottom opens it. Only the
-   content takes touches. */
+   half-way down the height under the clock: the header runs above it, the
+   rest of the view keeps clear of it (see wide.css). Round screen: a ring
+   in the middle of the screen, out of sight until the tab at the bottom
+   opens it. Only the content takes touches. */
 .app { --rail-item: 2.85rem; }   /* a button of the rail */
 .menu { position: absolute; z-index: 8; display: flex; align-items: center; justify-content: center; pointer-events: none; }
 .menu > * { pointer-events: auto; }
-.shape-wide .menu { right: 0; top: 0; bottom: 0; padding: 1rem; }
+.shape-wide .menu { right: 0; top: 0; bottom: 0; padding: 4.5rem 1rem 1rem; }   /* the clock's foot at 4.3rem at most, whatever the theme */
 /* the rail: a panel of round buttons (it scrolls when it runs out of room) */
 .menu-panel {
   display: flex; flex-direction: column; gap: 0.25rem; padding: 0.4rem; border-radius: var(--r-pill); max-height: 100%;
@@ -65,7 +65,8 @@
    off every light. On the Spot the cards are the rows of a list that
    scrolls; on the wide screens, a grid in the middle. Only the cards take
    touches: a tap anywhere else closes the menu. The Show's menu folders
-   (#folder-menu) are the same grid of cards, Back first. */
+   (#folder-menu) are the same grid of cards, Back first, and Settings' list
+   of themes the same list or grid on both. */
 .room-menu { position: absolute; inset: 0; z-index: 8; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
 .room-menu.open > * { pointer-events: auto; }   /* closing: taps go through */
 .room-menu.open { opacity: 1; }
@@ -84,8 +85,9 @@
 .room-text { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; max-width: 100%; }
 .room-name { font-size: 1rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .room-state { font-size: 0.78rem; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.room-card.current .room-go { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent), var(--shadow); }
-.room-card.current .room-icon { background: var(--accent); color: var(--on-accent); }
+/* the room or the theme on screen, a setting that is on */
+.room-card.current .room-go, .room-card.on .room-go { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent), var(--shadow); }
+.room-card.current .room-icon, .room-card.on .room-icon { background: var(--accent); color: var(--on-accent); }
 /* the room's power button, there while it has lights on */
 .room-off {
   position: absolute; width: 2.6rem; height: 2.6rem; border-radius: var(--r-round);
@@ -95,10 +97,11 @@
 .room-off::before { content: ""; position: absolute; inset: -0.5rem; }   /* a finger-sized hit area */
 .room-off.pressed { transform: scale(0.9); }
 /* the last card turns off every light: set apart, faded while none is on;
-   a folder's Back card is set apart the same way */
+   a folder's Back card is set apart the same way. A setting that does not
+   apply is faded too. */
 .room-card.all-off .room-go, .room-card.back .room-go { border: var(--border-w) dashed var(--muted); }
 .room-card.all-off .room-icon { color: var(--accent); }
-.room-card.all-off.idle .room-go { opacity: 0.55; }
+.room-card.idle .room-go { opacity: 0.55; }
 /* wide: a grid of cards, the power button top right, clear of the rail */
 .shape-wide .room-menu { padding: 0.6rem; }
 .app.with-rail .room-menu { padding-right: calc(var(--rail-item) + 2.6rem); }
@@ -139,8 +142,9 @@
 }
 .ring-item .icon { font-size: calc(var(--size) * 0.365); color: var(--muted); }
 .ring-item .item-label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; text-align: center; line-height: 1.12; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }   /* up to two lines */
-.ring-item.pressed { background: var(--accent); color: var(--on-accent); border-color: transparent; }
-.ring-item.pressed .icon { color: inherit; }
+.ring-item.pressed, .ring-item.on { background: var(--accent); color: var(--on-accent); border-color: transparent; }
+.ring-item.pressed .icon, .ring-item.on .icon { color: inherit; }
+.ring-item.idle { opacity: 0.55; }   /* a setting that does not apply */
 .ring-close {
   position: absolute; left: 0; top: 0; width: var(--mid); height: var(--mid); margin: calc(var(--mid) / -2); border-radius: var(--r-round);
   display: flex; align-items: center; justify-content: center; background: var(--surface-solid); border: var(--border-w) solid var(--border); color: var(--muted); font-size: calc(var(--mid) * 0.46);

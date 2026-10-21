@@ -78,7 +78,7 @@ html[data-theme="xp"] .media-btn, html[data-theme="xp"] .tile-icon, html[data-th
 html[data-theme="xp"] .menu-handle, html[data-theme="xp"] .tile-icon { color: #1f3f8f; }
 /* what is on: the colour, shining */
 html[data-theme="xp"] .chip.on, html[data-theme="xp"] .power, html[data-theme="xp"] .tab.active, html[data-theme="xp"] .pop-actions button.on,
-html[data-theme="xp"] .fav-switch button.on, html[data-theme="xp"] .room-off, html[data-theme="xp"] .media-btn.play, html[data-theme="xp"] .room-card.current .room-icon,
+html[data-theme="xp"] .fav-switch button.on, html[data-theme="xp"] .room-off, html[data-theme="xp"] .media-btn.play, html[data-theme="xp"] .room-card.current .room-icon, html[data-theme="xp"] .room-card.on .room-icon,
 html[data-theme="xp"] .menu-item.pressed {
   background-color: var(--accent); background-image: var(--xp-shine); color: var(--on-accent); border: 1px solid rgba(0, 0, 0, 0.35);
 }
@@ -144,8 +144,8 @@ html[data-theme="xp"] .ring-item:nth-child(5n + 2) .icon { color: #2c8f2c; }
 html[data-theme="xp"] .ring-item:nth-child(5n + 3) .icon { color: #e07800; }
 html[data-theme="xp"] .ring-item:nth-child(5n + 4) .icon { color: #c3380c; }
 html[data-theme="xp"] .ring-item:nth-child(5n + 5) .icon { color: #6a3fb8; }
-html[data-theme="xp"] .ring-item.pressed { background: #316ac5; color: #ffffff; }
-html[data-theme="xp"] .ring-item.pressed .icon { color: inherit; }
+html[data-theme="xp"] .ring-item.pressed, html[data-theme="xp"] .ring-item.on { background: #316ac5; color: #ffffff; }
+html[data-theme="xp"] .ring-item.pressed .icon, html[data-theme="xp"] .ring-item.on .icon { color: inherit; }
 html[data-theme="xp"] .ring-item.with-cover.pressed { box-shadow: 0 0 0 0.2rem #316ac5; }
 html[data-theme="xp"] .more { border-radius: 0.15rem; background: linear-gradient(180deg, #5fbf5f, #2e852e); color: #ffffff; }
 html[data-theme="xp"] .ring-close { border: 1px solid #ffffff; border-radius: 0.35rem; color: #ffffff; background: var(--xp-close); box-shadow: 0.06rem 0.1rem 0.3rem rgba(0, 0, 0, 0.35); }

@@ -7,7 +7,7 @@ its use; this page is the reference.
 
 ```js
 theme:       { name: 'dark', accent?: '#f2af48', followLight?: true, background?: '<picture>', fade?: 0.5 }
-menu:        { items: [{ name, icon, shape?: 'round' | 'wide', link | script | items, favorites? }] }
+menu:        { items: [{ name, icon, shape?: 'round' | 'wide', link | script | items | settings, favorites? }] }
 devices:     { '<Kiosk Satellite device name>': '<room key>' | { room: '<room key>', theme?: '<theme>' } }
 defaultRoom: '<room key>'
 rooms:       { <key>: { title, icon, sensors, modes, main, lights, media, player, background?, fade? } }
@@ -23,7 +23,9 @@ not set; the [theme gallery](theme-gallery.md) shows them all, and [Themes](them
 says how to make one. Each is dark or
 light and has its own accent colour; `accent`, any CSS hex colour, replaces it, except in
 a theme of one colour (`eink`, `crt`, `handheld`, `matrix`), which keeps its own and does not
-follow the light. A kiosk can have a theme of its own (see [Devices](#devices)).
+follow the light. A kiosk can have a theme of its own (see [Devices](#devices)), and
+[Settings](#settings) in the menu lets someone at the kiosk pick another theme and turn
+`followLight` on or off there.
 
 - **`followLight: true`** gives the accent the colour of the light the dial controls: the
   room's `main` light on the Show, and on the Spot the light in the main slot, whichever
@@ -116,6 +118,7 @@ ring of buttons on the Spot. Each item has a `name`, an `icon` and one of:
 | `script: 'script.find_my_phone'` | Runs the Home Assistant script, and says so in a toast |
 | `items: [...]` | A folder of items, one level deep. On the Spot it opens as a ring of its own, *Back* in the middle; on the Show as a grid of cards, *Back* first |
 | `favorites: ['radio', 'playlist']` | (on a folder) Your Music Assistant favourites, before the folder's own items |
+| `settings: true` | Settings: the theme and following the light, set on the kiosk itself (see [Settings](#settings)) |
 
 - `shape: 'round'` keeps an item to the Echo Spot, `shape: 'wide'` to the Echo Show.
 - A `ks://now-playing` item shows only while Kiosk Satellite has something to play.
@@ -135,6 +138,24 @@ Sendspin player is on). The page finds your Music Assistant instance from that p
 - A cover that does not load, for example an `http://` image on an `https://` dashboard,
   leaves the icon in its place.
 
+### Settings
+
+`{ name: 'Settings', icon: 'cog-outline', settings: true }` adds a folder of what can be
+changed on the kiosk itself, without editing `config.js`:
+
+- **Theme** opens the list of every theme in `themes/themes.js`, a list like the room
+  menu's: the theme on screen is marked, and the one `config.js` gives this kiosk says
+  *Default*. A tap switches the page to that theme at once and leaves the list open, to
+  try another. *Back* returns to Settings.
+- **Follow the light** turns `followLight` on or off. A mono theme keeps its own colour,
+  so the entry is faded with one.
+
+The kiosk keeps what is set, in its browser's storage, over `theme.name`, its own theme
+in `devices` and `followLight`. A setting that matches `config.js` is not kept: picking
+the *Default* theme hands the theme back to `config.js`. `?theme=` in the address still
+wins. Settings goes in the menu itself, not in a folder; leave it out where the
+kiosk's look should not change.
+
 ## Icons
 
 Icon names are [Material Design Icons](https://pictogrammers.com/library/mdi/) names
@@ -151,5 +172,5 @@ These override the configuration, mostly to try the page in a desktop browser:
 | `device` | Which kiosk to act as, by its Kiosk Satellite name |
 | `room` | The room to start on |
 | `shape` | `round` or `wide`, whatever the screen |
-| `theme` | A theme's name, over the kiosk's own and `theme.name` |
+| `theme` | A theme's name, over the one picked in Settings, the kiosk's own and `theme.name` |
 | `ks` | Lets `ks://` and `app://` links navigate outside Kiosk Satellite |

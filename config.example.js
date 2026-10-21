@@ -44,6 +44,9 @@ window.KIOSK_CONFIG = {
   //              the screen. They play on the player of the room this kiosk
   //              belongs to (the room's `player`, below) and show their covers.
   //              The Spot's ring shows the first ten by name.
+  //   settings   true: Settings, a folder for the theme and following the light,
+  //              set on the kiosk itself, which keeps them (over the theme
+  //              below). Leave it out where the kiosk's look should not change.
   // shape: 'round' keeps an item to the Echo Spot, 'wide' to the Echo Show.
   // A ks://now-playing item shows only while Kiosk Satellite has something to
   // play, favourites only when the kiosk's room has a player, a folder only
@@ -61,6 +64,7 @@ window.KIOSK_CONFIG = {
       { name: 'Music', icon: 'music', favorites: ['radio', 'playlist'], items: [
         { name: 'Music Assistant', icon: 'music-box-multiple', link: 'ks://music-assistant', shape: 'wide' },
       ] },
+      { name: 'Settings', icon: 'cog-outline', settings: true },
     ],
   },
 

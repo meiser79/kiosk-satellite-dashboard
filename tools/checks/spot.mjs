@@ -251,7 +251,7 @@ export async function livingSpot() {
   await sleep(300);
   const ringNames = `[...document.querySelectorAll('#menu .ring-item')].map((e) => e.textContent).join()`;
   const menuNames = await p.eval(ringNames);
-  check(menuNames === ROOT_ITEMS, `spot: the menu has every item, the two folders last (got ${menuNames})`);
+  check(menuNames === ROOT_ITEMS, `spot: the menu has every item, the folders last (got ${menuNames})`);
   const mid = await p.rect('#menu .ring-close');
   check(Math.abs(mid.x - 240) < 2 && Math.abs(mid.y - 240) < 2 && await p.eval(`[...document.querySelectorAll('#menu .ring-item')].every((e) => { const r = e.getBoundingClientRect(); return Math.hypot(r.left + r.width / 2 - 240, r.top + r.height / 2 - 240) + r.width / 2 < 240 * (50 - 3.6) / 50; })`), 'spot: the menu ring sits in the middle of the screen, inside the rim');
   check(await p.eval(`(() => { const cs = [...document.querySelectorAll('#menu .ring-item')].map((e) => { const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, d: r.width }; }); return cs.every((a, j) => cs.every((b, k) => j === k || Math.hypot(a.x - b.x, a.y - b.y) >= a.d)); })()`), 'the buttons on the ring do not touch');
@@ -282,7 +282,7 @@ export async function livingSpot() {
   await p.tapSel('#menu-handle');
   await p.waitFor(`document.getElementById('menu').classList.contains('open')`);
   await sleep(300);
-  check(await p.eval(`[...document.querySelectorAll('#menu .ring-item.folder')].map((e) => e.textContent).join() === 'Find my phone,Music' && document.querySelectorAll('#menu .ring-item.folder .more svg').length === 2`), 'spot: Find my phone and Music are folders, a small arrow in their corner');
+  check(await p.eval(`[...document.querySelectorAll('#menu .ring-item.folder')].map((e) => e.textContent).join() === 'Find my phone,Music,Settings' && document.querySelectorAll('#menu .ring-item.folder .more svg').length === 3`), 'spot: Find my phone, Music and Settings are folders, a small arrow in their corner');
   check(await p.eval(`[...document.querySelectorAll('#menu .ring-item .item-label')].every((l) => l.scrollHeight <= l.clientHeight + 1 && l.scrollWidth <= l.clientWidth + 1)`), 'spot: every name fits in its button (two lines at most)');
   await p.tapSel('#menu .ring-item:nth-child(5)');
   await sleep(350);

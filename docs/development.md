@@ -21,7 +21,7 @@ Node.js 22 or later, and Google Chrome for the checks; Python 3 only to add icon
 | `js/ha.js` | The Home Assistant connection: sign-in, WebSocket, subscriptions, service calls |
 | `js/core.js` | Creates `window.Kiosk`: configuration, DOM and state helpers, colours, toast |
 | `js/live.js` | Watching entities, redrawing in one frame, holding values in flight, service calls |
-| `js/theme.js` | The theme and its files, its scene, the accent and the light it follows, the rooms' background pictures |
+| `js/theme.js` | The theme and its files, switching to another in place, its scene, the accent and the light it follows, what Settings keeps on the kiosk, the rooms' background pictures |
 | `js/touch.js` | Press, long-press, drag and swipe; the slider |
 | `js/overlays.js` | The backdrop the menus open over |
 | `js/controls.js` | Sensors, mode chips, the dial, the main control, light tiles |
@@ -29,13 +29,14 @@ Node.js 22 or later, and Google Chrome for the checks; Python 3 only to add icon
 | `js/view.js` | Building the room views, switching between them, the clock |
 | `js/room-menu.js` | The room menu, and the lights it counts and turns off |
 | `js/favorites.js` | Music Assistant favourites |
+| `js/settings.js` | Settings in the menu: its entries and the list of themes |
 | `js/menu.js` | The menu: its items, the Spot's ring, the Show's rail and folders, links |
 | `js/popover.js` | The detail panel and its tabs |
 | `js/main.js` | Boot: which kiosk, which room, which shape; the status pill |
 | `tools/mock-ha.mjs` | A stand-in for Home Assistant |
 | `tools/shoot.mjs` | The check suite: runs the files in `tools/checks/` in order |
 | `tools/checks/harness.mjs` | Headless Chrome, touch input, the mock's test hooks, shared helpers |
-| `tools/checks/*.mjs` | The checks, by part of the page: the Spot, the Show, Kiosk Satellite, the room menu, the menu, signing in, the themes |
+| `tools/checks/*.mjs` | The checks, by part of the page: the Spot, the Show, Kiosk Satellite, the room menu, the menu, signing in, the themes, Settings |
 | `tools/fetch_icons.py` | Adds icons to `js/icons.js` |
 | `.github/workflows/checks.yml` | The check suite on GitHub, for every push to `main` and every pull request |
 
@@ -132,7 +133,11 @@ rim reaching the edge and the swipe through its lights, sensors going unavailabl
 theme on both shapes (its files loaded, its text legible on its background, no layer much
 larger than the screen, a clock of one width), a scene whose script comes after the page
 has shown, a kiosk's own theme, a name in the address that is not a theme, the accent
-following the light the dial controls (and staying legible on both schemes), the rooms'
+following the light the dial controls (and staying legible on both schemes), Settings on
+both shapes (following the light turned off and on, the list of themes, every theme
+switched in place looking as on a fresh page, a scene stopped and started again, a theme
+picked before the last one's files have come, what the kiosk keeps across a reload, a
+kept theme since removed, a kiosk's own theme as its default), the rooms'
 pictures (each room's own, none, one that does not load), the login round-trip, a token
 in the address being ignored, a login's token renewed before it runs out and when Home
 Assistant refuses it, and a refused kiosk token.

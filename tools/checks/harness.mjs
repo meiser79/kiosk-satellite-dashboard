@@ -171,7 +171,7 @@ const slowFile = (file, ms) => fetch(BASE + '/__slow', { method: 'POST', body: J
 const tokenLife = (life) => fetch(BASE + '/__tokens', { method: 'POST', body: JSON.stringify({ life }) });   // seconds a login's next tokens last
 const dropConnections = () => fetch(BASE + '/__drop');   // as when Home Assistant restarts
 const authLog = async () => (await fetch(BASE + '/__auths')).json();   // every sign-in on the WebSocket: { ok }
-const ROOT_ITEMS = 'Now playing,Screensaver,Intercom,Cameras,Find my phone,Music';   // the menu, outside Kiosk Satellite
+const ROOT_ITEMS = 'Now playing,Screensaver,Intercom,Cameras,Find my phone,Music,Settings';   // the menu, outside Kiosk Satellite
 const RADIOS = 'BBC Radio 6 Music,FIP,France Inter,KEXP,Radio Nova,Radio Paradise,TSF Jazz';   // the mock's favourites, by name
 const PLAYLISTS = 'Dinner jazz,Discover Weekly,Focus,Morning coffee,Sunday vinyl';
 // on the Spot's ring of favourites: every button inside the rim, none touching another, every name on two lines
