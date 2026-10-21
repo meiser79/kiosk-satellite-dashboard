@@ -8,7 +8,9 @@ What the page does, screen by screen. [Configuration](configuration.md) says how
   Show 5. A few [address parameters](configuration.md#address-parameters) help on a
   desktop browser.
 - **Room view.** A header with the room title, the sensors under it (one without a value,
-  such as an unavailable one, is left out), the mode chips (toggles, or a pair of scripts
+  such as an unavailable one, is left out, and one can show only while a state holds),
+  the house's alerts first among them in the warning colour while they need attention
+  (the front door left open; on the Spot they have the row to themselves), the mode chips (toggles, or a pair of scripts
   for things like a projector; when the header has no room for their names, they show
   their icons alone) and a large 24 hour clock. Under it, the dial for
   the room's lights: drag along its arc or across it to dim, tap the name in its middle to

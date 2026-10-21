@@ -21,6 +21,7 @@ span.title-btn { cursor: default; }
 .sensor { display: inline-flex; align-items: center; gap: 0.25rem; white-space: nowrap; transition: color 0.3s; }
 .sensor .icon { font-size: 1.15em; }
 .sensor.on { color: var(--accent); }
+.sensor.alert { color: var(--danger); font-weight: 600; }   /* an alert (config.js's alerts), in the warning colour */
 .modes { grid-area: modes; display: flex; align-items: center; justify-content: center; gap: 0.6rem; min-width: 0; }
 .clock { grid-area: clock; text-align: right; font-family: var(--font-title); font-size: 2.4rem; font-weight: 400; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
 

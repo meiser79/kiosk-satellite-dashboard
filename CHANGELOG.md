@@ -15,6 +15,13 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
   `config.js` ([Configuration](docs/configuration.md#settings)).
 - Settings says which version of the dashboard the kiosk runs.
 - Each release comes with a zip of the files to copy to Home Assistant.
+- **Alerts** and **showWhen** on sensors: a sensor can show only while a state holds (the
+  CO2 level above 1000 ppm), and `alerts` lists values of the house that every room shows,
+  in the warning colour, while they need attention (the front door left open)
+  ([Configuration](docs/configuration.md#shown-when),
+  [#3](https://github.com/sylvertom/kiosk-satellite-dashboard/issues/3)).
+- The media card's `showWhen` can now test the player's own state, a list of states, any
+  state but some, or a number.
 
 ### Changed
 

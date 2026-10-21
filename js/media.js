@@ -39,7 +39,7 @@
     const ids = [m.entity].concat(m.showWhen && m.showWhen.entity ? [m.showWhen.entity] : []);
     node.hidden = true; // until showWhen first matches, which then fades it in
     watch(ids, () => {
-      const visible = matches(m.showWhen);
+      const visible = matches(m.showWhen, m.entity);
       if (node.hidden === visible) {
         node.hidden = !visible;
         if (visible) requestAnimationFrame(() => node.classList.add('show'));

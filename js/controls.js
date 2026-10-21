@@ -4,15 +4,18 @@
 (() => {
   'use strict';
   const K = window.Kiosk;
-  const { states, el, esc, icon, clamp, isLight, isOn, isUnavailable, hasValue, stateText, lightRgb, lightLabel, groupMembers, setText, setClass, setVar, HA } = K;
+  const { states, el, esc, icon, clamp, isLight, isOn, isUnavailable, hasValue, matches, stateText, lightRgb, lightLabel, groupMembers, setText, setClass, setVar, HA } = K;
   const { watch, shownPct, call, toggle, setBrightness, pressFx, attachPress, attachTrack } = K;
 
-  // A read-only value for the header. It is left out while it has none.
+  // A read-only value for the header. It is left out while it has none, or
+  // while its showWhen does not hold. An alert is in the warning colour.
+  const sensorShown = (s) => hasValue(states[s.entity]) && matches(s.showWhen, s.entity);
+  const sensorIds = (s) => [s.entity].concat(s.showWhen && s.showWhen.entity ? [s.showWhen.entity] : []);
   function makeSensor(s) {
-    const node = el('span', 'sensor');
-    watch([s.entity], () => {
+    const node = el('span', 'sensor' + (s.alert ? ' alert' : ''));
+    watch(sensorIds(s), () => {
       const st = states[s.entity];
-      node.hidden = !hasValue(st);
+      node.hidden = !sensorShown(s);
       const on = isOn(st);
       const num = st && st.state !== '' && !isNaN(parseFloat(st.state));
       const text = num ? parseFloat(st.state).toFixed(s.digits ?? 0) + (s.unit || '') : stateText(st, s);
@@ -175,5 +178,5 @@
     return node;
   }
 
-  Object.assign(K, { makeSensor, makeChip, RIM_R, makeDial, makeBar, makeTile });
+  Object.assign(K, { makeSensor, sensorShown, sensorIds, makeChip, RIM_R, makeDial, makeBar, makeTile });
 })();

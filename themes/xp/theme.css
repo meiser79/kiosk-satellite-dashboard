@@ -57,6 +57,9 @@ html[data-theme="xp"] .view { --text: #ffffff; --muted: #eef4ff; color: var(--te
 html[data-theme="xp"] .view .chip, html[data-theme="xp"] .view .slider, html[data-theme="xp"] .view .media,
 html[data-theme="xp"].shape-wide .view .tile { --text: #000000; --muted: #4b4b4b; text-shadow: none; }
 html[data-theme="xp"] .view .sensor.on { color: #c6f7a8; }
+/* an alert on the desktop: the yellow of a warning balloon, legible on the sky */
+html[data-theme="xp"] .view { --danger: #ffe066; }
+html[data-theme="xp"] .view .sensor.alert { color: var(--danger); }
 /* the dial: a white trough edged in blue-grey, the level shining in it, a trackbar's thumb */
 html[data-theme="xp"] .dial-groove { display: block; stroke: #7f9db9; stroke-width: 6.4; }
 html[data-theme="xp"] .dial-track { stroke: #ffffff; stroke-width: 5.6; }

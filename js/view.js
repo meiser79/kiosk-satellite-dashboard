@@ -5,9 +5,9 @@
 (() => {
   'use strict';
   const K = window.Kiosk;
-  const { root, states, el, esc, icon, clamp, isLight, isOn, hasValue, setText, setClass, warn } = K;
+  const { CFG, root, states, el, esc, icon, clamp, isLight, isOn, setText, setClass, warn } = K;
   const { watch, shownPct, setBrightness, followLight, showWallpaper, pressFx, attachSwipe, closeOverlay } = K;
-  const { makeSensor, makeChip, RIM_R, makeDial, makeBar, makeTile, makeMedia } = K;
+  const { makeSensor, sensorShown, sensorIds, makeChip, RIM_R, makeDial, makeBar, makeTile, makeMedia } = K;
 
   const views = {};
   const fits = [];   // each header's fitting of its modes
@@ -31,11 +31,18 @@
     }
     title.appendChild(name);
     top.appendChild(rise(title));
+    // The house's alerts come first, in every room, each while its showWhen
+    // holds (its own entity on, unless said). On the round screen the room's
+    // own values step aside meanwhile.
+    const alerts = (CFG.alerts || []).map((a) => ({ showWhen: {}, ...a, alert: true }));
+    const values = alerts.concat(room.sensors || []);
     const sensors = el('div', 'sensors');
-    const sensorIds = (room.sensors || []).map((s) => s.entity);
-    sensors.append(...(room.sensors || []).map(makeSensor));
+    sensors.append(...values.map(makeSensor));
     sensors.hidden = true;
-    watch(sensorIds, () => { sensors.hidden = !sensorIds.some((id) => hasValue(states[id])); });   // the row goes with its last value
+    watch(values.flatMap(sensorIds), () => {   // the row goes with its last value
+      sensors.hidden = !values.some(sensorShown);
+      setClass(sensors, 'alerting', alerts.some(sensorShown));
+    });
     top.appendChild(rise(sensors));
     const modes = el('div', 'modes');
     for (const c of room.modes || []) modes.appendChild(makeChip(c));

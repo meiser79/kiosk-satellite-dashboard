@@ -7,6 +7,7 @@
 //   theme     the theme, its accent colour and the background picture
 //   menu      the launcher for the kiosk's own features
 //   devices   the room (and theme) of each kiosk, keyed by its Kiosk Satellite device name
+//   alerts    values of the house every room shows while they need attention
 //   rooms     one view per room
 //
 // The arrangement follows the screen and is not configurable: on the round
@@ -83,10 +84,22 @@ window.KIOSK_CONFIG = {
   // Room shown when the device is not listed above (and on a desktop browser).
   defaultRoom: 'bedroom',
 
+  /* ----------------------------------------------------------- alerts */
+  // Shown first in every room's header, in the warning colour, while they need
+  // attention: each is written like a room's sensor (below) and shows while its
+  // showWhen holds, or while its own entity is on. On the Spot an alert has the
+  // row to itself.
+  alerts: [
+    { entity: 'binary_sensor.front_door', icon: 'door-open', on: 'Front door open' }, // <-- entity
+  ],
+
   /* ------------------------------------------------------------ rooms */
   // The order here is the order in the room menu.
   // title, icon      header and room menu
-  // sensors          small read-only values in the header
+  // sensors          small read-only values in the header. showWhen shows one only
+  //                  while a state holds: { state: 'on' } (or a list), { not: 'idle' },
+  //                  { above: 1000 }, { below: 10 }, of its own entity or another:
+  //                  { entity: 'input_boolean.guests', state: 'on' }
   // modes            toggle chips in the header: anything with on/off (the header
   //                  has room for three or four). A mode may instead run scripts:
   //                  { entity: <state>, turnOn: 'script.x', turnOff: 'script.y' }
@@ -102,7 +115,7 @@ window.KIOSK_CONFIG = {
   //                  controls: extra entities shown in the panel (select, number, switch),
   //                  e.g. the palette / preset / speed / intensity entities WLED creates.
   //                  A room with one light needs no tiles: `main` alone is enough.
-  // media            a player card, shown when showWhen matches (or always)
+  // media            a player card, shown while showWhen holds (or always)
   // player           the Music Assistant player (or group of players) the menu's
   //                  favourites play on, for the kiosks that belong to this room
   // background, fade the room's own picture behind it, and how far it fades
@@ -139,6 +152,7 @@ window.KIOSK_CONFIG = {
         { entity: 'sensor.living_room_temperature', icon: 'thermometer', unit: '°', digits: 1 }, // <-- entity
         { entity: 'sensor.living_room_humidity', icon: 'water-percent', unit: '%', digits: 0 }, // <-- entity
         { entity: 'binary_sensor.living_room_presence', icon: 'motion-sensor', iconOff: 'motion-sensor-off', on: 'Present', off: 'Away' }, // <-- entity
+        { entity: 'sensor.living_room_co2', icon: 'molecule-co2', unit: ' ppm', showWhen: { above: 1000 } }, // <-- entity
       ],
       modes: [
         { entity: 'input_boolean.projector', name: 'Projector', icon: 'projector', // <-- entity (reflects the projector state)

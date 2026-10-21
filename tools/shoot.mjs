@@ -16,6 +16,7 @@ import { noPlayer, ringSizes } from './checks/menus.mjs';
 import { signIn, noConfig } from './checks/sign-in.mjs';
 import { accentFollowsLight, pictures, themes } from './checks/theme.mjs';
 import { settingsSpot, settingsShow } from './checks/settings.mjs';
+import { alertsSpot, alertsShow } from './checks/alerts.mjs';
 
 await reset();
 await bedroomSpot();
@@ -40,4 +41,7 @@ await themes();
 await reset();
 await settingsSpot();
 await settingsShow();
+await reset();
+await alertsSpot();
+await alertsShow();
 await finish();
