@@ -50,7 +50,8 @@ shows them all.
 2. Copy `config.example.js` to `config.js` and replace every entity marked
    `// <-- entity` with yours, and each picture marked `// <-- your picture` (or drop it).
 3. Check it in a browser: `http://<ha>:8123/local/kiosk/index.html?device=Echo+Spot+Bedroom`.
-4. Make it the kiosk's start page through Kiosk Satellite's remote API.
+4. Add it to Kiosk Satellite as a custom page, `/local/kiosk/index.html`, and pick it as
+   the kiosk's default dashboard.
 
 The [setup guide](docs/setup.md) goes through each step.
 

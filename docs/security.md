@@ -11,7 +11,8 @@ The page signs in with a session it finds in the browser:
 - **On the kiosk**, Kiosk Satellite writes its own long-lived token into the page as the
   Home Assistant session (its *Log in automatically* setting, on by default), exactly as it
   does for the Home Assistant frontend. Give Kiosk Satellite a token from a dedicated
-  non-admin user rather than your own.
+  non-admin user rather than your own. Its *Share Home Assistant connection* setting,
+  which hands that token's connection to every custom page, is not needed.
 - **On your computer**, the page reuses your Home Assistant login if you are signed in on
   the same address, and otherwise offers the normal Home Assistant login screen.
 

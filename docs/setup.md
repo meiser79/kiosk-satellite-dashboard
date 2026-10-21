@@ -42,24 +42,20 @@ Outside Kiosk Satellite, menu items that point at `ks://` links only show a note
 
 ## 3. Make it the kiosk's start page
 
-Kiosk Satellite's settings only offer Home Assistant dashboards in their *Dashboard* picker,
-but the underlying start URL accepts any page. Set it through the remote API (turn on
-**Remote Administration** in Kiosk Satellite if it is off):
+Add the page to Kiosk Satellite as a
+[custom page](https://kiosksatellite.com/docs/custom-pages/), on the kiosk or in its
+remote administration page:
 
-```sh
-KIOSK=http://<kiosk-ip>:2324
-TOKEN=$(curl -s -X POST $KIOSK/api/login -H 'Content-Type: application/json' \
-  -d '{"password": "<remote admin password>"}' | sed 's/.*"token":"\([^"]*\)".*/\1/')
-curl -X PATCH $KIOSK/api/settings -H "Authorization: Bearer $TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{"browser.start_url": "http://<ha>:8123/local/kiosk/index.html"}'
-curl -X POST $KIOSK/api/commands/loadStartUrl -H "Authorization: Bearer $TOKEN"
-```
+1. Open **Settings > Home Assistant > Custom Pages** and tap **Add page**.
+2. Give it a name (*Kiosk*) and the path `/local/kiosk/index.html`, then tap
+   **Save & Validate**.
+3. Pick it as the **Default dashboard**: it is listed under *Custom Pages* in every
+   dashboard picker, and in the kiosk's ESPHome dashboard selects in Home Assistant.
 
+Every kiosk gets the same page: it finds which kiosk it is on by itself.
 Keep **Log in automatically** on (Settings > Home Assistant Configuration); that is what
-signs the page in (see [Security](security.md)). Picking a dashboard again in Kiosk
-Satellite, or changing the ESPHome *Default dashboard* select in Home Assistant, writes a
-dashboard URL back over this one.
+signs the page in (see [Security](security.md)). *Share Home Assistant connection*, at the
+top of Custom Pages, can stay off: the page does not use it.
 
 ## 4. After editing the files
 
