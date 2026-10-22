@@ -17,6 +17,7 @@ import { signIn, noConfig } from './checks/sign-in.mjs';
 import { accentFollowsLight, pictures, themes } from './checks/theme.mjs';
 import { settingsSpot, settingsShow } from './checks/settings.mjs';
 import { alertsSpot, alertsShow } from './checks/alerts.mjs';
+import { eventsSpot, eventsShow } from './checks/events.mjs';
 
 await reset();
 await bedroomSpot();
@@ -44,4 +45,8 @@ await settingsShow();
 await reset();
 await alertsSpot();
 await alertsShow();
+await reset();
+await eventsSpot();
+await reset();
+await eventsShow();
 await finish();

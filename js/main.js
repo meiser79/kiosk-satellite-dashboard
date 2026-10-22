@@ -6,7 +6,7 @@
   'use strict';
   const K = window.Kiosk;
   const { CFG, HA, $, KS, params, root, icon, esc, lookup, applyTheme } = K;
-  const { render, sensorIds, buildView, showView, startClock, views, buildRoomMenu, buildMenu, followPlayer, menuFavoriteKinds, loadFavorites, closeOverlay, closePopover } = K;
+  const { render, sensorIds, eventsOf, loadEvents, buildView, showView, startClock, views, buildRoomMenu, buildMenu, followPlayer, menuFavoriteKinds, loadFavorites, closeOverlay, closePopover } = K;
 
   /* ------------------------------------------------------------- status */
   const statusEl = $('status');
@@ -45,6 +45,8 @@
       if (r.main) ids.push(r.main.entity);
       for (const l of r.lights || []) { ids.push(l.entity); for (const c of l.controls || []) ids.push(c); }
       if (r.media) { ids.push(r.media.entity); if (r.media.showWhen) ids.push(r.media.showWhen.entity); }
+      const events = eventsOf(r);
+      if (events) ids.push(...events.calendars.map((c) => c.entity));
     }
     return ids.filter(Boolean);
   }
@@ -81,8 +83,8 @@
     render();
 
     HA.start(entityIds());
-    // Music Assistant's favourites, there before a folder of them opens.
-    HA.onStatus((s) => { if (!s) loadFavorites(menuFavoriteKinds()); });
+    // Music Assistant's favourites, there before a folder of them opens; the rooms' events.
+    HA.onStatus((s) => { if (!s) { loadFavorites(menuFavoriteKinds()); loadEvents(); } });
 
     // Kiosk Satellite tells the page when the screensaver ends: start from a clean view.
     addEventListener('kiosksatellite:screensaverstop', () => { closePopover(); closeOverlay(); for (const v of Object.values(views)) v.restore(); });

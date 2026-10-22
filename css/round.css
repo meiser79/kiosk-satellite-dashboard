@@ -73,6 +73,15 @@
   transition: none; opacity: calc(1 - 0.5 * var(--away, 0));
   transform: translateX(var(--x, 0px)) scale(calc(1 - 0.1 * var(--away, 0)));
 }
+/* the room's events: a line of their own just above the main light, in the
+   same band (16% from each side), the mark of where they are at its right
+   end. The header's column moves up to make room. */
+.shape-round .view.with-events .top { bottom: calc(58.5% + 2rem); }
+.shape-round .events { --ev-row: 1.6rem; position: absolute; left: 16%; right: 16%; top: calc(var(--main) - var(--ev-row) - 0.85rem); font-size: 1rem; }
+.shape-round .events-rows { padding: 0 2.4rem; }
+.shape-round .event { justify-content: center; }
+.shape-round .events-at { right: 0; top: 0; height: var(--ev-row); display: flex; align-items: center; }
+.shape-round .with-wallpaper .events { text-shadow: var(--lift); }
 /* the rim: the main light's level along the edge of the screen. Its stroke
    width is also in js/controls.js (RIM_R), which puts the arc half of it inside the edge. */
 .dial.rim { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
@@ -159,6 +168,11 @@
 .shape-round .swatches { width: 67.6vmin; gap: 1.2vmin; margin: 0 auto; }   /* 7.4vmin each */
 .shape-round .pane .wrap { justify-content: center; }
 .shape-round .control-label { text-align: center; font-size: 0.75rem; }
+/* the events' rows centred in the circle, and their button under them, narrower where the circle is */
+.shape-round .pop-body .events-day { text-align: center; }
+.shape-round .pop-body .event-row { width: 62vmin; margin: 0 auto; }
+.shape-round .pop-actions.panel-actions { display: flex; width: 50vmin; margin: 0.25rem auto 0; }
+.shape-round .pop-actions.panel-actions button { height: 2.9rem; background: var(--surface-solid); font-size: 0.95rem; }
 .shape-round .pop-tab { display: flex; }
 .shape-round .status { bottom: 20%; max-width: 80vmin; white-space: normal; text-align: center; }
 .shape-round .toast { bottom: 26%; }

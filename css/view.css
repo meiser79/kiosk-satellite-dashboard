@@ -205,3 +205,25 @@ span.title-btn { cursor: default; }
 .media.compact .media-art { width: 4rem; height: 4rem; }
 .media.compact .media-volume, .media.compact .media-sources { display: none; }
 .media.off .media-art { color: var(--muted); }
+
+/* ------------------------------------------------------------- events */
+/* The room's events (js/events.js): the chip among the sensors, which a tap
+   opens; the list, --lines events in view (--ev-row each), which scrolls a
+   line at a time, the mark of where it is in a corner. wide.css and
+   round.css place them. */
+.events-chip { transition: color 0.3s, transform 0.12s var(--ease); }
+.events-chip.pressed { transform: scale(0.94); }
+.events { --ev-row: 1.55rem; }
+.events-rows {
+  height: calc(var(--lines, 1) * var(--ev-row)); overflow-y: auto; scroll-snap-type: y mandatory;
+  overscroll-behavior: contain; touch-action: pan-y; scrollbar-width: none;
+}
+.events-rows::-webkit-scrollbar { display: none; }
+.event { height: var(--ev-row); display: flex; align-items: center; gap: 0.55rem; min-width: 0; white-space: nowrap; scroll-snap-align: start; }
+.ev-time { flex: none; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ev-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--text); font-weight: 500; }
+.event.now .ev-time, .event-row.now .ev-time { color: var(--accent); font-weight: 600; }   /* on now */
+.event.none { color: var(--muted); }
+.ev-dot { flex: none; width: 0.5rem; height: 0.5rem; border-radius: var(--r-round); background: var(--ev); }   /* its calendar's colour */
+html.mono .ev-dot { background: var(--accent); }   /* a theme of one colour keeps to it */
+.events-at { position: absolute; font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }

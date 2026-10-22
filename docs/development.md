@@ -26,17 +26,18 @@ Node.js 22 or later, and Google Chrome for the checks; Python 3 only to add icon
 | `js/overlays.js` | The backdrop the menus open over |
 | `js/controls.js` | Sensors, mode chips, the dial, the main control, light tiles |
 | `js/media.js` | The media card |
+| `js/events.js` | A room's events: asking its calendars, the count, the list, the panel's rows |
 | `js/view.js` | Building the room views, switching between them, the clock |
 | `js/room-menu.js` | The room menu, and the lights it counts and turns off |
 | `js/favorites.js` | Music Assistant favourites |
 | `js/settings.js` | Settings in the menu: its entries, the list of themes, the version |
 | `js/menu.js` | The menu: its items, the Spot's ring, the Show's rail and folders, links |
-| `js/popover.js` | The detail panel and its tabs |
+| `js/popover.js` | The detail panel and its tabs, or the room's events |
 | `js/main.js` | Boot: which kiosk, which room, which shape; the status pill |
 | `tools/mock-ha.mjs` | A stand-in for Home Assistant |
 | `tools/shoot.mjs` | The check suite: runs the files in `tools/checks/` in order |
 | `tools/checks/harness.mjs` | Headless Chrome, touch input, the mock's test hooks, shared helpers |
-| `tools/checks/*.mjs` | The checks, by part of the page: the Spot, the Show, Kiosk Satellite, the room menu, the menu, signing in, the themes, Settings, the alerts |
+| `tools/checks/*.mjs` | The checks, by part of the page: the Spot, the Show, Kiosk Satellite, the room menu, the menu, signing in, the themes, Settings, the alerts, the events |
 | `tools/fetch_icons.py` | Adds icons to `js/icons.js` |
 | `tools/release.mjs` | Prepares a release: every `?v=` and the changelog at its version ([Changes and releases](#changes-and-releases)) |
 | `.github/workflows/checks.yml` | The check suite on GitHub, for every push to `main` and every pull request |
@@ -86,7 +87,8 @@ Open `http://127.0.0.1:8123/index.html?device=Echo+Spot+Bedroom` in a browser, t
 "sign in" pill (the mock accepts anything) and play with the lights. The mock keeps light
 groups in sync with their members, runs the projector scripts, answers the WLED and media
 player services, and stands in for Music Assistant's library (favourite radios and
-playlists with made-up covers). It signs in as Home Assistant does: a login's token runs
+playlists with made-up covers) and for two calendars, their events placed on the day the
+page asks from. It signs in as Home Assistant does: a login's token runs
 out after half an hour, and a refused token ends the connection. It serves
 `config.example.js` as `config.js`; `--config config.js` serves yours instead, though the
 mock only knows the example's entities.
@@ -145,7 +147,10 @@ picked before the last one's files have come, what the kiosk keeps across a relo
 kept theme since removed, a kiosk's own theme as its default), the rooms'
 pictures (each room's own, none, one that does not load), the login round-trip, a token
 in the address being ignored, a login's token renewed before it runs out and when Home
-Assistant refuses it, and a refused kiosk token.
+Assistant refuses it, a refused kiosk token, and the rooms' events (the page's clock set
+to 10:00: what Home Assistant is asked, their order, the count, the Spot's line and the
+Show's tile and a swipe through them, the panel and Open calendar, an event added, none,
+a calendar that does not answer, each period, the list's lines and length).
 
 All of that runs in desktop Chrome, which has far more memory and speed than an Echo:
 try a change on a kiosk as well (Synthwave's first grid looked right here and starved

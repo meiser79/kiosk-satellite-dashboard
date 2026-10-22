@@ -216,6 +216,15 @@ async function load(page, query) {
   await sleep(250);
 }
 
+// The page's clock, from its next load on, set to a time on Wednesday 21 October 2026, and running on from there:
+// the mock's calendars place their events on the day the page asks from.
+const setClock = (page, h, m = 0) => page.s('Page.addScriptToEvaluateOnNewDocument', { source: `(() => {
+  const D = Date, shift = new D(2026, 9, 21, ${h}, ${m}).getTime() - D.now();
+  class Clock extends D { constructor(...a) { if (a.length) super(...a); else super(D.now() + shift); } static now() { return D.now() + shift; } }
+  window.Date = Clock; })();` });
+const addEvent = (e) => fetch(BASE + '/__calendar', { method: 'POST', body: JSON.stringify(e) });   // {entity, summary, day, h, m, minutes}
+const noEvents = (none) => fetch(BASE + '/__calendar', { method: 'POST', body: JSON.stringify({ none }) });   // the calendars empty, or back
+
 // Back to the mock's first states, its call log emptied.
 const reset = () => fetch(BASE + '/__reset');
 // The end of the run: no console errors, Chrome closed, the verdict.
@@ -235,5 +244,5 @@ async function finish() {
 
 export {
   check, openPage, failPictures, pictureReferers, ROOT_ITEMS, has, menuOpen, load, sleep, text, insideRim, mockStates, mockReaches, activeRoom, mockSet, lastCall, RADIOS, PLAYLISTS, lightsOn, onScreen, tapTab, BASE, connected, callLog, setLibrary, RING_FITS, SWITCH_GAP, POP_PARTS, reset, finish,
-  failCalls, slowFile, tokenLife, dropConnections, authLog,
+  failCalls, slowFile, tokenLife, dropConnections, authLog, setClock, addEvent, noEvents,
 };

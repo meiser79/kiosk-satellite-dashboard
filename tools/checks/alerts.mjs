@@ -1,6 +1,6 @@
 // Checks of what shows only while it matters: a sensor's showWhen, and the house's alerts, in every room, in the
 // warning colour, with the row to themselves on the Spot.
-import { sleep, check, openPage, load, mockSet, insideRim } from './harness.mjs';
+import { sleep, check, openPage, load, mockSet, insideRim, setClock } from './harness.mjs';
 
 const ALERT = '.view.active .sensor.alert';
 // The row of the room on screen: the values shown, in order, and whether an alert has it.
@@ -9,12 +9,14 @@ const row = (p) => p.eval(`(() => { const r = document.querySelector('.view.acti
 const danger = `getComputedStyle(document.querySelector('${ALERT}')).color === (() => { const t = document.createElement('i'); t.style.color = 'var(--danger)'; document.querySelector('.view.active .sensors').append(t); const c = getComputedStyle(t).color; t.remove(); return c; })()`;
 
 // 17. On the Spot: the front door opened shows its alert, alone in the row, in every room; closed or unavailable,
-// the room's own values again. showWhen's forms.
+// the room's own values again (and its events' count: four at 10:00). showWhen's forms.
 export async function alertsSpot() {
   const p = await openPage(480, 480);
+  await setClock(p, 10);
   await load(p, 'device=Echo+Spot+Bedroom');
+  await p.waitFor(`!document.querySelector('.view.active .events-chip').hidden`);
   let r = await row(p);
-  check(r.shown === '19.4°,48%,Present' && !r.alerting && await p.eval(`document.querySelector('${ALERT}').hidden`), `spot: the front door closed, no alert: the room's own values (got ${r.shown})`);
+  check(r.shown === '19.4°,48%,Present,4' && !r.alerting && await p.eval(`document.querySelector('${ALERT}').hidden`), `spot: the front door closed, no alert: the room's own values (got ${r.shown})`);
   await mockSet('binary_sensor.front_door', 'on');
   check(await p.waitFor(`!document.querySelector('${ALERT}').hidden`), 'spot: the front door opened: its alert shows');
   r = await row(p);
@@ -24,7 +26,7 @@ export async function alertsSpot() {
   check(await p.eval(`[...document.querySelectorAll('.view .sensor.alert')].every((s) => !s.hidden) && document.querySelectorAll('.view').length === 3`), 'spot: and in every room');
   await p.shot('spot-alert.png');
   await mockSet('binary_sensor.front_door', 'unavailable');
-  check(await p.waitFor(`document.querySelector('${ALERT}').hidden`) && (await row(p)).shown === '19.4°,48%,Present', 'spot: unavailable, it goes, and the room\'s values come back');
+  check(await p.waitFor(`document.querySelector('${ALERT}').hidden`) && (await row(p)).shown === '19.4°,48%,Present,4', 'spot: unavailable, it goes, and the room\'s values come back');
   await mockSet('binary_sensor.front_door', 'on');
   await p.waitFor(`!document.querySelector('${ALERT}').hidden`);
   await mockSet('binary_sensor.front_door', 'off');
@@ -54,12 +56,13 @@ export async function alertsShow() {
   await p.close();
 
   const q = await openPage(960, 480);
+  await setClock(q, 10);
   await load(q, 'device=Echo+Show+5+Bedroom');
   await mockSet('binary_sensor.front_door', 'on');
   check(await q.waitFor(`!document.querySelector('${ALERT}').hidden`), 'show 5: the front door opened: its alert shows');
   await sleep(300);
   const r = await row(q);
-  check(r.shown === 'Front door open,19.4°,48%,Present' && await q.eval(danger), `show 5: first, beside the room's values, in the warning colour (got ${r.shown})`);
+  check(r.shown === 'Front door open,19.4°,48%,Present,4 today' && await q.eval(danger), `show 5: first, beside the room's values and its events, in the warning colour (got ${r.shown})`);
   check(await q.eval(`(() => { const s = document.querySelector('.view.active .sensors').getBoundingClientRect(), m = document.querySelector('.view.active .modes').getBoundingClientRect();
     return s.right <= m.left && [...document.querySelectorAll('.view.active .sensor')].every((e) => e.getBoundingClientRect().right <= s.right + 0.5); })()`), 'show 5: the row clear of the modes, all of it in view');
   await q.shot('show5-alert.png');

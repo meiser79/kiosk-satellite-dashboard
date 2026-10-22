@@ -46,6 +46,11 @@ What the page does, screen by screen. [Configuration](configuration.md) says how
   controls, closes it.
 - **Media card.** Artwork, title, transport, volume and source chips for a media player,
   shown only while `showWhen` matches (the projector is on). Compact on small screens.
+- **Events.** What a room's Home Assistant calendars hold today, this week, this month or
+  next: how many, after the sensors, and a list that a swipe scrolls through, a line just
+  above the main light on the Spot, a wide tile first among the lights on the Show, the
+  one on now marked. A tap shows them all with their hours and where, and a button to
+  Kiosk Satellite's calendar. An event added to a calendar shows at once.
 - **Menu.** On the Echo Show, a rail of icons on the right edge, always there. On the
   Spot, a ring of large buttons in the middle of the screen, opened by a tap or a swipe
   on the tab at the bottom; picking one, or a tap anywhere but on one, closes it. The

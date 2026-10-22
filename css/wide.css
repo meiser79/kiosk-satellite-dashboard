@@ -30,3 +30,11 @@
 .density-compact .clock { font-size: 2.2rem; }
 .density-compact .modes .chip { height: 2.9rem; }
 .density-compact.shape-wide .view { padding: 0.9rem 1.2rem 1.1rem; row-gap: 0.9rem; }
+/* the room's events: a wide tile across the top of the grid, as tall as its
+   lines (the grid's first row fits it), the mark of where it is in its corner */
+.shape-wide .view.with-events .lights { grid-template-rows: max-content; }
+.shape-wide .events { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 0.9rem; padding: 0.75rem 0.95rem; font-size: 0.95rem; }
+.shape-wide .events .tile-icon { background: rgba(var(--accent-rgb), 0.22); color: var(--accent); }
+.shape-wide .events .tile-text { display: none; }   /* the period's name, for a theme's title bar */
+.shape-wide .events-rows { flex: 1; min-width: 0; padding-right: 3.6rem; }
+.shape-wide .events-at { top: 0.75rem; right: 0.95rem; }

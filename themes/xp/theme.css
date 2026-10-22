@@ -101,6 +101,9 @@ html[data-theme="xp"].shape-wide .tile-text { position: absolute; left: 0.6rem; 
 html[data-theme="xp"].shape-wide .tile-name { color: #ffffff; font-family: var(--font-title); font-weight: 700; text-shadow: 0.06rem 0.06rem 0 #0f1089; }
 html[data-theme="xp"].shape-wide .tile-extra { color: #d8e6ff; }
 html[data-theme="xp"].shape-wide .tile-slider, html[data-theme="xp"].shape-wide .tile > .tile-state { margin-top: auto; }
+/* the room's events: their period in the title bar, the mark of where they are at its end */
+html[data-theme="xp"].shape-wide .events .tile-text { display: flex; }
+html[data-theme="xp"].shape-wide .events-at { top: 0; height: 2.1rem; display: flex; align-items: center; color: #d8e6ff; }
 /* its button in the title bar, as a window's */
 html[data-theme="xp"] .tile-more {
   top: 0.32rem; right: 0.35rem; width: 1.45rem; height: 1.45rem; border-radius: 0.2rem; border: 1px solid #ffffff; font-size: 1rem;

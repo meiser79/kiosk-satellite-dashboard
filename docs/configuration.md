@@ -11,7 +11,7 @@ menu:        { items: [{ name, icon, shape?: 'round' | 'wide', link | script | i
 devices:     { '<Kiosk Satellite device name>': '<room key>' | { room: '<room key>', theme?: '<theme>' } }
 defaultRoom: '<room key>'
 alerts:      [{ entity, icon, on?, unit?, digits?, showWhen? }]
-rooms:       { <key>: { title, icon, sensors, modes, main, lights, media, player, background?, fade? } }
+rooms:       { <key>: { title, icon, sensors, modes, main, lights, media, player, events?, background?, fade? } }
 ```
 
 The arrangement is not configurable: it follows the screen. A square screen (the round
@@ -74,6 +74,7 @@ The order of `rooms` is the order in the room menu. Each room has:
 | `lights` | Light tiles: tap toggles, long-press (or the dots) opens the detail panel. A room with one light needs no tiles: `main` alone is enough |
 | `media` | A media player card, shown while `showWhen` matches (or always) |
 | `player` | The Music Assistant player (or group of players) the menu's favourites play on, for the kiosks that belong to this room |
+| `events` | What the room's Home Assistant calendars hold: how many among the sensors, and a list (see [Events](#events)) |
 | `background`, `fade` | The room's own picture behind it, and how far it fades, over the theme's (see [Theme](#theme)) |
 
 The entries:
@@ -86,6 +87,7 @@ modes:   { entity, name, icon }
 main, lights: { entity, name, icon, controls?: ['select.x', 'number.y'] }
 media:   { entity, name, icon, showWhen?: { entity, state } }
 player:  'media_player.x'
+events:  { calendars: ['calendar.x' | { entity, color }], period?, max?, chip?, lines?, link? }
 ```
 
 - **Scripted modes.** A mode with `turnOn` and `turnOff` runs those scripts instead of
@@ -132,6 +134,49 @@ alerts: [
   { entity: 'sensor.freezer_temperature', icon: 'snowflake', unit: '°', showWhen: { above: -12 } },
 ],
 ```
+
+### Events
+
+`events` shows what the room's Home Assistant calendars hold, such as the day's
+appointments on a bedside kiosk:
+
+```js
+events: {
+  calendars: ['calendar.family', { entity: 'calendar.work', color: '#5aa9e6' }],
+  period: 'day',                  // 'day', 'week', 'month' or 'all'
+  max: 10,                        // how many the list shows, at most
+  chip: true,                     // how many, among the sensors
+  lines: { round: 1, wide: 3 },   // the list's lines on the Spot and on the Show; 0: no list
+  link: 'ks://calendar/day',      // Open calendar, in the panel
+},
+```
+
+Only `calendars` is needed; the rest is shown with its default.
+
+- **The period.** `'day'` is the rest of today: the events on now and those before
+  midnight. `'week'` and `'month'` are today and the 6 or 29 days after it, `'all'` the
+  next `max` events, up to a year ahead.
+- **How many.** A chip after the room's sensors: *4 today* on the Show (*this week*, *this
+  month*, *upcoming*), the number alone on the Spot. It hides while there are none, and
+  while an alert has the Spot's row. `chip: false` leaves it out.
+- **The list.** On the Spot a line just above the main light, on the Show a wide tile
+  first among the lights. It shows `lines` events (one at most on the Spot, six on the
+  Show; one number sets both), and a swipe up or down moves through the others, `max` in
+  all; a mark in its corner says which are in view (*2/4*). Each event has its time
+  (*Now* while it is on, *All day*, its day of the week this week, its date further on)
+  and its title, and when the room has more than one calendar, a dot in its calendar's
+  colour: `color`, any CSS colour, or one the page picks. On the Show 5, a room with four
+  light tiles has its grid scroll for the last ones.
+- **The panel.** A tap on the chip or on the list shows every event of the period, under
+  the day it is on when the period is longer than a day, with its hours and where. With a
+  `link`, an *Open calendar* button under them follows it: `ks://calendar` opens Kiosk
+  Satellite's calendar, `ks://calendar/day` (`week`, `month`, `schedule`) on that view.
+  It takes any link a menu item takes, such as Home Assistant's own `/calendar`. A menu
+  item with the same link reaches the calendar from every room.
+- **Kept up to date.** The page asks Home Assistant (its `calendar.get_events` action) once
+  connected, whenever one of the calendars changes (an event starts or ends, or another
+  one comes next), every ten minutes and after midnight. While Home Assistant does not
+  answer, the events it gave last stay.
 
 ## Menu
 
