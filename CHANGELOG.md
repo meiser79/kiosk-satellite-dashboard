@@ -7,6 +7,8 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
 
 ## Unreleased
 
+## 1.2.0 - 2026-10-23
+
 ### Added
 
 - **Events**: a room's `events` shows what its Home Assistant calendars hold, for the rest
