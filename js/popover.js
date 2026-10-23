@@ -1,4 +1,5 @@
-/* Kiosk dashboard: the popover, a light's controls, opened by a long press.
+/* Kiosk dashboard: the popover, a light's controls, opened by a long press
+ * (or the room's events, js/events.js, opened by a tap on them).
  * Wide screens: a card with the light's icon, name and state, a close
  * button and Off / On buttons. The Spot has no card: the controls stand on
  * the menus' dark backdrop in a column that keeps inside the circle, the
@@ -50,6 +51,36 @@
     popCard.appendChild(actions);
     popParts.actions = actions;
 
+    showPopover(pointerId);
+  }
+  // The panel for something other than a light, the room's events
+  // (js/events.js): an icon and a name at the top, and under them what
+  // update(body, line) puts there, on opening and on every redraw. Its
+  // buttons at the bottom (a name and what it runs) show on the Spot too.
+  function openPanel({ icon: ic, name, actions, update }) {
+    popCfg = { panel: true };
+    popParts = { update };
+    $('pop-icon').innerHTML = icon(ic);
+    $('pop-name').textContent = name;
+    $('pop-state').textContent = '';
+    popBody.innerHTML = '';
+    setClass(popCard, 'off', false);
+    setVar(popCard, '--tile-rgb', 'var(--accent-rgb)');
+    const old = popCard.querySelector('.pop-actions');
+    if (old) old.remove();
+    if (actions.length) {
+      const row = el('div', 'pop-actions panel-actions');
+      for (const a of actions) {
+        const b = el('button', '', esc(a.name));
+        pressFx(b);
+        b.addEventListener('click', a.run);
+        row.appendChild(b);
+      }
+      popCard.appendChild(row);
+    }
+    showPopover();
+  }
+  function showPopover(pointerId) {
     clearTimeout(popTimer);
     pop.hidden = false;
     requestAnimationFrame(() => pop.classList.add('show'));
@@ -58,6 +89,7 @@
   }
   function updatePopover() {
     if (!popCfg) return;
+    if (popCfg.panel) { popParts.update(popBody, $('pop-state')); return; }
     const st = states[popCfg.entity];
     const on = isOn(st);
     setText($('pop-state'), isLight(popCfg.entity) ? lightLabel(st, popCfg) : stateText(st, popCfg));
@@ -259,5 +291,5 @@
   popTab.addEventListener('click', closePopover);
   document.addEventListener('contextmenu', (e) => e.preventDefault());
 
-  Object.assign(K, { openPopover, updatePopover, closePopover });
+  Object.assign(K, { openPopover, openPanel, updatePopover, closePopover });
 })();

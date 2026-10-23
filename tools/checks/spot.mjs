@@ -1,5 +1,5 @@
 // Checks on the Echo Spot (480×480, round), in the bedroom and in the living room.
-import { sleep, check, openPage, mockStates, mockReaches, mockSet, callLog, lastCall, setLibrary, ROOT_ITEMS, RADIOS, PLAYLISTS, RING_FITS, SWITCH_GAP, text, has, activeRoom, lightsOn, menuOpen, onScreen, insideRim, POP_PARTS, tapTab, load } from './harness.mjs';
+import { sleep, check, openPage, mockStates, mockReaches, mockSet, noEvents, callLog, lastCall, setLibrary, ROOT_ITEMS, RADIOS, PLAYLISTS, RING_FITS, SWITCH_GAP, text, has, activeRoom, lightsOn, menuOpen, onScreen, insideRim, POP_PARTS, tapTab, load } from './harness.mjs';
 
 // 1. Bedroom Spot, round 480×480.
 export async function bedroomSpot() {
@@ -40,17 +40,21 @@ export async function bedroomSpot() {
   // The rim: its stroke reaches the edge of the round screen.
   const rim = await p.eval(`(() => { const t = document.querySelector('.view.active .dial.rim .dial-track'); const box = t.getBBox(); const w = parseFloat(getComputedStyle(t).strokeWidth); return { r: box.width / 2, w }; })()`);
   check(rim.w >= 3.4 && Math.abs(rim.r + rim.w / 2 - 50) < 0.05, `spot: a thick rim along the edge of the screen (stroke ${rim.w}, outer edge at ${(rim.r + rim.w / 2).toFixed(2)} of 50)`);
-  // Sensors without a value are left out; the row goes with the last one.
+  // Sensors without a value are left out; the row goes with the last one, the events' count included.
+  const SENSORS = `document.querySelectorAll('.view.active .sensor:not(.events-chip):not([hidden])').length`, CHIP = `!document.querySelector('.view.active .events-chip').hidden`;
   await mockSet('sensor.bedroom_temperature', 'unavailable');
-  check(await p.waitFor(`document.querySelectorAll('.view.active .sensor:not([hidden])').length === 2 && !document.querySelector('.view.active .sensors').hidden`), 'an unavailable sensor is not shown');
+  check(await p.waitFor(`${SENSORS} === 2 && !document.querySelector('.view.active .sensors').hidden`), 'an unavailable sensor is not shown');
   await mockSet('sensor.bedroom_humidity', 'unknown');
   await mockSet('binary_sensor.bedroom_presence', 'unavailable');
-  check(await p.waitFor(`document.querySelector('.view.active .sensors').hidden`), 'with no sensor left, the row goes');
+  check(await p.waitFor(`${SENSORS} === 0 && ${CHIP} && !document.querySelector('.view.active .sensors').hidden`), 'with no sensor left, the events\' count stays in the row');
+  await noEvents(true);
+  check(await p.waitFor(`document.querySelector('.view.active .sensors').hidden`), 'with no events either, the row goes');
   check(await p.waitFor(`(() => { const m = document.querySelector('.view.active .modes').getBoundingClientRect(), t = document.querySelector('.view.active .title-btn').getBoundingClientRect(); return m.top - t.bottom < 20; })()`), 'and the header closes up');
+  await noEvents(false);
   await mockSet('sensor.bedroom_temperature', '19.4');
   await mockSet('sensor.bedroom_humidity', '48');
   await mockSet('binary_sensor.bedroom_presence', 'on');
-  check(await p.waitFor(`document.querySelectorAll('.view.active .sensor:not([hidden])').length === 3`), 'the sensors come back with their values');
+  check(await p.waitFor(`${SENSORS} === 3 && ${CHIP}`), 'the sensors and the events\' count come back');
 
   // Tap a tile: Ceiling goes off. The run's first call, on a fresh Chrome: it can be slow to reach the mock.
   await p.tapSel('.view.active .tile:nth-child(1)');
@@ -202,7 +206,6 @@ export async function bedroomSpot() {
   check((await text(p, '.view.active .bar.group .name')) === 'Ceiling' && await p.eval(`document.querySelector('.view.active').classList.contains('solo')`), 'office: the ceiling light is the only control');
   check(!(await has(p, '.view.active .tile')) && !(await has(p, '.view.active .solo-card')), 'spot office: nothing but the main light and the rim');
   const ot = await p.rect('.view.active .title-btn');
-  check(Math.abs(ot.t - sTitle.t) < 2, `spot office: the header sits at the top, like in the other rooms (${ot.t.toFixed(0)}px, bedroom ${sTitle.t.toFixed(0)}px)`);
   await p.shot('spot-office.png');
   const ob = (await mockStates())['light.office_lights'].a.brightness;
   await p.dragTo('.view.active .main', 0.15, 0.5, 0.75);
@@ -218,6 +221,15 @@ export async function bedroomSpot() {
   await p.tapSel('.view.active .title-btn');
   await p.tap(30, 240); await sleep(400);
   check(await p.eval(`document.getElementById('room-menu').hidden`) && (await activeRoom(p)) === 'office', 'so does a tap beside the rows');
+  // The office's header sits where the living room's does, a room with more lights (neither has events); the
+  // bedroom's higher up, to make room for its events.
+  await p.tapSel('.view.active .title-btn');
+  await sleep(400);
+  await p.tapSel('#room-menu .room-card:nth-child(2) .room-go');
+  await p.waitFor(`document.querySelector('.view.active').dataset.room === 'living'`);
+  await sleep(500);
+  const lt = await p.rect('.view.active .title-btn');
+  check(Math.abs(ot.t - lt.t) < 2 && sTitle.t < lt.t - 10, `spot office: the header sits at the top, like in the living room (${ot.t.toFixed(0)}px, living room ${lt.t.toFixed(0)}px, bedroom ${sTitle.t.toFixed(0)}px)`);
   await p.close();
 }
 

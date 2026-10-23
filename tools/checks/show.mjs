@@ -28,12 +28,13 @@ export async function bedroomShow5() {
   check(await p.eval(`!document.querySelector('.view.active .modes').classList.contains('icons') && [...document.querySelectorAll('.view.active .modes .chip')].every((c) => c.querySelector('.name').scrollWidth <= c.querySelector('.name').clientWidth)`), 'header: every mode shows its full name');
   check(sens.t >= ttl.b - 2 && Math.abs(sens.l - (await box('.title')).l) < 2 && sens.b <= top.b + 1, 'header: the sensors are under the title');
   check((await text(p, '.view.active .clock')).match(/^\d\d:\d\d$/) !== null && clock.b <= railBox.t && clock.h > ttl.h * 0.8, 'header: a large 24 hour clock at the right end, above the rail');
-  check((await box('.tile:nth-child(2)')).r <= railBox.l - 10, 'the tiles keep clear of the rail');
+  check((await box('.tile:nth-child(3)')).r <= railBox.l - 10 && (await box('.events')).r <= railBox.l - 10, 'the tiles and the events keep clear of the rail');
   check(top.h > 50, `header: the top bar is tall (${top.h.toFixed(0)}px)`);
   check(!(await has(p, '.nav-btn')) && !(await has(p, '.chip.preset')), 'no navigation buttons and no presets');
-  // Under the header, the main slider card and the tiles share the rest of the screen.
-  let bar = await box('.main .bar.group'), tile1 = await box('.tile:first-child'), tileN = await box('.tile:last-child');
-  check(bar.t >= top.b && Math.abs(bar.t - tile1.t) < 3 && bar.b > 440 && tileN.b > 440 && tileN.b <= 480 && bar.b <= 480, `the main card and the tiles fill the height (card ${bar.h.toFixed(0)}px, tile ${tile1.h.toFixed(0)}px)`);
+  // Under the header, the main slider card and the lights share the rest of the screen: first among the lights, the
+  // room's events (the light tiles 2 to 5 in the grid), which scrolls for the last ones.
+  let bar = await box('.main .bar.group'), evs = await box('.lights > .events'), tile1 = await box('.lights > .tile:nth-child(2)'), grid = await box('.lights');
+  check(bar.t >= top.b && Math.abs(bar.t - evs.t) < 3 && tile1.t > evs.b && bar.b > 440 && grid.b > 440 && grid.b <= 480 && bar.b <= 480, `the main card and the lights fill the height, the events first (card ${bar.h.toFixed(0)}px, events ${evs.h.toFixed(0)}px, tile ${tile1.h.toFixed(0)}px)`);
   check(await p.eval(`getComputedStyle(document.querySelector('.view.active .main .bar.group')).backgroundColor === 'rgba(0, 0, 0, 0)' && !document.querySelector('.view.active .main .bar.group .power')`), 'the main control is the dial alone, no card behind it');
   await p.dragTo('.view.active .main .bar.group', 0.45, 0.3);
   st = await mockStates();
@@ -47,18 +48,18 @@ export async function bedroomShow5() {
   await p.tapSel('.view.active .main .bar.group .dial-centre');
   check(await p.waitFor(`document.querySelector('.view.active .main .bar.group').classList.contains('on')`), 'and on again');
   // Tiles: the pill at the bottom is a slider for that light.
-  await p.dragTo('.view.active .tile:nth-child(1) .tile-slider', 0.6);
+  await p.dragTo('.view.active .tile:nth-child(2) .tile-slider', 0.6);
   st = await mockStates();
   check(Math.abs(Math.round(st['light.bedroom_ceiling'].a.brightness / 2.55) - 60) <= 3, 'dragging a tile\'s pill dims that light alone');
-  check((await text(p, '.view.active .tile:nth-child(1) .tile-state')).replace('%', '') === String(Math.round(st['light.bedroom_ceiling'].a.brightness / 2.55)), 'the pill shows the level');
+  check((await text(p, '.view.active .tile:nth-child(2) .tile-state')).replace('%', '') === String(Math.round(st['light.bedroom_ceiling'].a.brightness / 2.55)), 'the pill shows the level');
   // A call Home Assistant refuses: a toast says so, and the pill goes back to the level the light has.
-  const level = await text(p, '.view.active .tile:nth-child(1) .tile-state');
+  const level = await text(p, '.view.active .tile:nth-child(2) .tile-state');
   await failCalls(true);
-  await p.dragTo('.view.active .tile:nth-child(1) .tile-slider', 0.9);
+  await p.dragTo('.view.active .tile:nth-child(2) .tile-slider', 0.9);
   await failCalls(false);
-  check(await p.waitFor(`document.getElementById('toast').textContent === 'Home Assistant did not answer'`) && await p.waitFor(`document.querySelector('.view.active .tile:nth-child(1) .tile-state').textContent === ${JSON.stringify(level)}`, 1500),
-    `a refused call: a toast says so and the pill goes back to ${level} (shows ${await text(p, '.view.active .tile:nth-child(1) .tile-state')})`);
-  check((await text(p, '.view.active .tile:nth-child(2) .tile-extra')).includes('Fireplace'), 'a running effect shows after the light\'s name');
+  check(await p.waitFor(`document.getElementById('toast').textContent === 'Home Assistant did not answer'`) && await p.waitFor(`document.querySelector('.view.active .tile:nth-child(2) .tile-state').textContent === ${JSON.stringify(level)}`, 1500),
+    `a refused call: a toast says so and the pill goes back to ${level} (shows ${await text(p, '.view.active .tile:nth-child(2) .tile-state')})`);
+  check((await text(p, '.view.active .tile:nth-child(3) .tile-extra')).includes('Fireplace'), 'a running effect shows after the light\'s name');
 
   // Room menu: a grid of room cards, then All lights off, each saying how many lights are on, clear of the rail.
   await p.tapSel('.view.active .title-btn');

@@ -1,13 +1,14 @@
 /* Kiosk dashboard: the room views. One per room: a header (the title, which
  * opens the room menu, the sensors, the modes and on the wide screens a
- * clock), the main slot, the light tiles and the media card. On the Spot
- * the dial is the rim of the screen and the lights are a strip. */
+ * clock), the main slot, the light tiles, the media card and the room's
+ * events. On the Spot the dial is the rim of the screen and the lights are
+ * a strip. */
 (() => {
   'use strict';
   const K = window.Kiosk;
   const { CFG, root, states, el, esc, icon, clamp, isLight, isOn, setText, setClass, warn } = K;
   const { watch, shownPct, setBrightness, followLight, showWallpaper, pressFx, attachSwipe, closeOverlay } = K;
-  const { makeSensor, sensorShown, sensorIds, makeChip, RIM_R, makeDial, makeBar, makeTile, makeMedia } = K;
+  const { makeSensor, sensorShown, sensorIds, makeChip, RIM_R, makeDial, makeBar, makeTile, makeMedia, eventsOf, makeEventsChip, makeEventsList } = K;
 
   const views = {};
   const fits = [];   // each header's fitting of its modes
@@ -38,11 +39,16 @@
     const values = alerts.concat(room.sensors || []);
     const sensors = el('div', 'sensors');
     sensors.append(...values.map(makeSensor));
+    // after the room's values, how many events it has (js/events.js)
+    const events = eventsOf(room);
+    const chip = events && events.chip ? sensors.appendChild(makeEventsChip(events)) : null;
     sensors.hidden = true;
-    watch(values.flatMap(sensorIds), () => {   // the row goes with its last value
-      sensors.hidden = !values.some(sensorShown);
+    const fillRow = () => {   // the row goes with its last value
+      sensors.hidden = !values.some(sensorShown) && !(chip && !chip.hidden);
       setClass(sensors, 'alerting', alerts.some(sensorShown));
-    });
+    };
+    watch(values.flatMap(sensorIds), fillRow);
+    if (chip) chip.onvisibility = fillRow;
     top.appendChild(rise(sensors));
     const modes = el('div', 'modes');
     for (const c of room.modes || []) modes.appendChild(makeChip(c));
@@ -59,6 +65,11 @@
     fits.push(fit);
     if (shape !== 'round') top.appendChild(rise(el('time', 'clock')));
     view.appendChild(top);
+    // the list of the room's events: on the Spot a line above the main
+    // light, on the wide screens a tile first among the lights (below)
+    const list = events && events.lines ? rise(makeEventsList(events)) : null;
+    if (list && shape === 'round') view.appendChild(list);
+    setClass(view, 'with-events', !!list);
 
     // controls column: the main slot and the media card. The slot shows one
     // light at a time: the room's main light (the group), and on the Spot,
@@ -175,13 +186,14 @@
       lights.addEventListener('scroll', () => { if (!t) t = requestAnimationFrame(() => { t = null; updateDots(); }); }, { passive: true });
       new ResizeObserver(updateDots).observe(lights);
     } else {
+      if (list) lights.appendChild(list);
       for (const t of tiles) lights.appendChild(t);
       lights.dataset.count = String(tiles.length);
     }
     view.appendChild(lights);
     // The stylesheet gives a room without modes, or with nothing but its main slider, more room.
     setClass(view, 'no-modes', modes.hidden);
-    setClass(view, 'solo', !tiles.length && !media);
+    setClass(view, 'solo', !tiles.length && !media && !(list && shape !== 'round'));
 
     // the Spot's dial is the rim of the screen and follows the main slot
     if (shape === 'round' && bars.length) {

@@ -7,6 +7,16 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
 
 ## Unreleased
 
+### Added
+
+- **Events**: a room's `events` shows what its Home Assistant calendars hold, for the rest
+  of today, the next 7 or 30 days, or the next ones: how many among the sensors, and a
+  list that a swipe scrolls through, a line above the main light on the Spot, a tile
+  first among the lights on the Show. A tap shows them all, with a button to Kiosk
+  Satellite's calendar. To have it, add `events: { calendars: ['calendar.x'] }` to a room
+  in your `config.js` ([Events](docs/configuration.md#events),
+  [#1](https://github.com/sylvertom/kiosk-satellite-dashboard/issues/1)).
+
 ## 1.1.0 - 2026-10-21
 
 ### Added

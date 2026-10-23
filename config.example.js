@@ -118,6 +118,20 @@ window.KIOSK_CONFIG = {
   // media            a player card, shown while showWhen holds (or always)
   // player           the Music Assistant player (or group of players) the menu's
   //                  favourites play on, for the kiosks that belong to this room
+  // events           what the room's Home Assistant calendars hold: how many
+  //                  events, a chip among the sensors ("3 today"; chip: false
+  //                  leaves it out), and a list a swipe scrolls through, on the
+  //                  Spot a line above the main light, on the Show a tile first
+  //                  among the lights. A tap on either shows them all, with a
+  //                  button to Kiosk Satellite's calendar when `link` is set.
+  //                  calendars  calendar entities, or { entity, color } for the
+  //                             colour of their dots (with more than one)
+  //                  period     'day' (the rest of today), 'week' or 'month'
+  //                             (the next 7 or 30 days), 'all' (the next events)
+  //                  max        how many the list shows at most (10)
+  //                  lines      the lines of the list on each shape: { round: 1,
+  //                             wide: 3 } unless said (the Spot has room for one,
+  //                             the Show for six); a number for both, 0 for none
   // background, fade the room's own picture behind it, and how far it fades
   //                  (over the theme's)
   rooms: {
@@ -142,6 +156,11 @@ window.KIOSK_CONFIG = {
         { entity: 'light.bedroom_nightstand_2', name: 'Bedside right', icon: 'lamp-outline' }, // <-- entity
       ],
       player: 'media_player.bedroom_speakers', // <-- entity (Music Assistant group)
+      events: {
+        calendars: ['calendar.family', { entity: 'calendar.work', color: '#5aa9e6' }], // <-- entities
+        period: 'day',
+        link: 'ks://calendar/day',
+      },
       background: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1280&q=75&auto=format&fit=crop', // <-- your picture
     },
 

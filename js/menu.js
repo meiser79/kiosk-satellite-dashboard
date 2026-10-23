@@ -278,8 +278,9 @@
   const menuFavoriteKinds = () => [...new Set(menuRoot.flatMap((it) => (isFolder(it) ? it.favorites : [])))];
 
   /* -------------------------------------------------------------- links */
-  // Where a menu item may lead: another room, a Kiosk Satellite or Android
-  // app link, a page on Home Assistant, or a web address. Nothing else.
+  // Where a menu item (or the events' Open calendar) may lead: another room,
+  // a Kiosk Satellite or Android app link, a page on Home Assistant, or a web
+  // address. Nothing else.
   function follow(link) {
     link = String(link || '');
     if (link.startsWith('view:')) { showView(link.slice(5)); return; }
@@ -295,5 +296,5 @@
     warn(`config.js: the link "${link}" is not supported`);
   }
 
-  Object.assign(K, { buildMenu, followPlayer, redrawFavorites, menuFavoriteKinds });
+  Object.assign(K, { buildMenu, followPlayer, redrawFavorites, menuFavoriteKinds, follow });
 })();

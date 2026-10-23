@@ -93,6 +93,17 @@ html[data-theme="aqua"].shape-wide .tile-more {
 html[data-theme="aqua"].shape-wide .tile-more::before { content: ""; position: absolute; inset: -0.7rem; }   /* a finger-sized hit area */
 html[data-theme="aqua"].shape-wide .tile-more.pressed { background: radial-gradient(circle at 50% 30%, #a6e08c, #2f8a1a); border-color: #1d5a10; }
 html[data-theme="aqua"].shape-wide .tile-name { color: #222222; text-shadow: 0 0.06rem 0 rgba(255, 255, 255, 0.8); }
+/* the room's events: a window with no details, so its green button is for the look too; their period its title, in
+   the middle of the bar, the mark of where they are at its end */
+html[data-theme="aqua"].shape-wide .events::before {
+  background:
+    radial-gradient(circle at 1rem 0.95rem, #ffc9c0 0, #f2564a 0.3rem, #c42a1f 0.46rem, #9c2219 0.5rem, rgba(156, 34, 25, 0) 0.54rem),
+    radial-gradient(circle at 2.3rem 0.95rem, #fff1c0 0, #f6be3a 0.3rem, #c48a0e 0.46rem, #a5770f 0.5rem, rgba(165, 119, 15, 0) 0.54rem),
+    radial-gradient(circle at 3.6rem 0.95rem, #d7f7c0 0, #5ec43f 0.3rem, #2f8a1a 0.46rem, #2c7a19 0.5rem, rgba(44, 122, 25, 0) 0.54rem);
+}
+html[data-theme="aqua"].shape-wide .events .tile-text { display: flex; position: absolute; left: 0; right: 0; top: 0; height: 1.9rem; margin: 0; justify-content: center; align-items: center; }
+html[data-theme="aqua"].shape-wide .events .tile-name { font-size: 0.85rem; }
+html[data-theme="aqua"].shape-wide .events-at { top: 0; height: 1.9rem; display: flex; align-items: center; }
 /* its level: a striped bar of gel in its colour */
 html[data-theme="aqua"] .tile-slider { background: linear-gradient(180deg, #d9d9d9, #f4f4f4); border: 1px solid #9c9c9c; box-shadow: inset 0 0.08rem 0.15rem rgba(0, 0, 0, 0.2); }
 html[data-theme="aqua"] .tile-slider .fill {

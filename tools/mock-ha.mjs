@@ -2,8 +2,8 @@
 // A stand-in for Home Assistant to try the page without an instance:
 // serves this folder, answers the WebSocket API subset the page uses
 // (auth, subscribe_entities, call_service, config/entity_registry/get) and
-// fakes the login endpoints and Music Assistant's library (its favourites,
-// with covers). It signs in as Home Assistant does: a login's token runs out,
+// fakes the login endpoints, Music Assistant's library (its favourites,
+// with covers) and two calendars' events. It signs in as Home Assistant does: a login's token runs out,
 // and a refused token ends the connection. The entities match the ones in
 // config.example.js, which it serves as config.js (or the file given with
 // --config).
@@ -101,6 +101,64 @@ set('media_player.apple_tv', 'off', {
 set('script.find_alex_phone', 'off');
 set('script.find_sam_phone', 'off');
 for (const id of MA_PLAYERS) set(id, 'idle');
+// the bedroom's calendars (their events below)
+set('calendar.family', 'off', { friendly_name: 'Family', message: 'Lunch with Sam', all_day: false });
+set('calendar.work', 'off', { friendly_name: 'Work', message: 'Quarterly review', all_day: false });
+}
+// The calendars' events, placed on the day the page asks from (its today)
+// and the days after: on a page whose clock says 10:00, the family's gym
+// session is over and work's stand-up is on. More can be added for the
+// checks (POST /__calendar).
+const pad = (n) => String(n).padStart(2, '0');
+function isoLocal(d) {
+  const off = -d.getTimezoneOffset(), a = Math.abs(off);
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00${off < 0 ? '-' : '+'}${pad(Math.floor(a / 60))}:${pad(a % 60)}`;
+}
+let extraEvents = [], noEvents = false;   // { entity, summary, day, h, m, minutes }; whether the calendars are empty
+function calendarEvents(day0) {
+  if (noEvents) return {};
+  const at = (day, h, m = 0) => { const t = new Date(day0); t.setDate(t.getDate() + day); t.setHours(h, m, 0, 0); return isoLocal(t); };
+  const date = (day) => { const t = new Date(day0); t.setDate(t.getDate() + day); return `${t.getFullYear()}-${pad(t.getMonth() + 1)}-${pad(t.getDate())}`; };
+  const timed = (summary, day, h, m, minutes, location) => {
+    const end = new Date(day0); end.setDate(end.getDate() + day); end.setHours(h, m + minutes, 0, 0);
+    return { summary, start: at(day, h, m), end: isoLocal(end), ...(location ? { location } : {}) };
+  };
+  const cals = {
+    'calendar.family': [
+      { summary: 'Bins out', start: date(0), end: date(1) },
+      timed('Gym', 0, 7, 0, 60, 'Leisure centre'),
+      timed('Lunch with Sam', 0, 12, 30, 60, 'Café Lumière'),
+      timed('Swimming lesson', 0, 18, 0, 60),
+      timed('Dentist', 1, 8, 30, 30),
+      timed("Dinner at Alex's", 3, 19, 30, 150),
+      { summary: "Sam's birthday", start: date(12), end: date(13) },
+      { summary: 'Holiday', start: date(40), end: date(47) },
+    ],
+    'calendar.work': [
+      timed('Stand-up', 0, 9, 30, 45),
+      timed('Quarterly review', 2, 14, 0, 120, 'Room 4'),
+    ],
+  };
+  for (const e of extraEvents) (cals[e.entity] = cals[e.entity] || []).push(timed(e.summary, e.day, e.h, e.m, e.minutes));
+  return cals;
+}
+// calendar.get_events, as Home Assistant answers it: only with
+// return_response, the events of each calendar that overlap the window.
+function getEvents(c, m) {
+  const d = m.service_data || {};
+  const fail = (message) => c.send({ id: m.id, type: 'result', success: false, error: { code: 'service_validation_error', message } });
+  if (!m.return_response) { fail('The action requires responses and must be called with return_response=True'); return; }
+  const from = Date.parse(d.start_date_time), to = Date.parse(d.end_date_time);
+  if (isNaN(from) || isNaN(to)) { fail('Expected a start and an end'); return; }
+  const day0 = new Date(from); day0.setHours(0, 0, 0, 0);
+  const cals = calendarEvents(day0.getTime());
+  const when = (v) => (/^\d{4}-\d\d-\d\d$/.test(v) ? new Date(v + 'T00:00:00').getTime() : Date.parse(v));
+  const response = {};
+  for (const id of [].concat((m.target && m.target.entity_id) || [])) {
+    if (!states[id]) { fail(`Entity ${id} not found`); return; }
+    response[id] = { events: (cals[id] || []).filter((e) => when(e.end) > from && when(e.start) < to) };
+  }
+  c.send({ id: m.id, type: 'result', success: true, result: { context: { id: 'mock' }, response } });
 }
 // Music Assistant: the players it brings to Home Assistant, and its library.
 // Every radio but one and every playlist is a favourite. KEXP has no cover,
@@ -319,6 +377,7 @@ function onMessage(c, m) {
       calls.push({ domain: m.domain, service: m.service, data: m.service_data || {}, target: m.target || {}, response: !!m.return_response });
       if (failing) { c.send({ id: m.id, type: 'result', success: false, error: { code: 'home_assistant_error', message: 'Refused by the checks' } }); break; }
       if (m.domain === 'music_assistant' && m.service === 'get_library') { getLibrary(c, m); break; }
+      if (m.domain === 'calendar' && m.service === 'get_events') { getEvents(c, m); break; }
       apply(m.domain, m.service, m.service_data, m.target);
       c.send({ id: m.id, type: 'result', success: true, result: { context: { id: 'mock' } } });
       break;
@@ -384,10 +443,21 @@ const server = http.createServer((req, res) => {
   if (url.pathname === '/__fail' && req.method === 'POST') { hook(({ on }) => { failing = !!on; }); return; }   // {on}
   if (url.pathname === '/__slow' && req.method === 'POST') { hook(({ file, ms }) => { if (ms) slow.set(file, ms); else slow.delete(file); }); return; }   // {file: '/themes/…', ms}; 0: at once
   if (url.pathname === '/__tokens' && req.method === 'POST') { hook(({ life }) => { tokenLife = life; }); return; }   // {life}: seconds a login's next tokens last
+  // {entity, summary, day, h, m, minutes}: one more event, `day` days after the page's today; {none}: no events at all,
+  // or back. The calendars' states change, as Home Assistant's do when their next event does.
+  if (url.pathname === '/__calendar' && req.method === 'POST') {
+    hook((e) => {
+      if (e.none != null) noEvents = !!e.none; else extraEvents.push(e);
+      const ids = e.entity ? [e.entity] : ['calendar.family', 'calendar.work'];
+      for (const id of ids) { states[id].a = { ...states[id].a, message: e.summary || (noEvents ? '' : 'Lunch with Sam') }; states[id].lu = now(); }
+      broadcast(ids);
+    });
+    return;
+  }
   if (url.pathname === '/__drop') { for (const c of clients) c.close(); res.writeHead(200); res.end('ok'); return; }   // every connection ends, as when Home Assistant restarts
   if (url.pathname === '/__auths') { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(auths)); return; }
   if (url.pathname === '/__reset') {
-    seedStates(); library = LIBRARY(); calls.length = 0; failing = false; slow.clear(); tokenLife = 1800; auths.length = 0;
+    seedStates(); library = LIBRARY(); extraEvents = []; noEvents = false; calls.length = 0; failing = false; slow.clear(); tokenLife = 1800; auths.length = 0;
     broadcast(Object.keys(states)); res.writeHead(200); res.end('ok'); return;
   }
   if (url.pathname === '/mock/art.svg') { res.writeHead(200, { 'Content-Type': 'image/svg+xml' }); res.end(ART); return; }
