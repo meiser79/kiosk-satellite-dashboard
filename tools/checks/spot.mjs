@@ -239,12 +239,12 @@ export async function livingSpot() {
   await load(p, 'device=Echo+Spot+Living+Room');
   const h = await p.rect('#menu-handle');
   check(await has(p, '#menu-handle svg') && Math.abs(h.x - 240) < 1 && h.t + h.h > 460, 'living spot: the menu tab at the bottom, an arrow on it');
-  check(await p.eval(`(() => { const v = document.querySelector('.view.active'); return v.querySelectorAll('.lights > .tile').length === 5 && v.querySelector('.lights > .media').hidden && v.querySelectorAll(':scope > .dots span').length === 3; })()`), 'five lights in one strip (three places to rest); the media card hidden while the projector is off');
+  check(await p.eval(`(() => { const v = document.querySelector('.view.active'); return v.querySelectorAll('.lights > .tile').length === 8 && v.querySelector('.lights > .media').hidden && v.querySelectorAll(':scope > .dots span').length === 6; })()`), 'five lights, two covers and the heating in one strip (six places to rest); the media card hidden while the projector is off');
   await p.shot('spot-living.png');
   await p.tapSel('.view.active .chip:nth-child(1)');
   let st = await mockStates();
   check(st['input_boolean.projector'].s === 'on', 'projector chip runs the turn-on script');
-  check(await p.waitFor(`!document.querySelector('.view.active .lights > .media').hidden && document.querySelectorAll('.view.active > .dots span').length === 5`), 'the media card joins the end of the strip when the projector is on');
+  check(await p.waitFor(`!document.querySelector('.view.active .lights > .media').hidden && document.querySelectorAll('.view.active > .dots span').length === 8`), 'the media card joins the end of the strip when the projector is on');
   await p.eval(`document.querySelector('.view.active .lights').scrollTo({ left: 1e4, behavior: 'instant' }), true`);
   await sleep(500);
   check((await text(p, '.view.active .media-title')) === 'Severance', 'the media card shows what is playing');

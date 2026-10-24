@@ -28,6 +28,9 @@ shower toilet eyedropper-variant palette-outline snowflake
 book-open-page-variant-outline monitor gamepad-variant-outline image-filter-hdr
 water-outline cogs rocket-launch-outline pill weather-sunset information-outline
 door-open molecule-co2 calendar-blank-outline satellite-variant album
+stop arrow-up arrow-down window-shutter window-shutter-open blinds blinds-open
+curtains curtains-closed roller-shade roller-shade-closed garage garage-open
+window-closed window-open door-closed gate gate-open awning-outline thermostat
 """.split()
 OFFERED = """
 bed-king-outline bed-queen-outline bed-double-outline bed-single-outline bed-empty

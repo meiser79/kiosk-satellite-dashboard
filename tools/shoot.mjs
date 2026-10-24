@@ -21,6 +21,7 @@ import { alertsSpot, alertsShow } from './checks/alerts.mjs';
 import { eventsSpot, eventsShow } from './checks/events.mjs';
 import { musicShow8 } from './checks/music.mjs';
 import { germanSpot, germanShow, whichLanguage } from './checks/language.mjs';
+import { coversShow, coversMore } from './checks/covers.mjs';
 
 await reset();
 await bedroomSpot();
@@ -63,4 +64,8 @@ await germanSpot();
 await reset();
 await germanShow();
 await whichLanguage();
+await reset();
+await coversShow();
+await reset();
+await coversMore();
 await finish();

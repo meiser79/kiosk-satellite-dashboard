@@ -45,6 +45,8 @@
 .pop-actions { display: flex; gap: 0.6rem; margin-top: 0.9rem; flex: none; }
 .pop-actions button { flex: 1; height: 2.5rem; border-radius: var(--r-pill); background: var(--surface-2); color: var(--text); font-weight: 600; font-size: 0.85rem; transition: background 0.2s, color 0.2s; }
 .pop-actions button.on { background: var(--accent); color: var(--on-accent); }
+.pop-actions button.icon-only { font-size: 1.3rem; display: flex; align-items: center; justify-content: center; }   /* a cover's Open, Stop, Close */
+.pop-actions button.pressed { transform: scale(0.96); }
 /* the room's events (js/events.js): under the day they are on, a row each,
    its hours, then its title and where; a button to the kiosk's calendar */
 .events-day { margin: 0.8rem 0 0.2rem; }
