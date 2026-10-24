@@ -1,6 +1,7 @@
 /* Kiosk dashboard: the controls of a room view. Sensors and mode chips for
  * the header, the brightness dial, the main control (the room's light group)
- * and the light tiles. */
+ * and the tiles: their frame, and the light tiles (js/covers.js and
+ * js/climate.js make the others). */
 (() => {
   'use strict';
   const K = window.Kiosk;
@@ -141,28 +142,37 @@
   }
 
   /* -------------------------------------------------------------- tiles */
-  // A light tile: a tap toggles, the pill at the bottom is a slider for that
-  // light, a long-press (or the dots) opens the panel. On the Spot the tile is
-  // a round button with the name under it. Other entities get a state line.
-  function makeTile(cfg) {
+  // A tile's frame, whatever it controls (a light, a cover, a thermostat):
+  // its icon, the dots that open its panel, its name with a word after it,
+  // and at the bottom a pill, a slider when the tile `slide`s (onPreview and
+  // onCommit of a fraction) or else a line of its state. A tap runs `tap`, a
+  // long-press (or the dots) `open`. On the Spot the tile is a round button
+  // with the name under it.
+  function tileFrame(cfg, { icon: ic, tap, open, slide }) {
     const node = el('div', 'tile');
-    const light = isLight(cfg.entity);
-    node.innerHTML = `<span class="tile-icon">${icon(cfg.icon || 'lightbulb-outline')}</span>`
+    node.innerHTML = `<span class="tile-icon">${icon(ic)}</span>`
       + `<button class="tile-more" aria-label="${esc(t('details'))}">${icon('dots-horizontal')}</button>`
       + `<span class="tile-text"><span class="tile-name">${esc(cfg.name || cfg.entity)}</span><span class="tile-extra"></span></span>`
-      + (light ? `<span class="tile-slider"><span class="fill"></span><span class="tile-state"></span></span>` : '<span class="tile-state"></span>');
-    const stateEl = node.querySelector('.tile-state'), extraEl = node.querySelector('.tile-extra'), more = node.querySelector('.tile-more');
-    const pct = (f) => clamp(Math.round(f * 100), 1, 100);
-    const paint = (p) => { setVar(node, '--p', (p / 100).toFixed(4)); if (light) setText(stateEl, `${p}%`); };
-    attachPress(node, { onTap: () => toggle(cfg.entity), onHold: (pid) => K.openPopover(cfg, pid), ignore: '.tile-more, .tile-slider' });
-    if (light) {
-      attachTrack(node.querySelector('.tile-slider'), {
-        onPreview: (f) => paint(pct(f)), onCommit: (f) => setBrightness(cfg.entity, pct(f)),
-        onTap: () => toggle(cfg.entity), onHold: (pid) => K.openPopover(cfg, pid),
-      });
-    }
+      + (slide ? `<span class="tile-slider"><span class="fill"></span><span class="tile-state"></span></span>` : '<span class="tile-state"></span>');
+    const more = node.querySelector('.tile-more');
+    attachPress(node, { onTap: tap, onHold: open, ignore: '.tile-more, .tile-slider' });
+    if (slide) attachTrack(node.querySelector('.tile-slider'), { ...slide, onTap: tap, onHold: open });
     pressFx(more);
-    more.addEventListener('click', () => K.openPopover(cfg));
+    more.addEventListener('click', () => open());
+    return { node, iconEl: node.querySelector('.tile-icon'), stateEl: node.querySelector('.tile-state'), extraEl: node.querySelector('.tile-extra') };
+  }
+
+  // A light tile: a tap toggles, the pill is a slider for its brightness.
+  // Another entity among the lights (a switch, a fan) toggles too and says
+  // its state.
+  function makeTile(cfg) {
+    const light = isLight(cfg.entity);
+    const pct = (f) => clamp(Math.round(f * 100), 1, 100);
+    const { node, stateEl, extraEl } = tileFrame(cfg, {
+      icon: cfg.icon || 'lightbulb-outline', tap: () => toggle(cfg.entity), open: (pid) => K.openPopover(cfg, pid),
+      slide: light && { onPreview: (f) => paint(pct(f)), onCommit: (f) => setBrightness(cfg.entity, pct(f)) },
+    });
+    const paint = (p) => { setVar(node, '--p', (p / 100).toFixed(4)); if (light) setText(stateEl, `${p}%`); };
     watch([cfg.entity], () => {
       const st = states[cfg.entity];
       const on = isOn(st);
@@ -178,5 +188,5 @@
     return node;
   }
 
-  Object.assign(K, { makeSensor, sensorShown, sensorIds, makeChip, RIM_R, makeDial, makeBar, makeTile });
+  Object.assign(K, { makeSensor, sensorShown, sensorIds, makeChip, RIM_R, makeDial, makeBar, tileFrame, makeTile });
 })();

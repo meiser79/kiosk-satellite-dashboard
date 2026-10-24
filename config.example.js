@@ -128,6 +128,12 @@ window.KIOSK_CONFIG = {
   //                  controls: extra entities shown in the panel (select, number, switch),
   //                  e.g. the palette / preset / speed / intensity entities WLED creates.
   //                  A room with one light needs no tiles: `main` alone is enough.
+  // covers           tiles after the lights for shutters, blinds, awnings, curtains, a
+  //                  garage door: tap opens, closes or stops; the pill sets the position.
+  //                  The icon follows the kind and whether it is open (or set icon,
+  //                  and iconOpen for the open one).
+  // climate          tiles after the covers for thermostats: tap turns on or off; the
+  //                  pill sets the target temperature; the panel has modes and presets.
   // media            a player card, shown while showWhen holds (or always)
   // player           the Music Assistant player (or group of players) the menu's
   //                  favourites play on, for the kiosks that belong to this room
@@ -201,6 +207,13 @@ window.KIOSK_CONFIG = {
           controls: ['select.tv_strip_color_palette', 'select.tv_strip_preset', 'number.tv_strip_speed', 'number.tv_strip_intensity'] }, // <-- entities
         { entity: 'light.shelf_strip', name: 'Shelf strip', icon: 'string-lights', // <-- entity (WLED)
           controls: ['select.shelf_strip_color_palette', 'select.shelf_strip_preset', 'number.shelf_strip_speed', 'number.shelf_strip_intensity'] }, // <-- entities
+      ],
+      covers: [
+        { entity: 'cover.living_room_shutter', name: 'Shutter' }, // <-- entity
+        { entity: 'cover.terrace_awning', name: 'Awning' }, // <-- entity
+      ],
+      climate: [
+        { entity: 'climate.living_room', name: 'Heating' }, // <-- entity
       ],
       media: {
         entity: 'media_player.apple_tv', // <-- entity

@@ -81,6 +81,16 @@ light('light.kitchen', false, null);
 wled('light.tv_strip', 'TV strip', true, [64, 120, 255]);
 wled('light.shelf_strip', 'Shelf strip', false, [255, 140, 40]);
 light('light.downstairs', true, 150, { entity_id: ['light.living_room', 'light.dining_room', 'light.kitchen', 'light.tv_strip', 'light.shelf_strip'] });
+// the living room's shutter, awning and heating (open, close, stop and a position: 15)
+set('cover.living_room_shutter', 'open', { friendly_name: 'Living room shutter', device_class: 'shutter', current_position: 70, supported_features: 15 });
+set('cover.terrace_awning', 'closed', { friendly_name: 'Terrace awning', device_class: 'awning', current_position: 0, supported_features: 15 });
+set('climate.living_room', 'heat', {
+  friendly_name: 'Living room heating', hvac_modes: ['off', 'heat', 'auto'], hvac_action: 'heating', preset_modes: ['comfort', 'eco', 'away', 'boost'], preset_mode: 'comfort',
+  current_temperature: 20.5, temperature: 21.5, min_temp: 7, max_temp: 30, target_temp_step: 0.5, supported_features: 1 | 16 | 128 | 256,
+});
+// for the checks, not in the example: blinds whose slats turn (and a position: 143), a garage door that only opens and closes (11)
+set('cover.bedroom_blinds', 'closed', { friendly_name: 'Bedroom blinds', device_class: 'blind', current_position: 0, current_tilt_position: 50, supported_features: 143 });
+set('cover.garage_door', 'closed', { friendly_name: 'Garage door', device_class: 'garage', supported_features: 11 });
 // the house
 set('binary_sensor.front_door', 'off', { device_class: 'door' });
 // office
@@ -240,6 +250,8 @@ function apply(domain, service, data = {}, target = {}) {
     if (d === 'select' || d === 'input_select') { if (service === 'select_option') { st.s = data.option; touch(id); } continue; }
     if (d === 'number' || d === 'input_number') { if (service === 'set_value') { st.s = String(data.value); touch(id); } continue; }
     if (d === 'media_player') { media(st, service, data); touch(id); continue; }
+    if (d === 'cover') { coverService(st, domain, service, data); touch(id); continue; }
+    if (d === 'climate') { climateService(st, domain, service, data); touch(id); continue; }
     let on = st.s === 'on';
     if (service === 'toggle') on = !on;
     else if (service === 'turn_on') on = true;
@@ -260,6 +272,30 @@ function apply(domain, service, data = {}, target = {}) {
     }
   }
   broadcast([...changed]);
+}
+// A cover takes its own services only, as in Home Assistant (homeassistant.turn_on
+// passes it by), and gets where it is sent at once.
+function coverService(st, domain, service, data) {
+  const a = st.a, positioned = a.current_position != null;
+  if (domain !== 'cover' && service !== 'toggle') return;
+  if (service === 'toggle') service = st.s === 'closed' ? 'open_cover' : 'close_cover';
+  if (service === 'open_cover') { if (positioned) a.current_position = 100; st.s = 'open'; }
+  if (service === 'close_cover') { if (positioned) a.current_position = 0; st.s = 'closed'; }
+  if (service === 'set_cover_position') { a.current_position = data.position; st.s = data.position > 0 ? 'open' : 'closed'; }
+  if (service === 'set_cover_tilt_position') a.current_tilt_position = data.tilt_position;
+  if (service === 'stop_cover' && /ing$/.test(st.s)) st.s = positioned && !a.current_position ? 'closed' : 'open';
+}
+// A thermostat: its target, its mode and preset; it heats while the room is colder than the target.
+function climateService(st, domain, service, data) {
+  const a = st.a;
+  if (domain !== 'climate' && service !== 'toggle') return;
+  if (service === 'set_temperature') a.temperature = data.temperature;
+  if (service === 'set_hvac_mode') st.s = data.hvac_mode;
+  if (service === 'set_preset_mode') a.preset_mode = data.preset_mode;
+  if (service === 'turn_on') st.s = 'heat';
+  if (service === 'turn_off') st.s = 'off';
+  if (service === 'toggle') st.s = st.s === 'off' ? 'heat' : 'off';
+  a.hvac_action = st.s === 'off' ? 'off' : a.current_temperature < a.temperature ? 'heating' : 'idle';
 }
 function mediaOn() {
   const st = states['media_player.apple_tv'];

@@ -1,5 +1,6 @@
 /* Kiosk dashboard: the popover, a light's controls, opened by a long press
- * (or the room's events, js/events.js, opened by a tap on them).
+ * (or the room's events, js/events.js, opened by a tap on them, and a
+ * cover's or a thermostat's, js/covers.js and js/climate.js).
  * Wide screens: a card with the light's icon, name and state, a close
  * button and Off / On buttons. The Spot has no card: the controls stand on
  * the menus' dark backdrop in a column that keeps inside the circle, the
@@ -54,10 +55,12 @@
     showPopover(pointerId);
   }
   // The panel for something other than a light, the room's events
-  // (js/events.js): an icon and a name at the top, and under them what
-  // update(body, line) puts there, on opening and on every redraw. Its
-  // buttons at the bottom (a name and what it runs) show on the Spot too.
-  function openPanel({ icon: ic, name, actions, update }) {
+  // (js/events.js), a cover or a thermostat: an icon and a name at the top,
+  // and under them what update(body, line, card) puts there, on opening and
+  // on every redraw (card: to mark it off). Its buttons at the bottom (a
+  // name, or an icon named for a screen reader, and what it runs) show on
+  // the Spot too. A long-press that opens it passes its finger (pointerId).
+  function openPanel({ icon: ic, name, actions, update }, pointerId) {
     popCfg = { panel: true };
     popParts = { update };
     $('pop-icon').innerHTML = icon(ic);
@@ -71,14 +74,15 @@
     if (actions.length) {
       const row = el('div', 'pop-actions panel-actions');
       for (const a of actions) {
-        const b = el('button', '', esc(a.name));
+        const b = el('button', a.icon ? 'icon-only' : '', a.icon ? icon(a.icon) : esc(a.name));
+        if (a.icon) b.setAttribute('aria-label', a.name);
         pressFx(b);
         b.addEventListener('click', a.run);
         row.appendChild(b);
       }
       popCard.appendChild(row);
     }
-    showPopover();
+    showPopover(pointerId);
   }
   function showPopover(pointerId) {
     clearTimeout(popTimer);
@@ -89,7 +93,7 @@
   }
   function updatePopover() {
     if (!popCfg) return;
-    if (popCfg.panel) { popParts.update(popBody, $('pop-state')); return; }
+    if (popCfg.panel) { popParts.update(popBody, $('pop-state'), popCard); return; }
     const st = states[popCfg.entity];
     const on = isOn(st);
     setText($('pop-state'), isLight(popCfg.entity) ? lightLabel(st, popCfg) : stateText(st, popCfg));

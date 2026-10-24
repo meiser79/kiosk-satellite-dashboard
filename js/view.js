@@ -8,7 +8,7 @@
   const K = window.Kiosk;
   const { CFG, t, root, states, el, esc, icon, clamp, isLight, isOn, setText, setClass, warn } = K;
   const { watch, shownPct, setBrightness, followLight, showWallpaper, pressFx, attachSwipe, closeOverlay } = K;
-  const { makeSensor, sensorShown, sensorIds, makeChip, RIM_R, makeDial, makeBar, makeTile, makeMedia, eventsOf, makeEventsChip, makeEventsList } = K;
+  const { makeSensor, sensorShown, sensorIds, makeChip, RIM_R, makeDial, makeBar, makeTile, makeCoverTile, makeClimateTile, makeMedia, eventsOf, makeEventsChip, makeEventsList } = K;
 
   const views = {};
   const fits = [];   // each header's fitting of its modes
@@ -157,10 +157,11 @@
     }
     view.appendChild(controls);
 
-    // lights: a grid of tiles, or on the round screen a strip of round
-    // buttons (the media card at its end) that scrolls one button at a time
+    // the tiles, the lights' then the covers' and the thermostats': a grid,
+    // or on the round screen a strip of round buttons (the media card at
+    // its end) that scrolls one button at a time
     const lights = el('div', 'lights');
-    const tiles = (room.lights || []).map((t) => rise(makeTile(t)));
+    const tiles = [...(room.lights || []).map(makeTile), ...(room.covers || []).map(makeCoverTile), ...(room.climate || []).map(makeClimateTile)].map(rise);
     if (shape === 'round') {
       lights.append(...tiles);
       if (media) lights.appendChild(media);

@@ -12,7 +12,7 @@ menu:        { items: [{ name, icon, shape?: 'round' | 'wide', link | script | i
 devices:     { '<Kiosk Satellite device name>': '<room key>' | { room: '<room key>', theme?: '<theme>' } }
 defaultRoom: '<room key>'
 alerts:      [{ entity, icon, on?, unit?, digits?, showWhen? }]
-rooms:       { <key>: { title, icon, sensors, modes, main, lights, media, player, events?, background?, fade? } }
+rooms:       { <key>: { title, icon, sensors, modes, main, lights, covers?, climate?, media, player, events?, background?, fade? } }
 ```
 
 The arrangement is not configurable: it follows the screen. A square screen (the round
@@ -96,6 +96,8 @@ The order of `rooms` is the order in the room menu. Each room has:
 | `modes` | Toggle chips in the header: anything with on/off. The header has room for three or four |
 | `main` | The room's main light, usually a light group: the dial on the Show, the power button and rim on the Spot. The room menu counts the lights of its group that are on, and its power button turns those off (see *Groups* below) |
 | `lights` | Light tiles: tap toggles, long-press (or the dots) opens the detail panel. A room with one light needs no tiles: `main` alone is enough |
+| `covers` | Tiles after the lights for shutters, blinds, awnings, curtains, a garage door: a tap opens a closed cover, closes an open one and stops one on its way; the pill sets the position (when the cover takes one) and says it; long-press (or the dots) opens a panel with Open, Stop and Close, the position, and the tilt of slats that turn. The icon follows the cover's kind (its device class) unless you give `icon` (closed) and `iconOpen` |
+| `climate` | Tiles after the covers for thermostats: a tap turns it on or off; the pill sets the target temperature, the room's own after its name; orange while it heats, blue while it cools. Long-press (or the dots) opens a panel with the target and chips for its modes and presets |
 | `media` | A media player card, shown while `showWhen` matches (or always) |
 | `player` | The Music Assistant player (or group of players) the menu's favourites play on, for the kiosks that belong to this room |
 | `events` | What the room's Home Assistant calendars hold: how many among the sensors, and a list (see [Events](#events)) |
@@ -109,6 +111,8 @@ sensors: { entity, icon, unit, digits, showWhen? }
 modes:   { entity, name, icon }
          { entity, name, icon, turnOn: 'script.a', turnOff: 'script.b' }
 main, lights: { entity, name, icon, controls?: ['select.x', 'number.y'] }
+covers:  { entity, name, icon?, iconOpen? }
+climate: { entity, name, icon? }
 media:   { entity, name, icon, showWhen?: { entity, state } }
 player:  'media_player.x'
 events:  { calendars: ['calendar.x' | { entity, color }], period?, max?, chip?, lines?, link? }
