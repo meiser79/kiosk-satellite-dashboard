@@ -7,7 +7,7 @@
 (() => {
   'use strict';
   const K = window.Kiosk;
-  const { HA, $, states, el, esc, icon, isLight, isOn, groupMembers, setText, setClass } = K;
+  const { HA, t, $, states, el, esc, icon, isLight, isOn, groupMembers, setText, setClass } = K;
   const { watch, call, pressFx, armIdle, dim, undim, showView, activeRoom } = K;
 
   /* -------------------------------------------------------- room lights */
@@ -37,7 +37,7 @@
     if (members) return members.filter((id) => isOn(states[id])).length;
     return ownTiles(room).filter((id) => isOn(states[id])).length || (main && isOn(states[main]) ? 1 : 0);
   }
-  const onText = (n) => (n ? `${n} ${n > 1 ? 'lights' : 'light'} on` : 'Lights off');
+  const onText = (n) => (n ? t('lightsOn', { n }) : t('lightsOff'));
   // Calls update when one of a room's lights changes, the members of its group included once known.
   function watchRoom(room, update) {
     let membersWatched = false;
@@ -72,7 +72,7 @@
       const name = room.title || key;
       const node = card(name, name, room.icon || 'home-outline', () => showView(key));
       const off = el('button', 'room-off', icon('power'));
-      off.setAttribute('aria-label', `Turn off the lights in ${name}`);
+      off.setAttribute('aria-label', t('roomOff', { room: name }));
       pressFx(off);
       off.addEventListener('click', () => lightsOff(countedLights(room)));
       node.appendChild(off);
@@ -80,7 +80,7 @@
       watchRoom(room, () => { const n = lightsOn(room); off.hidden = !n; setText(stateEl, onText(n)); });
       return node;
     });
-    const allOff = card('All lights off', 'Turn off every light', 'power', () => lightsOff(everyLight));
+    const allOff = card(t('allOff'), t('allOffLabel'), 'power', () => lightsOff(everyLight));
     allOff.classList.add('all-off');
     const allOffState = allOff.querySelector('.room-state');
     for (const [, room] of entries) watchRoom(room, () => { const n = total(); setClass(allOff, 'idle', !n); setText(allOffState, onText(n)); });

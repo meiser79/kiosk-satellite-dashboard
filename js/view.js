@@ -6,7 +6,7 @@
 (() => {
   'use strict';
   const K = window.Kiosk;
-  const { CFG, root, states, el, esc, icon, clamp, isLight, isOn, setText, setClass, warn } = K;
+  const { CFG, t, root, states, el, esc, icon, clamp, isLight, isOn, setText, setClass, warn } = K;
   const { watch, shownPct, setBrightness, followLight, showWallpaper, pressFx, attachSwipe, closeOverlay } = K;
   const { makeSensor, sensorShown, sensorIds, makeChip, RIM_R, makeDial, makeBar, makeTile, makeMedia, eventsOf, makeEventsChip, makeEventsList } = K;
 
@@ -26,7 +26,7 @@
     const title = el('h1', 'title');
     const name = el(canSwitch ? 'button' : 'span', 'title-btn', `<span>${esc(room.title || key)}</span>` + (canSwitch ? icon('chevron-down') : ''));
     if (canSwitch) {
-      name.setAttribute('aria-label', 'Change room');
+      name.setAttribute('aria-label', t('changeRoom'));
       pressFx(name);
       name.addEventListener('click', () => K.openRoomMenu());
     }
@@ -140,7 +140,7 @@
       for (const dir of [-1, 1]) {
         const arrow = el('button', 'main-arrow', icon(dir < 0 ? 'chevron-left' : 'chevron-right'));
         arrow.dataset.dir = String(dir);
-        arrow.setAttribute('aria-label', dir < 0 ? 'Previous light' : 'Next light');
+        arrow.setAttribute('aria-label', t(dir < 0 ? 'previousLight' : 'nextLight'));
         pressFx(arrow);
         arrow.addEventListener('click', () => step(dir));
         main.appendChild(arrow);

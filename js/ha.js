@@ -17,6 +17,7 @@
  */
 window.HA = (() => {
   'use strict';
+  const t = window.KIOSK_I18N;
 
   const params = new URLSearchParams(location.search);
   const ORIGIN = location.origin;
@@ -81,7 +82,7 @@ window.HA = (() => {
     });
   }
   function needSignIn() {
-    emitStatus({ kind: 'error', text: 'Tap to sign in to Home Assistant', action: signIn, icon: 'home-assistant' });
+    emitStatus({ kind: 'error', text: t('signIn'), action: signIn, icon: 'home-assistant' });
   }
 
   /* ----------------------------------------------------------- websocket */
@@ -112,7 +113,7 @@ window.HA = (() => {
 
   function scheduleReconnect(text) {
     if (retryTimer) return;
-    emitStatus({ kind: '', text: text || 'Reconnecting…', icon: 'wifi-off' });
+    emitStatus({ kind: '', text: text || t('reconnecting'), icon: 'wifi-off' });
     retryTimer = setTimeout(() => { retryTimer = null; connect(); }, backoff);
     backoff = Math.min(backoff * 2, 30000);
   }
@@ -131,7 +132,7 @@ window.HA = (() => {
     subIds.clear();
     const url = ORIGIN.replace(/^http/, 'ws') + '/api/websocket';
     try { ws = new WebSocket(url); } catch (_) { scheduleReconnect(); return; }
-    ws.onopen = () => emitStatus({ kind: '', text: 'Connecting…', icon: 'home-assistant' });
+    ws.onopen = () => emitStatus({ kind: '', text: t('connecting'), icon: 'home-assistant' });
     ws.onclose = () => { ws = null; scheduleReconnect(); };
     ws.onerror = () => { /* onclose follows */ };
     ws.onmessage = (ev) => {
@@ -190,7 +191,7 @@ window.HA = (() => {
     // Satellite holds is wrong or revoked. Keep retrying slowly, say why.
     if (ws) ws.onclose = null;
     backoff = 30000;
-    emitStatus({ kind: 'error', text: 'Home Assistant refused the kiosk token', action: signIn, icon: 'alert-circle-outline' });
+    emitStatus({ kind: 'error', text: t('tokenRefused'), action: signIn, icon: 'alert-circle-outline' });
     retryTimer = setTimeout(() => { retryTimer = null; connect(); }, backoff);
   }
 
@@ -223,7 +224,7 @@ window.HA = (() => {
   /* ---------------------------------------------------------------- api */
   async function start(entityIds) {
     watched = [...new Set(entityIds)].filter(Boolean);
-    emitStatus({ kind: '', text: 'Connecting…', icon: 'home-assistant' });
+    emitStatus({ kind: '', text: t('connecting'), icon: 'home-assistant' });
     try { tokens = await ensureTokens(); } catch (e) { console.warn(e); tokens = loadTokens(); }
     connect();
     addEventListener('online', () => {

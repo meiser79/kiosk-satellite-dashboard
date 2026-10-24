@@ -10,10 +10,10 @@
 (() => {
   'use strict';
   const K = window.Kiosk;
-  const { CFG, HA, el, esc } = K;
+  const { CFG, HA, t, el, esc } = K;
   const { pressFx } = K;
 
-  const FAVORITES = { radio: { name: 'Radios', icon: 'radio' }, playlist: { name: 'Playlists', icon: 'playlist-music' } };
+  const FAVORITES = { radio: { name: t('radios'), icon: 'radio', none: t('noRadios') }, playlist: { name: t('playlists'), icon: 'playlist-music', none: t('noPlaylists') } };
   const favorites = {};   // kind -> { items } as Music Assistant last said, or { failed: true }
   let favKind = null, entryAsked = null;   // the kind picked last; the instance's config entry (a Promise)
   // The player of the room this kiosk belongs to, where the favourites play.
@@ -50,7 +50,7 @@
       }
       bar.appendChild(sw);
     }
-    const note = !got ? 'Loading…' : got.failed ? 'Music Assistant did not answer' : got.items.length ? '' : `No favourite ${FAVORITES[kind].name.toLowerCase()} in Music Assistant`;
+    const note = !got ? t('loading') : got.failed ? t('maNoAnswer') : got.items.length ? '' : FAVORITES[kind].none;
     if (note) bar.appendChild(el('div', 'fav-note', esc(note)));
     return bar.childElementCount ? bar : null;
   }

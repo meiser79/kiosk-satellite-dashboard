@@ -9,7 +9,7 @@
 (() => {
   'use strict';
   const K = window.Kiosk;
-  const { HA, $, states, COLOR_MODES, reducedMotion, el, esc, icon, cap, domain, isLight, isOn, stateText, lightRgb, lightLabel, hsToRgb, setText, setClass, setVar } = K;
+  const { HA, t, $, states, COLOR_MODES, reducedMotion, el, esc, icon, cap, domain, isLight, isOn, stateText, lightRgb, lightLabel, hsToRgb, setText, setClass, setVar } = K;
   const { hold, held, shownPct, call, toggle, turn, lightOn, setBrightness, pressFx, makeSlider, views } = K;
 
   const pop = $('popover'), popCard = pop.querySelector('.popover'), popBody = $('pop-body');
@@ -29,14 +29,14 @@
     popBody.innerHTML = '';
 
     const power = el('button', 'pop-power', icon('power'));
-    power.setAttribute('aria-label', 'On or off');
+    power.setAttribute('aria-label', t('onOff'));
     pressFx(power);
     power.addEventListener('click', () => toggle(cfg.entity));
     const main = el('div', 'pop-main');
     main.appendChild(power);
     popBody.appendChild(main);
     if (isLight(cfg.entity)) {
-      const bright = makeSlider({ big: true, min: 1, label: 'Brightness', labelIcon: 'brightness-6', format: (v) => v + '%', onCommit: (v) => setBrightness(cfg.entity, v) });
+      const bright = makeSlider({ big: true, min: 1, label: t('brightness'), labelIcon: 'brightness-6', format: (v) => v + '%', onCommit: (v) => setBrightness(cfg.entity, v) });
       main.appendChild(bright.el);
       popParts.bright = bright;
       popParts.controls = makeLightControls(cfg);
@@ -45,7 +45,7 @@
 
     const old = popCard.querySelector('.pop-actions');
     if (old) old.remove();
-    const actions = el('div', 'pop-actions', '<button data-s="off">Off</button><button data-s="on">On</button>');
+    const actions = el('div', 'pop-actions', `<button data-s="off">${esc(t('off'))}</button><button data-s="on">${esc(t('on'))}</button>`);
     actions.querySelector('[data-s="off"]').addEventListener('click', () => turn(cfg.entity, false));
     actions.querySelector('[data-s="on"]').addEventListener('click', () => turn(cfg.entity, true));
     popCard.appendChild(actions);
@@ -112,11 +112,11 @@
     const parts = { tabs: {}, panes: {}, controls: [] };
     const modes = a.supported_color_modes || [];
     const tabs = [];
-    if (modes.includes('color_temp')) tabs.push({ key: 'temp', name: 'White', icon: 'white-balance-sunny' });
-    if (modes.some((m) => COLOR_MODES.includes(m))) tabs.push({ key: 'color', name: 'Colour', icon: 'palette' });
-    if (Array.isArray(a.effect_list) && a.effect_list.length) tabs.push({ key: 'fx', name: 'Effects', icon: 'auto-fix' });
-    if (Array.isArray(cfg.controls) && cfg.controls.length) tabs.push({ key: 'more', name: 'More', icon: 'tune-variant' });
-    if (Array.isArray(a.entity_id) && a.entity_id.length) tabs.push({ key: 'members', name: 'Lights', icon: 'lightbulb-group-outline' });
+    if (modes.includes('color_temp')) tabs.push({ key: 'temp', name: t('white'), icon: 'white-balance-sunny' });
+    if (modes.some((m) => COLOR_MODES.includes(m))) tabs.push({ key: 'color', name: t('colour'), icon: 'palette' });
+    if (Array.isArray(a.effect_list) && a.effect_list.length) tabs.push({ key: 'fx', name: t('effects'), icon: 'auto-fix' });
+    if (Array.isArray(cfg.controls) && cfg.controls.length) tabs.push({ key: 'more', name: t('more'), icon: 'tune-variant' });
+    if (Array.isArray(a.entity_id) && a.entity_id.length) tabs.push({ key: 'members', name: t('lights'), icon: 'lightbulb-group-outline' });
 
     const select = (key) => {
       for (const [k, b] of Object.entries(parts.tabs)) setClass(b, 'active', k === key);
@@ -171,15 +171,15 @@
     const entity = cfg.entity;
     if (key === 'temp') {
       const min = a.min_color_temp_kelvin || 2000, max = a.max_color_temp_kelvin || 6500;
-      const s = makeSlider({ min, max, step: 50, gradient: TEMP_GRADIENT, label: 'Temperature', format: (v) => v + 'K', onCommit: (v) => { hold(entity + ':k', v); lightOn(entity, { color_temp_kelvin: v }); } });
+      const s = makeSlider({ min, max, step: 50, gradient: TEMP_GRADIENT, label: t('temperature'), format: (v) => v + 'K', onCommit: (v) => { hold(entity + ':k', v); lightOn(entity, { color_temp_kelvin: v }); } });
       pane.appendChild(s.el);
       parts.temp = s;
     }
     if (key === 'color') {
       let h = 30, sat = 100;
       const send = () => { hold(entity + ':hs', [h, sat]); lightOn(entity, { hs_color: [h, sat] }); };
-      const satEl = makeSlider({ min: 0, max: 100, gradient: 'linear-gradient(90deg, #fff 0%, #f00 100%)', label: 'Saturation', format: (v) => v + '%', onCommit: (v) => { sat = v; send(); } });
-      const hueEl = makeSlider({ min: 0, max: 360, gradient: HUE_GRADIENT, label: 'Hue', format: (v) => v + '°', onPreview: (v) => { h = v; paintSat(); }, onCommit: (v) => { h = v; paintSat(); send(); } });
+      const satEl = makeSlider({ min: 0, max: 100, gradient: 'linear-gradient(90deg, #fff 0%, #f00 100%)', label: t('saturation'), format: (v) => v + '%', onCommit: (v) => { sat = v; send(); } });
+      const hueEl = makeSlider({ min: 0, max: 360, gradient: HUE_GRADIENT, label: t('hue'), format: (v) => v + '°', onPreview: (v) => { h = v; paintSat(); }, onCommit: (v) => { h = v; paintSat(); send(); } });
       const paintSat = () => satEl.el.style.setProperty('--grad', `linear-gradient(90deg, #fff 0%, rgb(${hsToRgb(h, 100).join(',')}) 100%)`);
       paintSat();
       const sw = el('div', 'swatches');

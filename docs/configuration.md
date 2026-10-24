@@ -6,6 +6,7 @@ JavaScript: one object, `window.KIOSK_CONFIG`. The example documents every optio
 its use; this page is the reference.
 
 ```js
+language?:   'en' | 'de'
 theme:       { name: 'dark', accent?: '#f2af48', followLight?: true, background?: '<picture>' | '#colour' | 'accent' | 'complement', fade?: 0.5 }
 menu:        { items: [{ name, icon, shape?: 'round' | 'wide', link | script | items | settings, favorites? }] }
 devices:     { '<Kiosk Satellite device name>': '<room key>' | { room: '<room key>', theme?: '<theme>' } }
@@ -16,6 +17,16 @@ rooms:       { <key>: { title, icon, sensors, modes, main, lights, media, player
 
 The arrangement is not configurable: it follows the screen. A square screen (the round
 Echo Spot) gets the round layout, anything else the wide one.
+
+## Language
+
+The page speaks English or German: `language: 'en'` or `language: 'de'`. Left out, it
+takes the kiosk's own language: German when the kiosk's browser asks for German, English
+otherwise. That covers the page's own words: the status pill, the room menu, Settings,
+the detail panel, the events with their days and months, and the states Home Assistant
+reports (*Playing* becomes *Wiedergabe*). What `config.js` names (rooms, lights, modes,
+sensors' `on` and `off`, menu items) shows as you wrote it there, so write those in the
+same language. `?lang=` in the address tries the other one.
 
 ## Theme
 
@@ -249,8 +260,10 @@ kiosk's look should not change.
 ## Icons
 
 Icon names are [Material Design Icons](https://pictogrammers.com/library/mdi/) names
-without the `mdi:` prefix. The page carries only the icons it uses, in `js/icons.js`. To
-add one, run `python3 tools/fetch_icons.py sofa-outline ceiling-fan` (it extends the
+without the `mdi:` prefix. `js/icons.js` carries the icons the page uses and some 200
+more for your rooms, lights, modes and menu (`bed-king-outline`, `radiator`,
+`window-shutter`, `robot-vacuum`…): the lists at the top of `tools/fetch_icons.py` name
+them all. To add another, run `python3 tools/fetch_icons.py sofa-outline ceiling-fan` (it extends the
 file) and bump `js/icons.js?v=` in `index.html`. An unknown name shows a light bulb.
 
 ## Address parameters
@@ -263,4 +276,5 @@ These override the configuration, mostly to try the page in a desktop browser:
 | `room` | The room to start on |
 | `shape` | `round` or `wide`, whatever the screen |
 | `theme` | A theme's name, over the one picked in Settings, the kiosk's own and `theme.name` |
+| `lang` | `en` or `de`, over `language` and the kiosk's own language |
 | `ks` | Lets `ks://` and `app://` links navigate outside Kiosk Satellite |

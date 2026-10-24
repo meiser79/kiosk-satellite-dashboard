@@ -5,7 +5,7 @@
 (() => {
   'use strict';
   const K = window.Kiosk;
-  const { CFG, HA, $, KS, params, root, icon, esc, lookup, applyTheme } = K;
+  const { CFG, HA, t, $, KS, params, root, icon, esc, lookup, applyTheme } = K;
   const { render, sensorIds, eventsOf, loadEvents, buildView, showView, startClock, views, buildRoomMenu, buildMenu, followPlayer, menuFavoriteKinds, loadFavorites, closeOverlay, closePopover } = K;
 
   /* ------------------------------------------------------------- status */
@@ -53,7 +53,7 @@
 
   async function main() {
     if (!window.KIOSK_CONFIG) {
-      showStatus({ kind: 'error', text: 'No config.js: copy config.example.js to config.js and edit it', icon: 'alert-circle-outline' });
+      showStatus({ kind: 'error', text: t('noConfig'), icon: 'alert-circle-outline' });
       return;
     }
     const name = await deviceName();

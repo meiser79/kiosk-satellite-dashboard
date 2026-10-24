@@ -7,6 +7,17 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
 
 ## Unreleased
 
+### Added
+
+- **German**: the page speaks English or German, the kiosk's own language unless
+  `language: 'en'` or `language: 'de'` in your `config.js` says otherwise: the status,
+  the menus, Settings, the detail panel, the events' days and months and Home Assistant's
+  states. Write the names in `config.js` in the same language
+  ([Language](docs/configuration.md#language)).
+- **More icons**: some 200 more Material Design Icons to use in `config.js` without
+  fetching them, such as `bed-king-outline`, `radiator`, `window-shutter`, `robot-vacuum`
+  and `solar-power` ([Icons](docs/configuration.md#icons)).
+
 ## 1.3.0 - 2026-10-26
 
 ### Added

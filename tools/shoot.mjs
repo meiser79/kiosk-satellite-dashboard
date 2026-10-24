@@ -18,6 +18,7 @@ import { accentFollowsLight, pictures, gradients, themes } from './checks/theme.
 import { settingsSpot, settingsShow } from './checks/settings.mjs';
 import { alertsSpot, alertsShow } from './checks/alerts.mjs';
 import { eventsSpot, eventsShow } from './checks/events.mjs';
+import { germanSpot, germanShow, whichLanguage } from './checks/language.mjs';
 
 await reset();
 await bedroomSpot();
@@ -50,4 +51,9 @@ await reset();
 await eventsSpot();
 await reset();
 await eventsShow();
+await reset();
+await germanSpot();
+await reset();
+await germanShow();
+await whichLanguage();
 await finish();

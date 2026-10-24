@@ -12,21 +12,20 @@
 (() => {
   'use strict';
   const K = window.Kiosk;
-  const { HA, states, el, esc, icon, clamp, setText, setClass, setVar } = K;
+  const { HA, t, states, el, esc, icon, clamp, setText, setClass, setVar } = K;
   const { watch, pressFx } = K;
 
   const PERIODS = {
-    day: { days: 1, chip: 'today', title: 'Today', none: 'No events today' },
-    week: { days: 7, chip: 'this week', title: 'Next 7 days', none: 'No events this week' },
-    month: { days: 30, chip: 'this month', title: 'Next 30 days', none: 'No events this month' },
-    all: { days: 365, chip: 'upcoming', title: 'Upcoming', none: 'No upcoming events' },
+    day: { days: 1, chip: t('chipDay'), title: t('titleDay'), none: t('noneDay') },
+    week: { days: 7, chip: t('chipWeek'), title: t('titleWeek'), none: t('noneWeek') },
+    month: { days: 30, chip: t('chipMonth'), title: t('titleMonth'), none: t('noneMonth') },
+    all: { days: 365, chip: t('chipAll'), title: t('titleAll'), none: t('noneAll') },
   };
   const LINES = { round: [1, 1], wide: [3, 6] };   // lines of the list by shape: unless said, and at most
   const STALE = 10 * 60000;   // asked again after this long
   // The dots of a room's calendars, when it has more than one and they have no colour of their own.
   const DOTS = ['var(--accent)', '#5aa9e6', '#e66a8a', '#7bc67e', '#b48ce6'];
-  const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const DAYS = t.list('weekdays'), MONTHS = t.list('months');   // Sun…Sat, Jan…Dec, in the page's language
 
   /* ------------------------------------------------------------- config */
   // A room's events, filled in: its calendars (an entity each, and a
@@ -62,6 +61,9 @@
   const hm = (t) => { const d = new Date(t); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
   const dayOf = (t) => { const d = new Date(t); return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(); };
   const daysFrom = (a, b) => Math.round((dayOf(b) - dayOf(a)) / 864e5);
+  // A day as the kiosk says it: "26 Oct", "Mon 26 Oct" (in German "26. Okt", "Mo 26. Okt").
+  const date = (d) => t('date', { day: d.getDate(), month: MONTHS[d.getMonth()] });
+  const dayDate = (d) => t('dayDate', { weekday: DAYS[d.getDay()], day: d.getDate(), month: MONTHS[d.getMonth()] });
   // A moment as Home Assistant reads it, in the kiosk's own time zone: 2026-10-22T07:30:00+02:00.
   function isoLocal(d) {
     const off = -d.getTimezoneOffset(), a = Math.abs(off);
@@ -80,15 +82,15 @@
   // is on, its time today, its day of the week this week, its date further on.
   function whenShort(e, now) {
     const n = daysFrom(now, dayUnder(e, now)), d = new Date(dayUnder(e, now));
-    const day = n === 0 ? '' : n < 7 ? DAYS[d.getDay()] : `${d.getDate()} ${MONTHS[d.getMonth()]}`;
-    if (e.allDay) return day || 'All day';
-    if (e.start <= now) return 'Now';
+    const day = n === 0 ? '' : n < 7 ? DAYS[d.getDay()] : date(d);
+    if (e.allDay) return day || t('allDay');
+    if (e.start <= now) return t('now');
     return day ? `${day} ${hm(e.start)}` : hm(e.start);
   }
   // The heading of a day in the panel.
-  function dayName(t, now) {
-    const n = daysFrom(now, t), d = new Date(t);
-    return n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`;
+  function dayName(day, now) {
+    const n = daysFrom(now, day), d = new Date(day);
+    return n === 0 ? t('today') : n === 1 ? t('tomorrow') : dayDate(d);
   }
 
   /* -------------------------------------------------------------- asking */
@@ -169,7 +171,7 @@
   /* --------------------------------------------------------------- shown */
   // The dot of an event's calendar, for a room with more than one.
   const dotOf = (cfg, e) => (cfg.calendars.length > 1 ? `<span class="ev-dot" style="--ev: ${esc((cfg.calendars.find((c) => c.entity === e.cal) || {}).color)}"></span>` : '');
-  const note = (s) => (s.failed ? 'The calendar did not answer' : PERIODS[s.cfg.period].none);
+  const note = (s) => (s.failed ? t('calendarNoAnswer') : PERIODS[s.cfg.period].none);
 
   // The chip among the sensors: how many events, "3 today" (the number alone
   // on the Spot), hidden while there are none. A tap opens them.
@@ -183,7 +185,7 @@
     s.draws.add(() => {
       const list = shown(s), n = list ? list.length : 0;
       setText(label, K.shape === 'round' ? String(n) : `${n} ${word}`);
-      node.setAttribute('aria-label', `${n} ${n === 1 ? 'event' : 'events'} ${word}`);
+      node.setAttribute('aria-label', `${t('events', { n })} ${word}`);
       if (node.hidden !== !n) {
         node.hidden = !n;
         if (node.onvisibility) node.onvisibility(!!n);
@@ -241,15 +243,15 @@
     let html = null;
     K.openPanel({
       icon: 'calendar-blank-outline', name: period.title,
-      actions: cfg.link ? [{ name: 'Open calendar', run: () => { K.closePopover(); K.follow(cfg.link); } }] : [],
+      actions: cfg.link ? [{ name: t('openCalendar'), run: () => { K.closePopover(); K.follow(cfg.link); } }] : [],
       update: (body, stateEl) => {
         const list = shown(s), now = Date.now();
-        setText(stateEl, !list ? (s.failed ? note(s) : 'Loading…') : list.length ? `${list.length} ${list.length === 1 ? 'event' : 'events'}` : period.none);
+        setText(stateEl, !list ? (s.failed ? note(s) : t('loading')) : list.length ? t('events', { n: list.length }) : period.none);
         let h = '', day = null;
         if (list && !list.length) h = `<div class="event-row none">${esc(note(s))}</div>`;
         for (const e of list || []) {
           if (cfg.period !== 'day' && dayUnder(e, now) !== day) { day = dayUnder(e, now); h += `<div class="control-label events-day">${esc(dayName(day, now))}</div>`; }
-          const hours = e.allDay ? 'All day' : `${hm(e.start)}–${hm(e.end)}`;
+          const hours = e.allDay ? t('allDay') : `${hm(e.start)}–${hm(e.end)}`;
           h += `<div class="event-row${e.start <= now && !e.allDay ? ' now' : ''}">${dotOf(cfg, e)}<span class="ev-time">${esc(hours)}</span>`
             + `<span class="ev-text"><span class="ev-title">${esc(e.title)}</span>${e.where ? `<span class="ev-where">${esc(e.where)}</span>` : ''}</span></div>`;
         }

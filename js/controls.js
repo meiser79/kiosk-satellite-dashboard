@@ -4,7 +4,7 @@
 (() => {
   'use strict';
   const K = window.Kiosk;
-  const { states, el, esc, icon, clamp, isLight, isOn, isUnavailable, hasValue, matches, stateText, lightRgb, lightLabel, groupMembers, setText, setClass, setVar, HA } = K;
+  const { t, states, el, esc, icon, clamp, isLight, isOn, isUnavailable, hasValue, matches, stateText, lightRgb, lightLabel, groupMembers, setText, setClass, setVar, HA } = K;
   const { watch, shownPct, call, toggle, setBrightness, pressFx, attachPress, attachTrack } = K;
 
   // A read-only value for the header. It is left out while it has none, or
@@ -107,14 +107,14 @@
       onHold: (pid) => K.openPopover(cfg, pid),
     };
     if (K.shape === 'round') {
-      node.innerHTML = `<button class="power" aria-label="On or off">${icon('power')}</button>` + text;
+      node.innerHTML = `<button class="power" aria-label="${esc(t('onOff'))}">${icon('power')}</button>` + text;
       const power = node.querySelector('.power');
       pressFx(power);
       power.addEventListener('click', () => toggle(cfg.entity));
       attachPress(node, { onTap: () => toggle(cfg.entity), onHold: act.onHold, ignore: '.power' });
     } else {
       dial = makeDial('gauge', act);
-      dial.el.insertAdjacentHTML('beforeend', `<button class="dial-centre" aria-label="On or off"><span class="bar-icon">${icon(cfg.icon || 'lightbulb-group')}</span>${text}</button>`);
+      dial.el.insertAdjacentHTML('beforeend', `<button class="dial-centre" aria-label="${esc(t('onOff'))}"><span class="bar-icon">${icon(cfg.icon || 'lightbulb-group')}</span>${text}</button>`);
       node.appendChild(dial.el);
       pressFx(node.querySelector('.dial-centre'));
       attachTrack(node, { ...act, onTap: (e) => { if (e.target.closest('.dial-centre')) toggle(cfg.entity); }, ignore: '.dial-hit' });
@@ -134,7 +134,7 @@
       const members = groupMembers(st);
       if (members && !membersWatched) { membersWatched = true; watch(members, update); HA.add(members); }
       const n = members ? members.filter((id) => isOn(states[id])).length : null;
-      setText(stateEl, !on ? stateText(st) : n != null ? `${p}% · ${n} on` : lightLabel(st, cfg));
+      setText(stateEl, !on ? stateText(st) : n != null ? t('membersOn', { pct: p, n }) : lightLabel(st, cfg));
     };
     watch([cfg.entity], update);
     return node;
@@ -144,34 +144,34 @@
   // A light tile: a tap toggles, the pill at the bottom is a slider for that
   // light, a long-press (or the dots) opens the panel. On the Spot the tile is
   // a round button with the name under it. Other entities get a state line.
-  function makeTile(t) {
+  function makeTile(cfg) {
     const node = el('div', 'tile');
-    const light = isLight(t.entity);
-    node.innerHTML = `<span class="tile-icon">${icon(t.icon || 'lightbulb-outline')}</span>`
-      + `<button class="tile-more" aria-label="Details">${icon('dots-horizontal')}</button>`
-      + `<span class="tile-text"><span class="tile-name">${esc(t.name || t.entity)}</span><span class="tile-extra"></span></span>`
+    const light = isLight(cfg.entity);
+    node.innerHTML = `<span class="tile-icon">${icon(cfg.icon || 'lightbulb-outline')}</span>`
+      + `<button class="tile-more" aria-label="${esc(t('details'))}">${icon('dots-horizontal')}</button>`
+      + `<span class="tile-text"><span class="tile-name">${esc(cfg.name || cfg.entity)}</span><span class="tile-extra"></span></span>`
       + (light ? `<span class="tile-slider"><span class="fill"></span><span class="tile-state"></span></span>` : '<span class="tile-state"></span>');
     const stateEl = node.querySelector('.tile-state'), extraEl = node.querySelector('.tile-extra'), more = node.querySelector('.tile-more');
     const pct = (f) => clamp(Math.round(f * 100), 1, 100);
     const paint = (p) => { setVar(node, '--p', (p / 100).toFixed(4)); if (light) setText(stateEl, `${p}%`); };
-    attachPress(node, { onTap: () => toggle(t.entity), onHold: (pid) => K.openPopover(t, pid), ignore: '.tile-more, .tile-slider' });
+    attachPress(node, { onTap: () => toggle(cfg.entity), onHold: (pid) => K.openPopover(cfg, pid), ignore: '.tile-more, .tile-slider' });
     if (light) {
       attachTrack(node.querySelector('.tile-slider'), {
-        onPreview: (f) => paint(pct(f)), onCommit: (f) => setBrightness(t.entity, pct(f)),
-        onTap: () => toggle(t.entity), onHold: (pid) => K.openPopover(t, pid),
+        onPreview: (f) => paint(pct(f)), onCommit: (f) => setBrightness(cfg.entity, pct(f)),
+        onTap: () => toggle(cfg.entity), onHold: (pid) => K.openPopover(cfg, pid),
       });
     }
     pressFx(more);
-    more.addEventListener('click', () => K.openPopover(t));
-    watch([t.entity], () => {
-      const st = states[t.entity];
+    more.addEventListener('click', () => K.openPopover(cfg));
+    watch([cfg.entity], () => {
+      const st = states[cfg.entity];
       const on = isOn(st);
       setClass(node, 'on', on);
       setClass(node, 'unavailable', isUnavailable(st));
       const rgb = lightRgb(st);
       setVar(node, '--tile-rgb', rgb ? rgb.join(', ') : 'var(--accent-rgb)');
-      if (light) paint(on ? shownPct(t.entity) : 0);
-      if (!light || !on) setText(stateEl, stateText(st, t));
+      if (light) paint(on ? shownPct(cfg.entity) : 0);
+      if (!light || !on) setText(stateEl, stateText(st, cfg));
       const fx = light && on && st.attributes.effect;
       setText(extraEl, fx && fx !== 'None' && fx !== 'Solid' ? `· ${fx}` : '');
     });

@@ -23,7 +23,8 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
 
 /* ---------------------------------------------------------- chrome */
 const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'kiosk-shoot-'));
-const chrome = spawn(CHROME, ['--headless=new', '--remote-debugging-port=0', '--remote-allow-origins=*', `--user-data-dir=${profile}`,
+// English, whatever the machine's language: a check that wants another asks for it.
+const chrome = spawn(CHROME, ['--headless=new', '--lang=en-US', '--accept-lang=en-US', '--remote-debugging-port=0', '--remote-allow-origins=*', `--user-data-dir=${profile}`,
   '--no-first-run', '--no-default-browser-check', '--hide-scrollbars', '--force-device-scale-factor=1', '--window-size=1400,900', 'about:blank']);
 const wsUrl = await new Promise((resolve, reject) => {
   let err = '';

@@ -4,6 +4,7 @@
 // docs/configuration.md describes every option.
 //
 // Structure
+//   language  the page's own words: English or German
 //   theme     the theme, its accent colour and the background (a picture or a colour)
 //   menu      the launcher for the kiosk's own features
 //   devices   the room (and theme) of each kiosk, keyed by its Kiosk Satellite device name
@@ -17,6 +18,12 @@
 // opens a grid of the rooms. Both room menus say how many lights each room
 // has on, turn them off, and turn off every light at once.
 window.KIOSK_CONFIG = {
+
+  /* --------------------------------------------------------- language */
+  // 'en' or 'de'. Left out, the kiosk's own language: German when its
+  // browser asks for German, English otherwise. The names below (rooms,
+  // lights, menu items) show as written here: write them in that language.
+  // language: 'de',
 
   /* ------------------------------------------------------------ theme */
   theme: {

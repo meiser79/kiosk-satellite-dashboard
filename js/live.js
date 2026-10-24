@@ -5,7 +5,7 @@
 (() => {
   'use strict';
   const K = window.Kiosk;
-  const { HA, states, pctOf, toast } = K;
+  const { HA, t, states, pctOf, toast } = K;
 
   /* -------------------------------------------------------- optimistic */
   // Keep a value the user set on screen until Home Assistant answers with the
@@ -60,7 +60,7 @@
   // A call Home Assistant did not take: say so, and show again what it last
   // said of the entities, in place of the values held for them.
   const call = (domain, service, data, target) => HA.call(domain, service, data, target).catch(() => {
-    toast('Home Assistant did not answer');
+    toast(t('noAnswer'));
     const ids = [].concat(typeof target === 'string' ? target : (target && target.entity_id) || []);
     for (const id of ids) release(id);
     if (ids.length) render(ids);

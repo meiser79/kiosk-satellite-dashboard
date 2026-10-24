@@ -16,7 +16,7 @@
 (() => {
   'use strict';
   const K = window.Kiosk;
-  const { CFG, HA, $, KS, params, el, esc, icon, setClass, toast, warn } = K;
+  const { CFG, HA, t, $, KS, params, el, esc, icon, setClass, toast, warn } = K;
   const { pressFx, armIdle, dim, undim, closeOverlay, dimmed, showView } = K;
   const { homePlayer, favoriteKinds, folderItems, favoritesBar, loadFavorites, settingsItems } = K;
 
@@ -114,7 +114,7 @@
   // What a tap on an item does. A script or a favourite leaves the page as
   // it is, so a toast says what was asked once Home Assistant has taken it.
   function act(it, folder) {
-    const done = () => toast((folder ? folder.name + ' · ' : '') + it.name), failed = () => toast('Home Assistant did not answer');
+    const done = () => toast((folder ? folder.name + ' · ' : '') + it.name), failed = () => toast(t('noAnswer'));
     if (it.script) HA.call('script', 'turn_on', {}, it.script).then(done, failed);
     else if (it.uri) HA.call('music_assistant', 'play_media', { media_id: it.uri, media_type: it.type }, homePlayer()).then(done, failed);
     else follow(it.link);
@@ -145,7 +145,7 @@
   // Settings' list of themes opens in the room menu's place.
   function showRing(folder, grow = true) {
     const items = folder ? contents(folder, RING.most) : menuRoot;
-    const centre = folder ? { icon: 'arrow-left', label: 'Back', back: true, pick: () => showRing(null) } : { icon: 'close', label: 'Close', pick: closeMenu };
+    const centre = folder ? { icon: 'arrow-left', label: t('back'), back: true, pick: () => showRing(null) } : { icon: 'close', label: t('close'), pick: closeMenu };
     const pick = (it) => () => {
       if (isFolder(it)) { showRing(it); loadFavorites(it.favorites); }
       else if (it.opens) openFolder(sub(it, folder));
@@ -248,7 +248,7 @@
     };
     const list = el('div', 'rooms');
     list.style.setProperty('--cols', Math.min(4, items.length + 1));
-    list.append(card({ name: 'Back', icon: 'arrow-left' }, ' back', back), ...items.map((it) => card(it, '', pick(it))));
+    list.append(card({ name: t('back'), icon: 'arrow-left' }, ' back', back), ...items.map((it) => card(it, '', pick(it))));
     const bar = favoritesBar(folder, fillFolder);
     const was = folderEl.querySelector('.rooms'), top = redraw && was ? was.scrollTop : 0;
     folderEl.replaceChildren(...(bar ? [bar] : []), list);
@@ -287,7 +287,7 @@
     if (/^(ks|app):\/\//.test(link)) {
       // Only a kiosk app understands these links; in a desktop browser just say so.
       const inApp = KS || window.flutter_inappwebview || /\bwv\b|Android/.test(navigator.userAgent) || params.has('ks');
-      if (!inApp) { toast('Opens in Kiosk Satellite'); return; }
+      if (!inApp) { toast(t('opensInApp')); return; }
       location.href = link;
       return;
     }
