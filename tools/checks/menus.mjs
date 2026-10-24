@@ -1,4 +1,4 @@
-// Checks of the menu: a room without a Music Assistant player, rings of one to ten buttons.
+// Checks of the menu: a room without a Music Assistant player, rings of one to ten buttons, icons alone.
 import { sleep, check, openPage, ROOT_ITEMS, text, has, insideRim, load } from './harness.mjs';
 
 // 8. A room without a Music Assistant player: its kiosks get no favourites. The Music folder keeps only the Music
@@ -70,4 +70,43 @@ export async function ringSizes() {
   check(all.every((r) => r.inner >= 0.9 * rem) && all.filter((r) => r.k <= 3).every((r) => r.inner <= 1.1 * rem), `a short ring keeps 1rem from the middle button, the others no nearer (wrong: ${bad((r) => r.inner >= 0.9 * rem && (r.k > 3 || r.inner <= 1.1 * rem))})`);
   check(all.every((r) => r.fits), `every name fits in its button, two lines at most (wrong: ${bad((r) => r.fits)})`);
   await p.close();
+}
+
+// 10. menu: { labels: false } on the Spot: the ring's buttons show their icons alone, in the middle, as large as the main light's power button, their names still
+//     read out; in Settings too; the favourites keep their names on their covers. The Show's rail as it was.
+export async function iconsOnly() {
+  const noLabels = `(() => { let v; Object.defineProperty(window, 'KIOSK_CONFIG', { configurable: true, get: () => v, set: (c) => { c.menu.labels = false; v = c; } }); })();`;
+  const ringNow = `[...document.querySelectorAll('#menu .ring-item')].map((e) => ({ name: e.getAttribute('aria-label'), label: e.querySelector('.item-label').offsetWidth > 0,
+    icon: e.querySelector('.icon') ? e.querySelector('.icon').getBoundingClientRect().width / e.getBoundingClientRect().width : 0,
+    mid: e.querySelector('.icon') ? Math.abs((e.querySelector('.icon').getBoundingClientRect().top + e.querySelector('.icon').getBoundingClientRect().bottom) - (e.getBoundingClientRect().top + e.getBoundingClientRect().bottom)) / 2 : 99, cover: e.classList.contains('with-cover') }))`;
+  const p = await openPage(480, 480);
+  // every button and its icon the size of the main light's power button and its icon
+  const asPower = () => p.eval(`(() => { const w = (e) => e.getBoundingClientRect().width, pw = document.querySelector('.view.active .main .bar.current .power');
+    return [...document.querySelectorAll('#menu .ring-item')].every((e) => Math.abs(w(e) - w(pw)) < 1.5 && Math.abs(w(e.querySelector('svg')) - w(pw.querySelector('svg'))) < 1.5); })()`);
+  await p.s('Page.addScriptToEvaluateOnNewDocument', { source: noLabels });
+  await load(p, 'device=Echo+Spot+Bedroom');
+  await p.tapSel('#menu-handle');
+  await p.waitFor(`document.getElementById('menu').classList.contains('open')`);
+  await sleep(400);
+  let ring = await p.eval(ringNow);
+  check(ring.map((r) => r.name).join() === ROOT_ITEMS && ring.every((r) => !r.label && r.mid < 1) && await asPower(), `labels: false: the ring's buttons show their icons alone, in the middle, as large as the main light's power button, named for a screen reader (got ${JSON.stringify(ring.map((r) => [r.name, r.label, r.mid.toFixed(1)]))})`);
+  check(await insideRim(p, '#menu .ring-item'), 'labels: false: the ring inside the rim');
+  await p.shot('spot-menu-icons.png');
+  await p.tapSel('#menu .ring-item[aria-label="Settings"]');
+  await sleep(450);
+  ring = await p.eval(ringNow);
+  check(ring.length === 3 && ring.every((r) => !r.label) && await asPower(), 'labels: false: Settings\' ring, icons alone, as large as the power button');
+  await p.tapSel('#menu .ring-close');
+  await sleep(450);
+  await p.tapSel('#menu .ring-item[aria-label="Music"]');
+  await p.waitFor(`document.querySelectorAll('#menu .ring-item.with-cover').length > 0`);
+  await sleep(400);
+  ring = await p.eval(ringNow);
+  check(ring.length > 0 && ring.every((r) => r.label), `labels: false: the favourites keep their names (got ${JSON.stringify(ring.map((r) => [r.name, r.label]))})`);
+  await p.close();
+  const q = await openPage(960, 480);
+  await q.s('Page.addScriptToEvaluateOnNewDocument', { source: noLabels });
+  await load(q, 'device=Echo+Show+5+Bedroom');
+  check(await q.eval(`document.querySelectorAll('#menu .menu-item').length > 0 && !document.querySelector('#menu .icon-only')`), 'labels: false: the Show\'s rail as it was');
+  await q.close();
 }
