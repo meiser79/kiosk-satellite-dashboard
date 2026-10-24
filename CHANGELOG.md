@@ -26,6 +26,9 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
   after the lights: a tap opens, closes or stops a cover, or turns a thermostat on or off;
   the pill sets the position or the target temperature; the panel has Open, Stop and Close
   and the tilt, or the modes and presets ([Rooms](docs/configuration.md#rooms)).
+- **Icons alone on the Spot's menu**: `menu: { labels: false }` in your `config.js` leaves
+  the names off the ring's buttons, which take the size of the main light's power button;
+  the favourites keep theirs ([Menu](docs/configuration.md#menu)).
 - **Satellite themes**: `satellite` and `satellite-light`, Kiosk Satellite's own look,
   dark and light, so the dashboard matches the app around it: its teal, flat charcoal
   or warm paper, large rounded cards and its typeface, Rubik

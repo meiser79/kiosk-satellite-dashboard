@@ -226,6 +226,9 @@ ring of buttons on the Spot. Each item has a `name`, an `icon` and one of:
 - `shape: 'round'` keeps an item to the Echo Spot, `shape: 'wide'` to the Echo Show.
 - A `ks://now-playing` item shows only while Kiosk Satellite has something to play.
 - The Spot's ring holds ten buttons at most.
+- `labels: false` beside `items` shows the Spot's ring buttons as their icons alone, as
+  large as the main light's power button; a screen reader still says their names, and a
+  favourite keeps its name on its cover (`menu: { labels: false, items: [...] }`).
 
 ### Music Assistant favourites
 

@@ -145,6 +145,10 @@
 .ring-item.pressed, .ring-item.on { background: var(--accent); color: var(--on-accent); border-color: transparent; }
 .ring-item.pressed .icon, .ring-item.on .icon { color: inherit; }
 .ring-item.idle { opacity: 0.55; }   /* a setting that does not apply */
+/* menu: { labels: false }: the icon alone, in the middle; a ring of them is
+   no larger than the main light's power button, its icon as large as that one's */
+.ring-item.icon-only .item-label { display: none; }
+.ring-item.icon-only .icon { font-size: calc(var(--size) * 0.477); }
 .ring-close {
   position: absolute; left: 0; top: 0; width: var(--mid); height: var(--mid); margin: calc(var(--mid) / -2); border-radius: var(--r-round);
   display: flex; align-items: center; justify-content: center; background: var(--surface-solid); border: var(--border-w) solid var(--border); color: var(--muted); font-size: calc(var(--mid) * 0.46);

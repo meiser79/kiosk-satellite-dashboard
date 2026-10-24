@@ -62,7 +62,10 @@ window.KIOSK_CONFIG = {
   // A ks://now-playing item shows only while Kiosk Satellite has something to
   // play, favourites only when the kiosk's room has a player, a folder only
   // with something in it.
+  // labels: false shows the Spot's ring buttons as their icons alone, as large
+  // as the main light's power button (a favourite keeps its name on its cover).
   menu: {
+    // labels: false,
     items: [
       { name: 'Now playing', icon: 'play-circle-outline', link: 'ks://now-playing' },
       { name: 'Screensaver', icon: 'weather-night', link: 'ks://screensaver' },

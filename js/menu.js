@@ -68,12 +68,14 @@
   // the favourites' switch at the top of the screen), 7rem across at most. A
   // short ring keeps close to the middle button, 1rem from it; that one
   // grows a little with the others (--mid). Sizes are in rem. Each button's
-  // angle is its --a. A ring is made for ten buttons at most.
-  const RING = { reach: 10.9, underSwitch: 9.6, max: 7, gap: 0.3, inner: 1, most: 10 };
-  function makeRing(nodes, centre, reach = RING.reach) {
+  // angle is its --a. A ring is made for ten buttons at most. A ring of icons
+  // alone (labels: false) keeps its buttons to the size of the main light's
+  // power button, `max`.
+  const RING = { reach: 10.9, underSwitch: 9.6, max: 7, iconsOnly: 4.4, gap: 0.3, inner: 1, most: 10 };
+  function makeRing(nodes, centre, reach = RING.reach, max = RING.max) {
     const node = el('div', 'ring');
     const n = nodes.length, sin = n > 1 ? Math.sin(Math.PI / n) : 0;
-    const size = sin ? Math.min(RING.max, (2 * reach * sin) / (1 + RING.gap + sin)) : RING.max;
+    const size = sin ? Math.min(max, (2 * reach * sin) / (1 + RING.gap + sin)) : max;
     const middle = Math.max(2.6, size * 0.45);
     const radius = Math.max(middle / 2 + RING.inner + size / 2, sin ? (size * (1 + RING.gap)) / (2 * sin) : 0);
     node.style.setProperty('--size', size + 'rem');
@@ -142,7 +144,10 @@
   // The Spot's ring: the menu's items, or a folder's with Back in the middle
   // (and the favourites' switch above). A ring that takes another's place
   // while the menu is open grows in; one redrawn for a setting just changes.
-  // Settings' list of themes opens in the room menu's place.
+  // Settings' list of themes opens in the room menu's place. With labels:
+  // false in config.js the buttons show their icons alone, in the middle,
+  // as large as the main light's power button (their names still read out);
+  // a favourite keeps its name on its cover.
   function showRing(folder, grow = true) {
     const items = folder ? contents(folder, RING.most) : menuRoot;
     const centre = folder ? { icon: 'arrow-left', label: t('back'), back: true, pick: () => showRing(null) } : { icon: 'close', label: t('close'), pick: closeMenu };
@@ -153,7 +158,10 @@
       else { act(it, folder); closeMenu(); }
     };
     const bar = folder && favoritesBar(folder, () => showRing(folder));
-    const ring = makeRing(items.map((it) => makeItem(it, 'ring-item', pick(it))), centre, bar && bar.querySelector('.fav-switch') ? RING.underSwitch : RING.reach);
+    const iconsOnly = !!CFG.menu && CFG.menu.labels === false;
+    const nodes = items.map((it) => { const node = makeItem(it, 'ring-item', pick(it)); setClass(node, 'icon-only', iconsOnly && !it.uri); return node; });
+    const ring = makeRing(nodes, centre, bar && bar.querySelector('.fav-switch') ? RING.underSwitch : RING.reach,
+      nodes.length && nodes.every((n) => n.classList.contains('icon-only')) ? RING.iconsOnly : RING.max);
     const swap = grow && menuEl.classList.contains('open');
     if (swap) ring.classList.add('swap');
     menuEl.replaceChildren(...(bar ? [bar] : []), ring);
