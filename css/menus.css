@@ -164,6 +164,8 @@
 .fav-switch button { height: 2rem; padding: 0 0.85rem; border-radius: var(--r-pill); color: var(--muted); font-size: 0.85rem; font-weight: 600; transition: background 0.2s, color 0.2s, transform 0.12s var(--ease); }
 .fav-switch button.on { background: var(--accent); color: var(--on-accent); }
 .fav-switch button.pressed { transform: scale(0.95); }
+.fav-switch.icons button { padding: 0 0.75rem; }   /* the Spot's switch of three kinds: their icons */
+.fav-switch.icons .icon { font-size: 1.2rem; }
 .fav-note { max-width: 18rem; font-size: 0.9rem; color: var(--muted); text-align: center; }
 /* round: across the top of the circle, the ring below it (js/menu.js keeps the
    ring short enough); a line alone sits where it would under the switch */

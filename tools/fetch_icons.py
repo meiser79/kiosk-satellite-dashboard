@@ -27,7 +27,7 @@ monitor-shimmer lightning-bolt-outline circle-small desk account-voice cellphone
 shower toilet eyedropper-variant palette-outline snowflake
 book-open-page-variant-outline monitor gamepad-variant-outline image-filter-hdr
 water-outline cogs rocket-launch-outline pill weather-sunset information-outline
-door-open molecule-co2 calendar-blank-outline satellite-variant
+door-open molecule-co2 calendar-blank-outline satellite-variant album
 """.split()
 OFFERED = """
 bed-king-outline bed-queen-outline bed-double-outline bed-single-outline bed-empty

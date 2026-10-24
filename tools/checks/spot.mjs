@@ -320,11 +320,11 @@ export async function livingSpot() {
     'covers in the buttons; KEXP (no cover) and Radio Paradise (a cover that does not load) keep the radio icon');
   const sw = await p.eval(`(() => { const s = document.querySelector('#menu .fav-switch'), r = s.getBoundingClientRect(); return { names: [...s.children].map((b) => b.textContent + (b.classList.contains('on') ? '*' : '')).join(), x: r.left + r.width / 2 }; })()`);
   const gap = await p.eval(SWITCH_GAP);
-  check(sw.names === 'Radios*,Playlists' && Math.abs(sw.x - 240) < 2 && gap >= 4 && await insideRim(p, '#menu .fav-switch'), `spot: a switch at the top of the screen, Radios picked, inside the rim and above the ring (${sw.names}, ${Math.round(gap)}px above it)`);
+  check(sw.names === 'Radios*,Playlists' && Math.abs(sw.x - 240) < 2 && gap >= 4 && await insideRim(p, '#menu .fav-switch'), `spot: a switch at the top of the screen, the Spot's own Music item's two kinds by name, Radios picked, inside the rim and above the ring (${sw.names}, ${Math.round(gap)}px above it)`);
   check(await p.eval(RING_FITS), 'the ring of covers sits inside the rim, its buttons apart, every name in its button');
   await p.shot('spot-menu-music.png');
   await p.tapSel('#menu .fav-switch button:nth-child(2)');
-  check(await p.waitFor(`${ringNames} === ${JSON.stringify(PLAYLISTS)}`) && await menuOpen(p) && (await text(p, '#menu .fav-switch .on')) === 'Playlists', 'Playlists brings the favourite playlists in the radios\' place, the menu still open');
+  check(await p.waitFor(`${ringNames} === ${JSON.stringify(PLAYLISTS)}`) && await menuOpen(p) && (await p.eval(`document.querySelector('#menu .fav-switch .on').getAttribute('aria-label')`)) === 'Playlists', 'Playlists brings the favourite playlists in the radios\' place, the menu still open');
   await p.tapSel('#menu .ring-item:nth-child(2)');
   check(await p.waitFor(`!document.getElementById('menu').classList.contains('open')`), 'picking a playlist closes the menu');
   let last = await lastCall();
@@ -347,7 +347,7 @@ export async function livingSpot() {
   await p.tapSel('#menu-handle');
   await sleep(350);
   await p.tapSel('#menu .ring-item:nth-child(6)');
-  check(await p.waitFor(`(document.querySelector('#menu .fav-switch .on') || {}).textContent === 'Playlists' && (document.querySelector('#menu .fav-note') || {}).textContent === 'No favourite playlists in Music Assistant' && !document.querySelector('#menu .ring-item')`)
+  check(await p.waitFor(`(document.querySelector('#menu .fav-switch .on') || { getAttribute: () => '' }).getAttribute('aria-label') === 'Playlists' && (document.querySelector('#menu .fav-note') || {}).textContent === 'No favourite playlists in Music Assistant' && !document.querySelector('#menu .ring-item')`)
     && await insideRim(p, '#menu .fav-note'), 'spot: Music opens on Playlists again; with none left in Music Assistant it says so inside the rim, Back alone in the middle');
   await p.tapSel('#menu .fav-switch button:nth-child(1)');
   check(await p.waitFor(`${ringNames} === ${JSON.stringify(twelve.slice(0, 10).map((r) => r.name).join())}`), 'twelve favourite radios: the ring takes the first ten by name');

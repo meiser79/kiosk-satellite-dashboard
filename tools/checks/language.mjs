@@ -1,7 +1,7 @@
 // Checks of the page's language: German asked for in the address, in config.js and by the kiosk's browser, English
 // otherwise. The page's own words in German (the events' days and months among them), what config.js names as
 // written there. The page's clock at 10:00 on Wednesday 21 October 2026, as in the events' checks.
-import { sleep, check, openPage, load, setClock, text, lightsOn, tapTab } from './harness.mjs';
+import { sleep, check, openPage, load, setClock, text, lightsOn, tapTab, insideRim, RING_FITS } from './harness.mjs';
 
 const TODAY = 'Ganztägig Bins out,Jetzt Stand-up,12:30 Lunch with Sam,18:00 Swimming lesson';
 const lines = (p, sel) => p.eval(`[...document.querySelectorAll(${JSON.stringify(sel + ' .event')})].map((e) => (e.querySelector('.ev-time') ? e.querySelector('.ev-time').textContent + ' ' + e.querySelector('.ev-title').textContent : e.textContent)).join()`);
@@ -52,7 +52,26 @@ export async function germanSpot() {
   const ring = await p.eval(`[...document.querySelectorAll('#menu .ring-item')].map((e) => e.textContent).join()`);
   check(ring === 'Design,Dem Licht folgen,Version' && await label(p, '#menu .ring-close') === 'Zurück', `german, spot: Settings' ring in German, Back in the middle Zurück (got ${ring})`);
   await p.shot('spot-german-settings.png');
+
   await p.close();
+
+  // A Spot whose Music item has all three kinds: a switch of their icons, named in German for a screen reader,
+  // inside the rim; Alben brings the albums.
+  const m = await withConfig(480, 480, `c.menu.items.find((i) => i.name === 'Music' && i.shape === 'round').favorites = ['radio', 'playlist', 'album']`);
+  await load(m, 'device=Echo+Spot+Living+Room&lang=de');
+  await m.tapSel('#menu-handle');
+  await m.waitFor(`document.getElementById('menu').classList.contains('open')`);
+  await sleep(300);
+  await m.tapSel('#menu .ring-item[aria-label="Music"]');
+  await m.waitFor(`!!document.querySelector('#menu .fav-switch')`);
+  await sleep(350);
+  const kinds = await m.eval(`[...document.querySelectorAll('#menu .fav-switch button')].map((b) => b.getAttribute('aria-label') + (b.textContent ? '!' : '')).join()`);
+  check(kinds === 'Radiosender,Playlists,Alben' && await m.eval(`document.querySelectorAll('#menu .fav-switch button .icon').length === 3`) && await insideRim(m, '#menu .fav-switch'),
+    `german, spot: three kinds, a switch of their icons named in German, inside the rim (got ${kinds})`);
+  await m.tapSel('#menu .fav-switch button:nth-child(3)');
+  check(await m.waitFor(`[...document.querySelectorAll('#menu .ring-item')].map((e) => e.textContent).join() === 'Abbey Road,Kind of Blue,Random Access Memories'`) && await m.eval(RING_FITS), 'german, spot: Alben brings the favourite albums, inside the rim');
+  await m.shot('spot-german-albums.png');
+  await m.close();
 }
 
 // 22. German on the Show: the light panel's tabs and buttons, the week's events under German days and months.
