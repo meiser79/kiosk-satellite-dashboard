@@ -74,9 +74,10 @@ What the page does, screen by screen. [Configuration](configuration.md) says how
 - **Music card.** On the Show, a room can have a card under the dial for its speakers:
   while they play nothing, the favourites in a strip, a tap to play one there; while they
   play, the cover and title with pause, next and the volume.
-- **Themes.** Twelve to choose from: dark, light, Nord, E-ink, an amber CRT, a handheld
+- **Themes.** Fourteen to choose from: dark, light, Nord, E-ink, an amber CRT, a handheld
   console's greens, two desktops of the early 2000s, steampunk brass, a starship's
-  console, and two that move: Matrix's falling code and a synthwave sunset. One for the whole house or one per kiosk, each with its own accent colour, or
+  console, two that move: Matrix's falling code and a synthwave sunset, and Kiosk
+  Satellite's own look, dark and light. One for the whole house or one per kiosk, each with its own accent colour, or
   yours. The accent can take the colour of the light the dial
   controls (the main light on the Show, the light in the main slot on the Spot), fading
   from one to the next. A picture can sit behind every room, or each room its own, faded

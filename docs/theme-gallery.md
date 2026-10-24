@@ -95,3 +95,17 @@ glass, in Share Tech Mono.
 running toward you, cyan neon, chrome titles in Audiowide.
 
 <img src="images/themes/synthwave-show.webp" width="512" alt="Synthwave on an Echo Show 8"> <img src="images/themes/synthwave-spot.webp" width="320" alt="Synthwave on an Echo Spot">
+
+## Satellite
+
+`satellite` · dark. [Kiosk Satellite](https://github.com/jxlarrea/kiosk-satellite)'s own
+look, so the dashboard sits with the app around it: flat charcoal, its teal, large
+rounded cards, Rubik.
+
+<img src="images/themes/satellite-show.webp" width="512" alt="Satellite on an Echo Show 8"> <img src="images/themes/satellite-spot.webp" width="320" alt="Satellite on an Echo Spot">
+
+## Satellite light
+
+`satellite-light` · light. The same on Kiosk Satellite's warm paper, the cards white.
+
+<img src="images/themes/satellite-light-show.webp" width="512" alt="Satellite light on an Echo Show 8"> <img src="images/themes/satellite-light-spot.webp" width="320" alt="Satellite light on an Echo Spot">
