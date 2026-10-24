@@ -9,11 +9,11 @@
 (() => {
   'use strict';
   const K = window.Kiosk;
-  const { cap, toast } = K;
+  const { t, cap, toast } = K;
   const { pickTheme, themeNow, defaultTheme, setFollow, followsLight } = K;
 
   const THEMES = window.KIOSK_THEMES || {};
-  const nameOf = (key) => (THEMES[key] && THEMES[key].name) || cap(key);
+  const nameOf = (key) => (THEMES[key] && THEMES[key].name) || t.list('themes')[key] || cap(key);
   const iconOf = (key) => (THEMES[key] && THEMES[key].icon) || 'palette-outline';
   // The version index.html asks this file at: a release sets every ?v= to it.
   const version = new URL(document.currentScript.src).searchParams.get('v') || '';
@@ -25,15 +25,15 @@
   function settingsItems() {
     const now = themeNow(), mono = !!(THEMES[now] || {}).mono, on = followsLight();
     return [
-      { name: 'Theme', icon: iconOf(now), state: nameOf(now), opens: { name: 'Theme', list: themeItems } },
-      { name: 'Follow the light', icon: 'eyedropper-variant', state: mono ? `Not with ${nameOf(now)}` : on ? 'On' : 'Off', on: on && !mono, idle: mono, stay: true,
-        pick: () => (mono ? toast(`${nameOf(now)} keeps its own colour`) : setFollow(!on)) },
-      { name: 'Version', icon: 'information-outline', state: version, stay: true, pick: () => toast(`Kiosk dashboard ${version}`) },
+      { name: t('theme'), icon: iconOf(now), state: nameOf(now), opens: { name: t('theme'), list: themeItems } },
+      { name: t('followLight'), icon: 'eyedropper-variant', state: mono ? t('notWith', { theme: nameOf(now) }) : t(on ? 'on' : 'off'), on: on && !mono, idle: mono, stay: true,
+        pick: () => (mono ? toast(t('ownColour', { theme: nameOf(now) })) : setFollow(!on)) },
+      { name: t('version'), icon: 'information-outline', state: version, stay: true, pick: () => toast(t('dashboard', { version })) },
     ];
   }
   function themeItems() {
     const now = themeNow(), own = defaultTheme();
-    return Object.keys(THEMES).map((key) => ({ name: nameOf(key), icon: iconOf(key), state: key === own ? 'Default' : '', current: key === now, stay: true, pick: () => pickTheme(key) }));
+    return Object.keys(THEMES).map((key) => ({ name: nameOf(key), icon: iconOf(key), state: key === own ? t('default') : '', current: key === now, stay: true, pick: () => pickTheme(key) }));
   }
 
   Object.assign(K, { settingsItems });

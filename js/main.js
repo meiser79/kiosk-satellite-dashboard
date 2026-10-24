@@ -5,7 +5,7 @@
 (() => {
   'use strict';
   const K = window.Kiosk;
-  const { CFG, HA, $, KS, params, root, icon, esc, lookup, applyTheme } = K;
+  const { CFG, HA, t, $, KS, params, root, icon, esc, lookup, applyTheme } = K;
   const { render, sensorIds, eventsOf, loadEvents, buildView, showView, startClock, views, buildRoomMenu, buildMenu, followPlayer, menuFavoriteKinds, loadFavorites, musicOf, musicKinds, closeOverlay, closePopover } = K;
 
   /* ------------------------------------------------------------- status */
@@ -57,7 +57,7 @@
     if (!window.KIOSK_CONFIG) {
       // served by the integration (/local/kiosk_dashboard/), config.js is the one in /config/www/kiosk/
       const where = location.pathname.startsWith('/local/kiosk_dashboard/') ? '/config/www/kiosk/config.js' : 'config.js';
-      showStatus({ kind: 'error', text: `No config.js: copy config.example.js to ${where} and edit it`, icon: 'alert-circle-outline' });
+      showStatus({ kind: 'error', text: t('noConfig', { where }), icon: 'alert-circle-outline' });
       return;
     }
     const name = await deviceName();

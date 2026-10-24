@@ -10,7 +10,7 @@
 (() => {
   'use strict';
   const K = window.Kiosk;
-  const { el, esc, icon, toast } = K;
+  const { t, el, esc, icon, toast } = K;
   const { pressFx, makeMedia, favoriteKinds, folderItems, favoritesSwitch, favoritesNote, onFavorites, addCover, playFavorite, loadFavorites } = K;
 
   // A room's music: the kinds of favourites its card offers, and the player
@@ -49,7 +49,7 @@
         b.setAttribute('aria-label', it.name);
         if (it.cover) addCover(b, b.querySelector('.music-cover'), it.cover);
         pressFx(b);
-        b.addEventListener('click', () => playFavorite(it, music.player).then(() => toast(it.name), () => toast('Home Assistant did not answer')));
+        b.addEventListener('click', () => playFavorite(it, music.player).then(() => toast(it.name), () => toast(t('noAnswer'))));
         strip.appendChild(b);
       }
       const was = favs.querySelector('.music-strip'), left = was && picked === kind ? was.scrollLeft : 0;

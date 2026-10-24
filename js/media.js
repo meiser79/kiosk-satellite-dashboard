@@ -4,7 +4,7 @@
 (() => {
   'use strict';
   const K = window.Kiosk;
-  const { states, el, esc, icon, cap, matches, stateText, setText, setClass } = K;
+  const { t, states, el, esc, icon, matches, stateText, setText, setClass } = K;
   const { watch, hold, held, call, pressFx, makeSlider } = K;
 
   const F = { PAUSE: 1, VOLUME_SET: 4, PREV: 16, NEXT: 32, TURN_ON: 128, TURN_OFF: 256, VOLUME_STEP: 1024, SELECT_SOURCE: 2048, PLAY: 16384 };
@@ -31,7 +31,7 @@
     const volDown = btn('vol', 'volume-low', 'volume_down');
     const volUp = btn('vol', 'volume-high', 'volume_up');
     const pwr = btn('pwr', 'power', () => (states[m.entity] && ['off', 'standby'].includes(states[m.entity].state) ? 'turn_on' : 'turn_off'));
-    const vol = makeSlider({ label: 'Volume', labelIcon: 'volume-medium', format: (v) => v + '%', onCommit: (v, final) => { if (final) hold(m.entity + ':vol', v); call('media_player', 'volume_set', { volume_level: v / 100 }, m.entity); } });
+    const vol = makeSlider({ label: t('volume'), labelIcon: 'volume-medium', format: (v) => v + '%', onCommit: (v, final) => { if (final) hold(m.entity + ':vol', v); call('media_player', 'volume_set', { volume_level: v / 100 }, m.entity); } });
     volWrap.appendChild(vol.el);
     let sourceKey = '', lastArt = null;
     img.addEventListener('error', () => art.classList.remove('has-art'));
@@ -51,7 +51,7 @@
       const off = !st || ['off', 'unavailable', 'unknown', 'standby'].includes(st.state);
       const feats = a.supported_features || 0;
       setClass(node, 'off', off);
-      setText(title, a.media_title || (off ? stateText(st) : (a.app_name || a.source || cap(st.state))));
+      setText(title, a.media_title || (off ? stateText(st) : (a.app_name || a.source || t.state(st.state))));
       setText(sub, a.media_artist || a.media_series_title || a.media_album_name || (a.media_title ? (a.app_name || a.source || '') : ''));
       const pic = a.entity_picture || null;
       if (pic !== lastArt) { lastArt = pic; if (pic) img.src = pic; else { img.removeAttribute('src'); art.classList.remove('has-art'); } }

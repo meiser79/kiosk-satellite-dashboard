@@ -2,7 +2,8 @@
  * The page is a handful of plain scripts that index.html loads in order (no
  * build step, no dependencies), sharing one global, window.Kiosk. This file
  * creates it with what the others use: the configuration, small helpers for
- * the DOM and for Home Assistant states, colours and the toast. Each file
+ * the DOM and for Home Assistant states, colours, the toast and the page's
+ * words (t, from js/i18n.js). Each file
  * after it adds its own parts to Kiosk; it takes what it needs from the
  * files above it when it loads, and reaches the files below it (not loaded
  * yet) through Kiosk at the time of the call. */
@@ -12,6 +13,7 @@ window.Kiosk = (() => {
   const CFG = window.KIOSK_CONFIG || {};
   const ICONS = window.KIOSK_ICONS || {};
   const HA = window.HA;
+  const t = window.KIOSK_I18N;
   const params = new URLSearchParams(location.search);
   const $ = (id) => document.getElementById(id);
   const root = document.documentElement;
@@ -56,11 +58,11 @@ window.Kiosk = (() => {
   const pctOf = (st) => (isOn(st) ? clamp(Math.round(((st.attributes.brightness ?? 255) / 255) * 100), 1, 100) : 0);
   function stateText(st, cfg) {
     if (!st) return '–';
-    if (st.state === 'unavailable') return 'Unavailable';
+    if (st.state === 'unavailable') return t('unavailable');
     if (st.state === 'unknown') return '–';
     if (cfg && cfg.on && st.state === 'on') return cfg.on;
     if (cfg && cfg.off && st.state === 'off') return cfg.off;
-    return cap(st.state.replace(/_/g, ' '));
+    return t.state(st.state);
   }
   function lightRgb(st) {
     if (!isOn(st)) return null;
@@ -128,8 +130,11 @@ window.Kiosk = (() => {
   }
   function warn(text) { console.warn(text); toast(text); }
 
+  // The names index.html gives its fixed parts, for a screen reader, in the page's language.
+  for (const [id, key] of [['menu', 'kioskMenu'], ['menu-handle', 'menu'], ['room-menu', 'rooms'], ['folder-menu', 'menuFolder'], ['pop-close', 'close'], ['pop-tab', 'close']]) $(id).setAttribute('aria-label', t(key));
+
   return {
-    CFG, ICONS, HA, params, $, root, KS, COLOR_MODES, states, reducedMotion,
+    CFG, ICONS, HA, t, params, $, root, KS, COLOR_MODES, states, reducedMotion,
     slug, esc, cap, clamp, domain, isLight, icon, lookup, el, setText, setClass, setVar,
     isOn, isUnavailable, hasValue, pctOf, stateText, lightRgb, lightLabel, matches, groupMembers,
     hexToRgb, hsToRgb, kelvinRgb, relLum, toast, warn,
