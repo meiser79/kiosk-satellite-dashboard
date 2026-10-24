@@ -31,8 +31,9 @@
   // Drag on a track: reports a 0..1 fraction, by default the horizontal
   // position (pass `frac` for another geometry). A plain tap calls onTap with
   // the press event (its target is what was tapped; the release, once the
-  // pointer is captured, would name the track itself).
-  function attachTrack(target, { onPreview, onCommit, onTap, onHold, ignore, frac: fraction }) {
+  // pointer is captured, would name the track itself). With `lock`, a drag
+  // that starts up or down is let go, for the page to scroll.
+  function attachTrack(target, { onPreview, onCommit, onTap, onHold, ignore, lock, frac: fraction }) {
     let active = false, moved = false, x0 = 0, y0 = 0, last = null, lastSent = 0, pid = null, holdTimer = null, press = null;
     const frac = fraction || ((e) => {
       const r = target.getBoundingClientRect();
@@ -58,7 +59,16 @@
     });
     target.addEventListener('pointermove', (e) => {
       if (!active) return;
-      if (!moved && Math.hypot(e.clientX - x0, e.clientY - y0) > 6) { moved = true; clearHold(); target.classList.add('dragging'); }
+      if (!moved && Math.hypot(e.clientX - x0, e.clientY - y0) > 6) {
+        clearHold();
+        if (lock && Math.abs(e.clientY - y0) > Math.abs(e.clientX - x0)) {   // a scroll, not a drag
+          active = false;
+          target.classList.remove('pressed');
+          try { target.releasePointerCapture(pid); } catch (_) { /* ignore */ }
+          return;
+        }
+        moved = true; target.classList.add('dragging');
+      }
       if (!moved) return;
       last = frac(e);
       onPreview(last);

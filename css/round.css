@@ -88,39 +88,41 @@
 .dial.rim .dial-track, .dial.rim .dial-fill { stroke-width: 3.6; }
 .dial.rim .dial-hit { stroke-width: 9; }
 .dial.rim .dial-knob .knob { transform: scale(1.35); stroke-width: 0.33; }
-/* the lights: a strip of round buttons, the name under each, three in view
-   between two 16% ends (which grow to centre a shorter strip). It comes to
-   rest with a button, or the media card, in the middle; what scrolls out
-   fades away at the rim's inner edge (46.4vmin from the centre of the
-   screen, which is 50vmin − --strip above the strip). The card needs the
-   band's height; the buttons sit lower, clear of the main slot. The dots
-   follow the strip, nearer to it than to the menu handle under them. */
+/* the lights: a strip of tiles lying across as on the Show (view.css), two
+   side by side, whole inside the rim, between two ends (which grow to centre
+   a shorter strip). It comes to rest with a pair of tiles, or the media card,
+   in the middle; at its end, with the last two tiles. What scrolls out
+   fades away at the pair's edges, so no tile shows cut by the rim. The card,
+   as wide as the pair, needs the band's height; the tiles sit lower, clear
+   of the main slot. A finger on it sets a tile's level, so the strip does
+   not swipe: the dots move it. They follow the strip, nearer to it than to
+   the menu handle under them. */
 .shape-round .lights {
   position: absolute; top: var(--strip); left: 0; right: 0; height: 24.5%;
-  display: flex; gap: 0; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; touch-action: pan-x; align-items: flex-start;
-  -webkit-mask-image: radial-gradient(circle at 50% calc(50vmin - var(--strip)), #000 44.6vmin, transparent 46.4vmin);
-  mask-image: radial-gradient(circle at 50% calc(50vmin - var(--strip)), #000 44.6vmin, transparent 46.4vmin);
+  --gap: 0.45rem; scroll-padding-inline: calc(20% - var(--gap) / 2);   /* the room either side of a pair of 30% tiles */
+  display: flex; gap: var(--gap); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; touch-action: none; align-items: flex-start;
+  --edge: linear-gradient(90deg, transparent calc(20% - var(--gap) * 1.5), #000 calc(20% - var(--gap) / 2), #000 calc(80% + var(--gap) / 2), transparent calc(80% + var(--gap) * 1.5));
+  -webkit-mask-image: var(--edge); mask-image: var(--edge);
 }
 .shape-round .lights::-webkit-scrollbar { display: none; }
-.shape-round .lights::before, .shape-round .lights::after { content: ""; flex: 1 0 16%; }
-.shape-round .lights > .tile { flex: none; width: calc(68% / 3); margin-top: 1.9rem; scroll-snap-align: center; }
-.shape-round .lights > .media { flex: none; width: 68%; margin-top: 0.6rem; scroll-snap-align: center; }   /* clear of the rim */
-.shape-round .tile { background: none; border: 0; padding: 0; overflow: visible; align-items: center; gap: 0.35rem; }
-.shape-round .tile::before { display: none; }
-.shape-round .tile-icon { width: 3.2rem; height: 3.2rem; font-size: 1.5rem; }
-.shape-round .tile.on .tile-icon { background: rgb(var(--tile-rgb)); color: var(--on-tile); box-shadow: 0 0 1.1rem rgba(var(--tile-rgb), 0.4); }
-.shape-round .tile.pressed { transform: none; }
-.shape-round .tile.pressed .tile-icon { transform: scale(0.92); }
-.shape-round .tile-more, .shape-round .tile-slider, .shape-round .tile-extra, .shape-round .tile > .tile-state { display: none; }
-.shape-round .tile-text { margin: 0; justify-content: center; }
-.shape-round .tile-name { font-size: 0.72rem; text-align: center; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.15; }
-.shape-round .tile:not(.on) .tile-name { color: var(--muted); }
-.shape-round .with-wallpaper .tile:not(.on) .tile-icon { background: var(--surface); box-shadow: var(--float); }   /* solid on a picture */
+.shape-round .lights::before, .shape-round .lights::after { content: ""; flex: 1 0 calc(20% - var(--gap) * 1.5); }
+.shape-round .lights > .tile { flex: none; width: 30%; margin-top: 2.3rem; }
+.shape-round .lights > .tile:nth-child(odd) { scroll-snap-align: start; }   /* the first of each pair */
+.shape-round .lights > .media { flex: none; width: calc(60% + var(--gap)); margin-top: 0.6rem; scroll-snap-align: center; }
+.shape-round .lights > :where(.tile) { padding: 0.65rem 0.55rem; column-gap: 0.45rem; touch-action: none; }   /* a drag across sets its level */
+.shape-round .lights > .tile .tile-icon { width: 2rem; height: 2rem; font-size: 1.1rem; }
+.shape-round .lights > .tile .tile-name { font-size: 0.8rem; }
+.shape-round .lights > .tile .tile-state, .shape-round .lights > .tile .tile-extra { font-size: 0.72rem; }
+.shape-round .with-wallpaper .tile:not(.on) { background: var(--surface-solid); }   /* solid on a picture */
 .shape-round .media { padding: 0.6rem; row-gap: 0.25rem; }
 .shape-round .media-sub { display: none; }
 .shape-round .media.compact .media-art { width: 3.4rem; height: 3.4rem; }
 .shape-round .media-transport { gap: 0.3rem; }
-.shape-round .view > .dots { position: absolute; top: calc(var(--strip) + 23.5vmin); left: 0; right: 0; }
+/* the dots move the strip: they take a band's taps and swipes, from under
+   the tiles to just above the menu tab, over the strip's own box */
+.shape-round .view > .dots { position: absolute; top: calc(var(--strip) + 23.5vmin); left: 0; right: 0; z-index: 1; touch-action: none; }
+.shape-round .view > .dots::before { content: ""; position: absolute; inset: -0.8rem 20%; }
+.shape-round .view > .dots span { position: relative; }   /* over the band, a dot of its own */
 /* the popover: no card, the menus' dark backdrop (a light one for the light
    theme's dark text), and like the menus' rows, the controls solid on it,
    larger than on the card. A column 70% wide from 6.4% down to just above

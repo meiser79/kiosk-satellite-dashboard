@@ -78,7 +78,7 @@ export async function germanSpot() {
 export async function germanShow() {
   const p = await openPage(1280, 800);
   await load(p, 'device=Echo+Show+8+Living+Room&lang=de');
-  await p.tapSel('.view.active .tile:nth-child(4) .tile-more');
+  await p.longPressSel('.view.active .tile:nth-child(4) .tile-text');
   await p.waitFor(`!document.getElementById('popover').hidden`);
   const tabs = await p.eval(`[...document.querySelectorAll('#popover .tabs .tab')].map((t) => t.textContent).join()`);
   const buttons = await p.eval(`[...document.querySelectorAll('#popover .pop-actions button')].map((b) => b.textContent).join()`);

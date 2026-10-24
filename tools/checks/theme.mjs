@@ -73,7 +73,7 @@ export async function pictures() {
     let w = await paper(p);
     check(w.shown === 1 && w.image.includes('photo-1519681393784') && w.fade === '0.5' && w.on, `spot: it is the bedroom's own, faded by the theme's 0.5 (got ${w.image.slice(0, 60)}, ${w.fade})`);
     check(await p.eval(`(() => { const v = getComputedStyle(document.getElementById('views')), w = getComputedStyle(document.getElementById('wallpaper')); return v.backgroundImage === 'none' && w.borderRadius === '50%' && document.getElementById('wallpaper').getBoundingClientRect().width === 480; })()`), 'spot: it fills the round screen, in place of the usual background');
-    check(await p.eval(`getComputedStyle(document.querySelector('.view.active .title')).textShadow !== 'none' && getComputedStyle(document.querySelector('.view.active .tile:not(.on) .tile-icon')).boxShadow !== 'none'`), 'spot: the text stands out from it, and a light that is off keeps a solid button');
+    check(await p.eval(`getComputedStyle(document.querySelector('.view.active .title')).textShadow !== 'none' && getComputedStyle(document.querySelector('.view.active .tile:not(.on)')).backgroundColor.startsWith('rgb(')`), 'spot: the text stands out from it, and a light that is off keeps a solid tile');
     await sleep(500);
     await p.shot('spot-bedroom-picture.png');
     await p.tapSel('.view.active .title-btn');

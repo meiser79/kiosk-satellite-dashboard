@@ -25,17 +25,20 @@ export async function bedroomSpot() {
   check(await fontPx('.title') >= 29 && await fontPx('.sensors') >= 16.5, 'spot: large title and sensors');
   const sPower = await sbox('.main .bar.group .power');
   check(sPower.w >= 70 && Math.abs(sPower.w - sPower.h) < 1 && await fontPx('.main .bar.group .name') < 23, `spot: a large power button for the main light (${sPower.w.toFixed(0)}px), its name as before`);
-  // The lights: one strip in a straight row, three in view inside the rim, the fourth beyond the third.
-  const sTiles = await p.eval(`[...document.querySelectorAll('.view.active .lights > .tile')].map((t) => [t.querySelector('.tile-icon'), t.querySelector('.tile-name')].map((e) => { const r = e.getBoundingClientRect(); return { l: r.left, t: r.top, r: r.right, b: r.bottom, w: r.width }; }))`);
+  // The lights: one strip of tiles lying across, as on the Show, the first two whole side by side in the middle
+  // inside the rim, the third out of sight (the strip shows no more than the pair's width).
+  const sTiles = await p.eval(`[...document.querySelectorAll('.view.active .lights > .tile')].map((t) => [t, t.querySelector('.tile-name')].map((e) => { const r = e.getBoundingClientRect(); return { l: r.left, t: r.top, r: r.right, b: r.bottom, w: r.width, h: r.height }; }))`);
   const inRim = ({ l, t, r, b }) => [[l, t], [r, t], [l, b], [r, b]].every(([x, y]) => Math.hypot(x - 240, y - 240) < 240 * (50 - 3.6) / 50);
   const rowTop = sTiles[0][0].t;
-  check(sTiles.length === 4 && sTiles.every(([i]) => Math.abs(i.t - rowTop) < 0.5 && i.w > 50), 'spot: the lights in one straight row, their buttons as large as before');
-  check(sTiles.slice(0, 3).every(([i, n]) => Math.hypot(i.l + i.w / 2 - 240, i.t + i.w / 2 - 240) + i.w / 2 < 240 * (50 - 3.6) / 50 && inRim(n)) && sTiles[3][0].l >= 400, 'spot: three of them in view, each with its name inside the rim; the fourth further on');
-  check(await p.eval(`document.querySelectorAll('.view.active > .dots span').length === 2`), 'spot: a dot for each place the strip can rest');
+  check(sTiles.length === 4 && sTiles.every(([t]) => Math.abs(t.t - rowTop) < 0.5 && t.w > 2.5 * t.h) && await p.eval(`[...document.querySelectorAll('.view.active .lights > .tile')].every((t) => t.querySelector('.tile-state').offsetWidth > 0 && getComputedStyle(t.querySelector('.tile-fill')).display !== 'none')`),
+    'spot: the lights in one straight row of tiles lying across, each with its name, its state and its level');
+  check(Math.abs((sTiles[0][0].l + sTiles[1][0].r) / 2 - 240) < 2 && inRim(sTiles[0][0]) && inRim(sTiles[1][0]) && sTiles[1][0].l > sTiles[0][0].r && sTiles[2][0].l - sTiles[1][0].r < 10 && sTiles[2][0].l > 480 * 0.8,
+    'spot: the first two whole side by side in the middle, inside the rim; the third out of sight');
+  check(await p.eval(`document.querySelectorAll('.view.active > .dots span').length === 2`), 'spot: a dot for each pair of tiles, the strip coming to rest with each in the middle');
   check(sPower.t - sModes.b >= 32 && rowTop - sPower.b >= 32, `spot: room above and below the power button (${(sPower.t - sModes.b).toFixed(0)}px, ${(rowTop - sPower.b).toFixed(0)}px)`);
-  check(sHandle.w >= 90 && sHandle.h >= 38 && sHandle.t - Math.max(...sTiles.map(([, n]) => n.b)) >= 15, `spot: a large menu handle under the lights (${sHandle.w.toFixed(0)}×${sHandle.h.toFixed(0)}px)`);
-  const [overDots, underDots] = [sDots.t - Math.max(...sTiles.map(([, n]) => n.b)), sHandle.t - sDots.b];
-  check(overDots >= 8 && underDots >= 18 && underDots > overDots, `spot: the dots close under the names, with more room between them and the handle (${overDots.toFixed(0)}px, ${underDots.toFixed(0)}px)`);
+  check(sHandle.w >= 90 && sHandle.h >= 38 && sHandle.t - Math.max(...sTiles.map(([t]) => t.b)) >= 15, `spot: a large menu handle under the lights (${sHandle.w.toFixed(0)}×${sHandle.h.toFixed(0)}px)`);
+  const [overDots, underDots] = [sDots.t - Math.max(...sTiles.map(([t]) => t.b)), sHandle.t - sDots.b];
+  check(overDots >= 8 && underDots >= 18 && underDots > overDots, `spot: the dots close under the tiles, with more room between them and the handle (${overDots.toFixed(0)}px, ${underDots.toFixed(0)}px)`);
   check(await p.eval(`(() => { const b = document.querySelector('.view.active .main .bar.group'); return getComputedStyle(b).backgroundColor === 'rgba(0, 0, 0, 0)' && getComputedStyle(b).borderTopWidth === '0px' && !b.querySelector('.bar-icon') && !!b.querySelector('.power'); })()`), 'spot: the main light has no background and no icon, just its power button, name and state');
   // The rim: its stroke reaches the edge of the round screen.
   const rim = await p.eval(`(() => { const t = document.querySelector('.view.active .dial.rim .dial-track'); const box = t.getBBox(); const w = parseFloat(getComputedStyle(t).strokeWidth); return { r: box.width / 2, w }; })()`);
@@ -108,18 +111,29 @@ export async function bedroomSpot() {
   check(await p.waitFor(`document.querySelector('.view.active .main .bar.current .name').textContent === 'Ceiling'`), 'spot: a tap on the right arrow brings in the next light');
   await p.tapSel('.view.active .main-arrow[data-dir="-1"]');
   check(await p.waitFor(`document.querySelector('.view.active .main .bar.current').classList.contains('group')`), 'and the left one goes back');
-  // A swipe on the strip moves it on by a light, not a page; the dots follow.
-  await p.dragTo('.view.active .lights', 0.32, 0.5, 0.6);
-  await sleep(400);
-  const stripAt = await p.eval(`document.querySelector('.view.active .lights').scrollLeft`);
-  check(Math.abs(stripAt - (sTiles[1][0].l - sTiles[0][0].l)) < 2 && await p.eval(`document.querySelector('.view.active > .dots span:nth-child(2)').classList.contains('on')`), `spot: a swipe on the lights moves them on by one (${stripAt.toFixed(0)}px), the dots follow`);
+  // A drag across a tile sets its light's level, as on the Show; the strip stays put.
+  const stripLeft = `document.querySelector('.view.active .lights').scrollLeft`;
+  const stripFrom = await p.eval(stripLeft);
+  await p.dragTo('.view.active .lights > .tile:nth-child(2)', 0.8, 0.5, 0.3);
+  check(await mockReaches((s) => Math.round(s['light.bedroom_strips'].a.brightness / 2.55) === 80) && Math.abs(await p.eval(stripLeft) - stripFrom) < 1,
+    'spot: a drag across a tile sets its light\'s level (80%), the strip stays put');
+  // The dots move the strip: a swipe on them by a pair of tiles, a tap beside them to that side; the dots follow.
+  await p.dragTo('.view.active > .dots', 0.15, 0.5, 0.75);
+  await sleep(600);
+  const stripAt = await p.eval(stripLeft) - stripFrom;
+  check(Math.abs(stripAt - (sTiles[2][0].l - sTiles[0][0].l)) < 2 && await p.eval(`document.querySelector('.view.active > .dots span:nth-child(2)').classList.contains('on')`), `spot: a swipe on the dots moves the lights on by a pair (${stripAt.toFixed(0)}px), the dots follow`);
+  const dotsBox = await p.rect('.view.active > .dots');
+  await p.tap(dotsBox.x - 50, dotsBox.y); await sleep(700);
+  check(Math.abs(await p.eval(stripLeft) - stripFrom) < 2 && await p.eval(`document.querySelector('.view.active > .dots span:nth-child(1)').classList.contains('on')`), 'spot: a tap left of the dots brings the pair before');
+  await p.tap(dotsBox.x + 50, dotsBox.y); await sleep(700);
+  check(Math.abs(await p.eval(stripLeft) - stripFrom - stripAt) < 2, 'spot: a tap right of them the next pair');
   await p.eval(`document.querySelector('.view.active .lights').scrollTo({ left: 0, behavior: 'instant' }), true`);
   await p.dragArc('.view.active .dial.rim', 0.8, 0.3);
   st = await mockStates();
   const rp = Math.round(st['light.bedroom_lights'].a.brightness / 2.55);
   check(rp >= 27 && rp <= 33, `spot: dragging along the rim sets the level by angle (got ${rp}%)`);
   check(st['light.bedroom_ceiling'].a.brightness === st['light.bedroom_lights'].a.brightness, 'group members followed');
-  check(await p.eval(`(() => { const t = document.querySelector('.view.active .tile'); const i = t.querySelector('.tile-icon').getBoundingClientRect(); return Math.abs(i.width - i.height) < 1 && i.width > 45 && getComputedStyle(t.querySelector('.tile-slider')).display === 'none'; })()`), 'spot: lights are round buttons without sliders');
+  check(await p.eval(`(() => { const t = document.querySelector('.view.active .tile'); return t.querySelector('.tile-fill').getBoundingClientRect().width > 0 && t.querySelector('.tile-state').textContent.endsWith('%'); })()`), 'spot: a tile shows its light\'s level, filled as far');
   await p.tapSel('.view.active .main .power');
   st = await mockStates();
   check(st['light.bedroom_lights'].s === 'off', 'spot: the power button turns the room off');
@@ -158,11 +172,13 @@ export async function bedroomSpot() {
   await p.tapSel('#pop-tab');
   check(await p.waitFor(`document.getElementById('popover').hidden`), 'spot: the tab closes the popover');
 
-  // Ambiance light: colour tab with swatches and effects. (The Spot's round buttons have no dots: long-press.)
+  // Ambiance light: colour tab with swatches and effects. (A long-press, in the middle of the strip.)
+  await p.eval(`document.querySelector('.view.active .lights > .tile:nth-child(2)').scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'instant' }), true`);
+  await sleep(400);
   r = await p.rect('.view.active .tile:nth-child(2)');
   await p.longPress(r.x, r.y);
   await sleep(400);
-  check(await p.waitFor(`!document.getElementById('popover').hidden`) && (await text(p, '#pop-name')) === 'Ambiance', 'long-press on a round light button opens its popover');
+  check(await p.waitFor(`!document.getElementById('popover').hidden`) && (await text(p, '#pop-name')) === 'Ambiance', 'long-press on a light\'s tile opens its popover');
   await tapTab(p, 'Colour');
   check(await insideRim(p, POP_PARTS) && await p.eval(`(() => { const b = document.getElementById('pop-body'); return b.scrollHeight <= b.clientHeight + 1; })()`), 'spot popover: the colour controls and swatches fit inside the rim, nothing to scroll');
   // As far apart as each other: brightness, tabs, hue, saturation, swatches. The swatches large enough to aim at.
@@ -239,12 +255,12 @@ export async function livingSpot() {
   await load(p, 'device=Echo+Spot+Living+Room');
   const h = await p.rect('#menu-handle');
   check(await has(p, '#menu-handle svg') && Math.abs(h.x - 240) < 1 && h.t + h.h > 460, 'living spot: the menu tab at the bottom, an arrow on it');
-  check(await p.eval(`(() => { const v = document.querySelector('.view.active'); return v.querySelectorAll('.lights > .tile').length === 8 && v.querySelector('.lights > .media').hidden && v.querySelectorAll(':scope > .dots span').length === 6; })()`), 'five lights, two covers and the heating in one strip (six places to rest); the media card hidden while the projector is off');
+  check(await p.eval(`(() => { const v = document.querySelector('.view.active'); return v.querySelectorAll('.lights > .tile').length === 8 && v.querySelector('.lights > .media').hidden && v.querySelectorAll(':scope > .dots span').length === 4; })()`), 'five lights, two covers and the heating in one strip (a place to rest for each pair); the media card hidden while the projector is off');
   await p.shot('spot-living.png');
   await p.tapSel('.view.active .chip:nth-child(1)');
   let st = await mockStates();
   check(st['input_boolean.projector'].s === 'on', 'projector chip runs the turn-on script');
-  check(await p.waitFor(`!document.querySelector('.view.active .lights > .media').hidden && document.querySelectorAll('.view.active > .dots span').length === 8`), 'the media card joins the end of the strip when the projector is on');
+  check(await p.waitFor(`!document.querySelector('.view.active .lights > .media').hidden && document.querySelectorAll('.view.active > .dots span').length === 5`), 'the media card joins the end of the strip when the projector is on');
   await p.eval(`document.querySelector('.view.active .lights').scrollTo({ left: 1e4, behavior: 'instant' }), true`);
   await sleep(500);
   check((await text(p, '.view.active .media-title')) === 'Severance', 'the media card shows what is playing');
@@ -294,7 +310,7 @@ export async function livingSpot() {
   await p.tapSel('#menu-handle');
   await p.waitFor(`document.getElementById('menu').classList.contains('open')`);
   await sleep(300);
-  check(await p.eval(`[...document.querySelectorAll('#menu .ring-item.folder')].map((e) => e.textContent).join() === 'Find my phone,Music,Settings' && document.querySelectorAll('#menu .ring-item.folder .more svg').length === 3`), 'spot: Find my phone, Music and Settings are folders, a small arrow in their corner');
+  check(await p.eval(`[...document.querySelectorAll('#menu .ring-item.folder')].map((e) => e.textContent).join() === 'Find my phone,Music,Settings' && !document.querySelector('#menu .more')`), 'spot: Find my phone, Music and Settings are folders, no arrow on them');
   check(await p.eval(`[...document.querySelectorAll('#menu .ring-item .item-label')].every((l) => l.scrollHeight <= l.clientHeight + 1 && l.scrollWidth <= l.clientWidth + 1)`), 'spot: every name fits in its button (two lines at most)');
   await p.tapSel('#menu .ring-item:nth-child(5)');
   await sleep(350);

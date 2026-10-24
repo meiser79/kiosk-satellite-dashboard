@@ -1,7 +1,7 @@
 // Checks of covers and thermostats: the living room's shutter, awning and heating on the Show and on the Spot, the
-// tiles' pills and taps, their panels, in English and German; blinds whose slats turn and a garage door that only
+// tiles' drags and taps, their panels, in English and German; blinds whose slats turn and a garage door that only
 // opens and closes, added to the living room for these checks.
-import { sleep, check, openPage, load, mockStates, mockReaches, mockSet, lastCall, text, insideRim } from './harness.mjs';
+import { sleep, check, openPage, load, mockStates, mockReaches, mockSet, lastCall, callLog, text, insideRim } from './harness.mjs';
 
 // A tile of the room on screen, by name, scrolled into view: its selector (nth-child among the tiles).
 const tileOf = async (p, name) => {
@@ -33,28 +33,31 @@ async function withMore(width, height) {
   return p;
 }
 
-// 24. On the Show 8: the shutter, the awning and the heating after the lights; a tap
+// 24. On the Show 8: the shutter, the awning and the heating after the lights, no taller than they should be; a tap
 // and a drag on each, a cover on its way stopped, their panels.
 export async function coversShow() {
   const p = await openPage(1280, 800);
   await load(p, 'device=Echo+Show+8+Living+Room');
   const names = await p.eval(`[...document.querySelectorAll('.view.active .lights > .tile .tile-name')].map((e) => e.textContent).join()`);
   check(names === 'Living room,Dining room,Kitchen,TV strip,Shelf strip,Shutter,Awning,Heating', `show 8: the covers and the heating after the lights (got ${names})`);
+  check(await p.eval(`!document.querySelector('.view.active .tile button')`), 'show 8: no buttons on the tiles, a long-press opens their panels');
+  const tall = await p.eval(`(() => { const rem = parseFloat(getComputedStyle(document.documentElement).fontSize); return Math.max(...[...document.querySelectorAll('.view.active .lights > .tile')].map((e) => e.getBoundingClientRect().height)) / rem; })()`);
+  check(tall <= 10.55, `show 8: the tiles 10.5rem tall at most (got ${tall.toFixed(2)}rem)`);
 
   const SHUTTER = await tileOf(p, 'Shutter'), AWNING = await tileOf(p, 'Awning'), HEATING = await tileOf(p, 'Heating');
   let sh = await tile(p, SHUTTER), aw = await tile(p, AWNING);
-  check(sh.on && sh.state === '70%' && sh.icon === 'window-shutter-open', `the shutter, open at 70%: lit, its pill says so, an open shutter's icon (got ${JSON.stringify(sh)})`);
+  check(sh.on && sh.state === '70%' && sh.icon === 'window-shutter-open', `the shutter, open at 70%: lit, it says so, filled as far, an open shutter's icon (got ${JSON.stringify(sh)})`);
   check(!aw.on && aw.state === '0%' && aw.icon === 'awning-outline', `the awning, closed: not lit, 0%, an awning's icon (got ${JSON.stringify(aw)})`);
   await p.shot('show8-covers.png');
 
-  // a tap opens the closed awning; a drag along the shutter's pill sets its position
+  // a tap opens the closed awning; a drag across the shutter sets its position
   await p.tapSel(`${AWNING} .tile-text`);
   check(await mockReaches((st) => st['cover.terrace_awning'].s === 'open' && st['cover.terrace_awning'].a.current_position === 100) && (await lastCall()).service === 'open_cover',
     'a tap on the closed awning opens it, with cover.open_cover');
   check(await p.waitFor(`(() => { const t = document.querySelector('${AWNING}'); return t.classList.contains('on') && t.querySelector('.tile-state').textContent === '100%'; })()`), 'the awning\'s tile lights up at 100%');
-  await p.dragTo(`${SHUTTER} .tile-slider`, 0.4, 0.5, 0.8);
+  await p.dragTo(`${SHUTTER}`, 0.4, 0.5, 0.8);
   const pos = (await mockStates())['cover.living_room_shutter'].a.current_position;
-  check((await lastCall()).service === 'set_cover_position' && pos >= 33 && pos <= 47, `a drag along the shutter's pill sets its position (got ${pos})`);
+  check((await lastCall()).service === 'set_cover_position' && pos >= 33 && pos <= 47, `a drag across the shutter sets its position (got ${pos})`);
   // on its way: the tile says so, a tap stops it
   await mockSet('cover.living_room_shutter', 'closing');
   check(await p.waitFor(`document.querySelector('${SHUTTER} .tile-extra').textContent === '· Closing'`), 'a shutter on its way says so after its name');
@@ -62,8 +65,8 @@ export async function coversShow() {
   check((await lastCall()).service === 'stop_cover' && await mockReaches((st) => st['cover.living_room_shutter'].s === 'open'), 'a tap on it stops it, with cover.stop_cover');
 
   // the shutter's panel: Open, Stop, Close, its position
-  await p.tapSel(`${SHUTTER} .tile-more`);
-  check(await p.waitFor(panelOpen), 'the dots open the shutter\'s panel');
+  await p.longPressSel(`${SHUTTER} .tile-text`);
+  check(await p.waitFor(panelOpen), 'a long-press opens the shutter\'s panel');
   await sleep(300);
   check(await actions(p) === 'Open,Stop,Close' && /^Open · \d+%$/.test(await text(p, '#pop-state')) && await p.eval(`document.querySelector('#popover .pop-main .slider .label').textContent.trim() === 'Position'`),
     `its panel: Open, Stop and Close, its position, the line saying how it stands (got ${await actions(p)}; ${await text(p, '#pop-state')})`);
@@ -76,19 +79,19 @@ export async function coversShow() {
   check(pos2 >= 40 && pos2 <= 60, `the panel's slider sets the position (got ${pos2})`);
   await closePanel(p);
 
-  // the heating: on and heating, orange, its target in the pill and the room's temperature after its name
+  // the heating: on and heating, orange, its target and the room's temperature after it
   let he = await tile(p, HEATING);
   check(he.on && he.rgb === '255, 138, 61' && he.state === '21.5°' && he.extra === '· 20.5°' && he.icon === 'thermostat',
-    `the heating: lit in orange while it heats, its target in the pill, the room's temperature after its name (got ${JSON.stringify(he)})`);
-  await p.dragTo(`${HEATING} .tile-slider`, 0.6, 0.5, 0.3);
+    `the heating: lit in orange while it heats, its target, the room's temperature after it (got ${JSON.stringify(he)})`);
+  await p.dragTo(`${HEATING}`, 0.6, 0.5, 0.3);
   const set = await lastCall(), temp = set.data && set.data.temperature;
-  check(set.domain === 'climate' && set.service === 'set_temperature' && temp > 7 && temp < 30 && Math.round(temp * 2) === temp * 2, `a drag along its pill sets the target, in half degrees (got ${JSON.stringify(set.data)})`);
+  check(set.domain === 'climate' && set.service === 'set_temperature' && temp > 7 && temp < 30 && Math.round(temp * 2) === temp * 2, `a drag across it sets the target, in half degrees (got ${JSON.stringify(set.data)})`);
   await p.tapSel(`${HEATING} .tile-text`);
   check(await mockReaches((st) => st['climate.living_room'].s === 'off') && (await lastCall()).service === 'turn_off', 'a tap turns it off, with climate.turn_off');
-  check(await p.waitFor(`(() => { const t = document.querySelector('${HEATING}'); return !t.classList.contains('on') && t.querySelector('.tile-state').textContent === 'Off'; })()`), 'off: not lit, its pill says Off');
+  check(await p.waitFor(`(() => { const t = document.querySelector('${HEATING}'); return !t.classList.contains('on') && t.querySelector('.tile-state').textContent === 'Off'; })()`), 'off: not lit, it says Off');
 
   // its panel: the target, its modes and its presets, the ones it is in marked
-  await p.tapSel(`${HEATING} .tile-more`);
+  await p.longPressSel(`${HEATING} .tile-text`);
   await p.waitFor(panelOpen);
   await sleep(300);
   check(await chips(p, 0) === 'Off*,Heat,Auto' && await chips(p, 1) === 'Comfort*,Eco,Away,Boost' && await p.eval(`document.querySelector('#popover .pop-main .slider .label').textContent.trim() === 'Target temperature'`) && await actions(p) === '',
@@ -105,11 +108,11 @@ export async function coversShow() {
   // German: the panels' words
   const g = await openPage(1280, 800);
   await load(g, 'device=Echo+Show+8+Living+Room&lang=de');
-  await g.tapSel(`${await tileOf(g, 'Shutter')} .tile-more`);
+  await g.longPressSel(`${await tileOf(g, 'Shutter')} .tile-text`);
   await g.waitFor(panelOpen);
   check(await actions(g) === 'Öffnen,Stopp,Schließen' && /^(Offen|Geschlossen) · \d+%$/.test(await text(g, '#pop-state')), `german: the cover's buttons and state in German (got ${await actions(g)}; ${await text(g, '#pop-state')})`);
   await closePanel(g);
-  await g.tapSel(`${await tileOf(g, 'Heating')} .tile-more`);
+  await g.longPressSel(`${await tileOf(g, 'Heating')} .tile-text`);
   await g.waitFor(panelOpen);
   await sleep(300);
   check(await chips(g, 0) === 'Aus,Heizen*,Automatisch' && await chips(g, 1) === 'Komfort,Eco*,Abwesend,Boost', `german: the heating's modes and presets in German (got ${await chips(g, 0)}; ${await chips(g, 1)})`);
@@ -122,18 +125,24 @@ export async function coversShow() {
 export async function coversMore() {
   const p = await withMore(1280, 800);
   await load(p, 'device=Echo+Show+8+Living+Room');
+  await p.eval(`document.querySelector('.view.active .lights').style.maxHeight = '20rem', true`);   // shorter, for there to be more to scroll to
+  const before = (await callLog()).length, top0 = await p.eval(`document.querySelector('.view.active .lights').scrollTop`);
+  const first = await p.rect('.view.active .lights > .tile:nth-child(3)');
+  await p.drag(first.x, first.y + 40, first.x + 8, first.y - 60, 10); await sleep(700);
+  check((await callLog()).length === before && await p.eval(`document.querySelector('.view.active .lights').scrollTop`) > top0, 'a swipe up across the tiles scrolls them and sets no light');
+  await p.eval(`(() => { const l = document.querySelector('.view.active .lights'); l.style.maxHeight = ''; l.scrollTo({ top: 0, behavior: 'instant' }); return true; })()`);
   const GARAGE = await tileOf(p, 'Garage');
-  check(await p.waitFor(`document.querySelector('${GARAGE} .tile-state').textContent === 'Closed'`) && (await tile(p, GARAGE)).icon === 'garage', 'a garage door without positions: its pill says Closed, a garage\'s icon');
-  await p.dragTo(`${GARAGE} .tile-slider`, 0.8, 0.5, 0.2);
-  check((await lastCall()).service !== 'set_cover_position', 'a drag along its pill asks no position of it');
+  check(await p.waitFor(`document.querySelector('${GARAGE} .tile-state').textContent === 'Closed'`) && (await tile(p, GARAGE)).icon === 'garage', 'a garage door without positions: it says Closed, a garage\'s icon');
+  await p.dragTo(`${GARAGE}`, 0.8, 0.5, 0.2);
+  check((await lastCall()).service !== 'set_cover_position', 'a drag across it asks no position of it');
   await p.tapSel(`${GARAGE} .tile-text`);
   check(await mockReaches((st) => st['cover.garage_door'].s === 'open') && await p.waitFor(`(() => { const t = document.querySelector('${GARAGE}'); return t.classList.contains('on') && t.querySelector('.tile-state').textContent === 'Open'; })()`)
     && (await tile(p, GARAGE)).icon === 'garage-open', 'a tap opens it: lit, Open, an open garage\'s icon');
-  await p.tapSel(`${GARAGE} .tile-more`);
+  await p.longPressSel(`${GARAGE} .tile-text`);
   await p.waitFor(panelOpen);
   check(await actions(p) === 'Open,Stop,Close' && !(await p.eval(`!!document.querySelector('#popover .slider')`)), 'its panel: the three buttons, no slider');
   await closePanel(p);
-  await p.tapSel(`${await tileOf(p, 'Blinds')} .tile-more`);
+  await p.longPressSel(`${await tileOf(p, 'Blinds')} .tile-text`);
   await p.waitFor(panelOpen);
   await sleep(300);
   const sliders = await p.eval(`[...document.querySelectorAll('#popover .slider .label')].map((e) => e.textContent.trim()).join()`);
@@ -144,7 +153,7 @@ export async function coversMore() {
   await closePanel(p);
   await p.close();
 
-  // the Spot: the round buttons in the strip, the heating lit in orange; a long-press opens the shutter's panel
+  // the Spot: the tiles in the strip, the heating lit in orange; a long-press opens the shutter's panel
   // inside the rim, its buttons too
   const s = await openPage(480, 480);
   await load(s, 'device=Echo+Spot+Living+Room');

@@ -151,26 +151,33 @@ span.title-btn { cursor: default; }
   background: var(--surface-2); color: var(--muted); font-size: 1.45rem; transition: background 0.3s, color 0.3s, transform 0.14s var(--ease);
 }
 .tile.on .tile-icon { background: rgba(var(--tile-rgb), 0.24); color: rgb(var(--tile-rgb)); }
-.tile-more {
-  position: absolute; top: 0.7rem; right: 0.7rem; width: 2.2rem; height: 2.2rem; border-radius: var(--r-round);
-  display: flex; align-items: center; justify-content: center; background: var(--surface-2); color: var(--muted); font-size: 1.1rem;
-  transition: transform 0.12s var(--ease), background 0.2s;
-}
-.tile-more.pressed { transform: scale(0.9); background: var(--accent); color: var(--on-accent); }
 .tile-text { margin-top: auto; display: flex; align-items: baseline; gap: 0.35rem; min-width: 0; }
 .tile-name { font-size: 0.95rem; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile-line { display: flex; align-items: baseline; gap: 0.35rem; min-width: 0; }
 .tile-extra { font-size: 0.8rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tile-extra:empty { display: none; }
 .tile-state { font-size: 0.8rem; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
-/* the pill at the bottom of a light tile is a slider for that light */
-.tile-slider { position: relative; overflow: hidden; height: 2.5rem; border-radius: var(--r-pill); background: var(--surface-2); touch-action: none; }
-.tile-slider .fill {
-  position: absolute; inset: 0; border-radius: inherit;
-  background: linear-gradient(90deg, rgba(var(--tile-rgb), 0.35), rgba(var(--tile-rgb), 0.8));
-  transform: translateX(calc((var(--p, 0) - 1) * 100%)); transition: transform 0.18s var(--ease);
+/* the tile's level (--p), a fill behind it from the left: a light's
+   brightness, a cover's position, a thermostat's target */
+.tile > .tile-fill {
+  position: absolute; left: 0; top: 0; bottom: 0; width: calc(var(--p, 0) * 100%); border-radius: inherit; pointer-events: none;
+  background: linear-gradient(90deg, rgba(var(--tile-rgb), 0.14), rgba(var(--tile-rgb), 0.42)); transition: width 0.18s var(--ease);
 }
-.tile-slider .tile-state { position: absolute; left: 0.95rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem; font-weight: 600; color: var(--text); }
+.tile.dragging > .tile-fill { transition: none; }
+/* a tile lies across: its icon, beside it its name and under that its state
+   with a word after it; the fill behind them is its level */
+.lights > :where(.tile:not(.events)) {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "icon text" "icon state"; align-content: center;
+  column-gap: 0.7rem; row-gap: 0.1rem; padding: 0.7rem 0.8rem;
+}
+.lights > :where(.tile.on:not(.events))::before { opacity: 0; }   /* the fill says it is on */
+.lights > :where(.tile:not(.events)) > .tile-icon { grid-area: icon; align-self: center; }
+.lights > :where(.tile:not(.events)) > .tile-text { grid-area: text; margin: 0; align-self: end; }
+.lights > :where(.tile:not(.events)) > .tile-line { grid-area: state; align-self: start; }
+.lights > :where(.tile:not(.events)) .tile-state { font-size: 0.85rem; font-weight: 600; }
+.lights > :where(.tile.on) .tile-state { color: var(--text); }
 .tile.pressed { transform: scale(0.975); }
+.tile.dragging { transform: none; }
 .view.solo .lights { display: none; }   /* a room with a single light: its main light alone */
 
 /* -------------------------------------------------------------- media */

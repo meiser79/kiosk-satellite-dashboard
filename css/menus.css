@@ -37,11 +37,6 @@
 .menu-item .item-label { display: none; }
 .menu-item.pressed { background: var(--accent); color: var(--on-accent); transform: scale(0.93); }
 .menu-item.active { color: var(--accent); }   /* its folder is open */
-/* a folder's button carries a small arrow in its corner: it opens more */
-.more { position: absolute; border-radius: var(--r-round); display: flex; align-items: center; justify-content: center; background: var(--surface-2); color: var(--muted); }
-.menu-item .more { top: 0.1rem; right: 0.1rem; width: 0.8rem; height: 0.8rem; font-size: 0.6rem; }
-.ring-item .more { top: calc(var(--size) * 0.145); right: calc(var(--size) * 0.145); width: calc(var(--size) * 0.19); height: calc(var(--size) * 0.19); font-size: calc(var(--size) * 0.145); }
-.pressed .more { background: transparent; color: inherit; }
 /* the ring fades in and out */
 .shape-round .menu { inset: 0; opacity: 0; visibility: hidden; transition: opacity 0.25s, visibility 0s 0.25s; }
 .shape-round .menu.open { opacity: 1; visibility: visible; transition-delay: 0s; }

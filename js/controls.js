@@ -143,26 +143,22 @@
 
   /* -------------------------------------------------------------- tiles */
   // A tile's frame, whatever it controls (a light, a cover, a thermostat):
-  // its icon, the dots that open its panel, its name with a word after it,
-  // and at the bottom a pill, a slider when the tile `slide`s (onPreview and
-  // onCommit of a fraction) or else a line of its state. A tap runs `tap`, a
-  // long-press (or the dots) `open`. On the Spot the tile is a round button
-  // with the name under it.
+  // its icon, its name, under it its state with a word after it, and behind
+  // them a fill as far as its level (--p). A tap runs `tap`, a
+  // long-press `open`. When the tile `slide`s, a drag across it sets the
+  // level where the finger is (onPreview and onCommit of a fraction), on the
+  // Spot as on the Show; on the Show a swipe up or down scrolls the tiles.
   function tileFrame(cfg, { icon: ic, tap, open, slide }) {
-    const node = el('div', 'tile');
-    node.innerHTML = `<span class="tile-icon">${icon(ic)}</span>`
-      + `<button class="tile-more" aria-label="${esc(t('details'))}">${icon('dots-horizontal')}</button>`
-      + `<span class="tile-text"><span class="tile-name">${esc(cfg.name || cfg.entity)}</span><span class="tile-extra"></span></span>`
-      + (slide ? `<span class="tile-slider"><span class="fill"></span><span class="tile-state"></span></span>` : '<span class="tile-state"></span>');
-    const more = node.querySelector('.tile-more');
-    attachPress(node, { onTap: tap, onHold: open, ignore: '.tile-more, .tile-slider' });
-    if (slide) attachTrack(node.querySelector('.tile-slider'), { ...slide, onTap: tap, onHold: open });
-    pressFx(more);
-    more.addEventListener('click', () => open());
+    const node = el('div', 'tile' + (slide ? ' slides' : ''));
+    node.innerHTML = `<span class="tile-fill"></span><span class="tile-icon">${icon(ic)}</span>`
+      + `<span class="tile-text"><span class="tile-name">${esc(cfg.name || cfg.entity)}</span></span>`
+      + '<span class="tile-line"><span class="tile-state"></span><span class="tile-extra"></span></span>';
+    if (slide) attachTrack(node, { ...slide, onTap: tap, onHold: open, lock: true });
+    else attachPress(node, { onTap: tap, onHold: open });
     return { node, iconEl: node.querySelector('.tile-icon'), stateEl: node.querySelector('.tile-state'), extraEl: node.querySelector('.tile-extra') };
   }
 
-  // A light tile: a tap toggles, the pill is a slider for its brightness.
+  // A light tile: a tap toggles, a drag across it sets its brightness.
   // Another entity among the lights (a switch, a fan) toggles too and says
   // its state.
   function makeTile(cfg) {

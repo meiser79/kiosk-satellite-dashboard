@@ -56,14 +56,14 @@ html[data-theme="steampunk"] .clock { min-width: 2.36em; }   /* as wide as its w
 
 /* -------------------------------------------- brass plates and buttons */
 html[data-theme="steampunk"] .chip, html[data-theme="steampunk"] .pop-actions button, html[data-theme="steampunk"] .tab,
-html[data-theme="steampunk"] .fav-switch button, html[data-theme="steampunk"] .media-btn, html[data-theme="steampunk"] .tile-more,
+html[data-theme="steampunk"] .fav-switch button, html[data-theme="steampunk"] .media-btn,
 html[data-theme="steampunk"] .room-icon, html[data-theme="steampunk"] .ring-close, html[data-theme="steampunk"] .menu-handle, html[data-theme="steampunk"] .pop-tab, html[data-theme="steampunk"] .pop-close {
   background: #2a1b10; border: var(--border-w) solid #a9853a; color: #e2c27a;
 }
 /* what is on: polished brass, glowing */
 html[data-theme="steampunk"] .chip.on, html[data-theme="steampunk"] .tab.active, html[data-theme="steampunk"] .pop-actions button.on, html[data-theme="steampunk"] .fav-switch button.on,
 html[data-theme="steampunk"] .media-btn.play, html[data-theme="steampunk"] .room-off, html[data-theme="steampunk"] .room-card.current .room-icon, html[data-theme="steampunk"] .room-card.on .room-icon,
-html[data-theme="steampunk"] .ring-item.pressed, html[data-theme="steampunk"] .ring-item.on, html[data-theme="steampunk"] .ring-close.pressed, html[data-theme="steampunk"] .menu-item.pressed, html[data-theme="steampunk"] .tile-more.pressed {
+html[data-theme="steampunk"] .ring-item.pressed, html[data-theme="steampunk"] .ring-item.on, html[data-theme="steampunk"] .ring-close.pressed, html[data-theme="steampunk"] .menu-item.pressed {
   background: var(--brass); color: #2b1a08; border-color: #6e5214; text-shadow: 0 0.06rem 0 rgba(255, 238, 180, 0.6);
   box-shadow: 0 0 0.7rem rgba(var(--accent-rgb), 0.55);
 }
@@ -87,7 +87,6 @@ html[data-theme="steampunk"].shape-wide .tile, html[data-theme="steampunk"] .med
   box-shadow: inset 0 0 0 0.12rem #3a260f, inset 0 0 1.2rem rgba(0, 0, 0, 0.5), 0 0.3rem 0.8rem rgba(0, 0, 0, 0.45);
 }
 html[data-theme="steampunk"].shape-wide .tile.on { border-color: #d9b356; }
-html[data-theme="steampunk"] .tile-slider { background: #140c06; box-shadow: inset 0 0.1rem 0.25rem rgba(0, 0, 0, 0.8); border: 1px solid #6e5214; }
 
 /* -------------------------------------------------- the dial: a gauge */
 html[data-theme="steampunk"] .dial-track { stroke: #a9853a; stroke-linecap: butt; stroke-dasharray: 0.006 0.044; stroke-width: 5; }
