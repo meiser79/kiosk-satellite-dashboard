@@ -161,8 +161,9 @@ function getEvents(c, m) {
   c.send({ id: m.id, type: 'result', success: true, result: { context: { id: 'mock' }, response } });
 }
 // Music Assistant: the players it brings to Home Assistant, and its library.
-// Every radio but one and every playlist is a favourite. KEXP has no cover,
-// Radio Paradise's does not load: both keep their icon.
+// Every radio but one, every playlist and every album but one is a
+// favourite. KEXP has no cover, Radio Paradise's does not load: both keep
+// their icon.
 const MA_ENTRY = 'mock-music-assistant';   // the config entry of its integration
 const MA_PLAYERS = ['media_player.bedroom_speakers', 'media_player.living_room_speakers', 'media_player.office_speakers'];
 const cover = (name) => `/mock/cover/${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.svg`;
@@ -184,6 +185,12 @@ const LIBRARY = () => ({
     libItem('playlist', 'library://playlist/3', 'Focus'),
     libItem('playlist', 'library://playlist/4', 'Morning coffee'),
     libItem('playlist', 'library://playlist/5', 'Sunday vinyl'),
+  ],
+  album: [
+    libItem('album', 'library://album/1', 'Kind of Blue'),
+    libItem('album', 'library://album/2', 'Abbey Road'),
+    libItem('album', 'spotify://album/mock-random-access-memories', 'Random Access Memories'),
+    libItem('album', 'library://album/4', 'Blue Train', cover('Blue Train'), false),
   ],
 });
 let library = LIBRARY();
@@ -433,7 +440,7 @@ const server = http.createServer((req, res) => {
     return;
   }
   if (url.pathname === '/__calls') { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(calls)); return; }
-  if (url.pathname === '/__library' && req.method === 'POST') { // test hook: {radio?: [...], playlist?: [...]}, items as in LIBRARY; null: as it was
+  if (url.pathname === '/__library' && req.method === 'POST') { // test hook: {radio?: [...], playlist?: [...], album?: [...]}, items as in LIBRARY; null: as it was
     let body = '';
     req.on('data', (d) => { body += d; });
     req.on('end', () => { const lib = JSON.parse(body); library = lib ? { ...library, ...lib } : LIBRARY(); res.writeHead(200); res.end('ok'); });

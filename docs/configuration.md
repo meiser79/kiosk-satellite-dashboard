@@ -216,7 +216,7 @@ ring of buttons on the Spot. Each item has a `name`, an `icon` and one of:
 | `link: 'https://...'` | Any other web page |
 | `script: 'script.find_my_phone'` | Runs the Home Assistant script, and says so in a toast |
 | `items: [...]` | A folder of items, one level deep. On the Spot it opens as a ring of its own, *Back* in the middle; on the Show as a grid of cards, *Back* first |
-| `favorites: ['radio', 'playlist']` | (on a folder) Your Music Assistant favourites, before the folder's own items |
+| `favorites: ['radio', 'playlist', 'album']` | (on a folder) Your Music Assistant favourites, before the folder's own items |
 | `settings: true` | Settings: the theme and following the light, set on the kiosk itself (see [Settings](#settings)) |
 
 - `shape: 'round'` keeps an item to the Echo Spot, `shape: 'wide'` to the Echo Show.
@@ -225,11 +225,22 @@ ring of buttons on the Spot. Each item has a `name`, an `icon` and one of:
 
 ### Music Assistant favourites
 
-A folder with `favorites` lists your favourite radios and playlists in Music Assistant
-(the heart on a station or a playlist), with their covers and, with both kinds, a switch
-between them. They play on the room's `player`: the `media_player` entity Music Assistant
+A folder with `favorites` lists your favourite radios, playlists and albums in Music
+Assistant (the heart on a station, a playlist or an album), with their covers and, with
+more than one kind, a switch between them: their names, or on the Spot, with three kinds,
+their icons. They play on the room's `player`: the `media_player` entity Music Assistant
 creates for the group of speakers in that room (the kiosk itself is one of them once its
 Sendspin player is on). The page finds your Music Assistant instance from that player.
+
+To give the Spot and the Show different kinds, make the folder twice, each kept to its
+screen with `shape`, as `config.example.js` does:
+
+```js
+{ name: 'Music', icon: 'music', shape: 'round', favorites: ['radio', 'playlist'] },
+{ name: 'Music', icon: 'music', shape: 'wide', favorites: ['radio', 'playlist', 'album'], items: [
+  { name: 'Music Assistant', icon: 'music-box-multiple', link: 'ks://music-assistant' },
+] },
+```
 
 - A room without a `player` gets no favourites.
 - A `player` that Music Assistant does not provide makes the folder say *Music Assistant

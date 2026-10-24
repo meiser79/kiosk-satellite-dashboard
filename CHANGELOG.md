@@ -17,6 +17,10 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
 - **More icons**: some 200 more Material Design Icons to use in `config.js` without
   fetching them, such as `bed-king-outline`, `radiator`, `window-shutter`, `robot-vacuum`
   and `solar-power` ([Icons](docs/configuration.md#icons)).
+- **Albums**: Music Assistant favourites can be albums too: add `'album'` to a folder's
+  `favorites` in your `config.js` (`favorites: ['radio', 'playlist', 'album']`). With three
+  kinds the Spot's switch shows their icons ([Music Assistant
+  favourites](docs/configuration.md#music-assistant-favourites)).
 - **Satellite themes**: `satellite` and `satellite-light`, Kiosk Satellite's own look,
   dark and light, so the dashboard matches the app around it: its teal, flat charcoal
   or warm paper, large rounded cards and its typeface, Rubik

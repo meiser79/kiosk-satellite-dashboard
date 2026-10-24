@@ -61,9 +61,9 @@ What the page does, screen by screen. [Configuration](configuration.md) says how
   grid of cards with *Back* first. An item can be kept to the Spot or to the Show. *Now
   playing* shows only while Kiosk Satellite has something to play (its versions from
   October 2026 say so; with an older one the item stays).
-- **Music Assistant favourites.** A folder can hold your favourite radios and playlists
-  from Music Assistant (*Music*), shown with their covers, a switch at the top of the
-  screen between the two. Picking one plays it on the speakers of the room the kiosk
+- **Music Assistant favourites.** A folder can hold your favourite radios, playlists and
+  albums from Music Assistant (*Music*), shown with their covers, a switch at the top of
+  the screen between them. Picking one plays it on the speakers of the room the kiosk
   belongs to. The list comes from Music Assistant each time the folder opens, so a
   station you star there shows up the next time; the Spot's ring shows the first ten by
   name. A script or a favourite says what it did in a short toast.

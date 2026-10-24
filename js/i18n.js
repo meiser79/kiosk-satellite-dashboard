@@ -42,11 +42,12 @@ window.KIOSK_I18N = (() => {
       allOff: 'All lights off', allOffLabel: 'Turn off every light',
       // the menu
       opensInApp: 'Opens in Kiosk Satellite',
-      radios: 'Radios', playlists: 'Playlists',
+      radios: 'Radios', playlists: 'Playlists', albums: 'Albums',
       loading: 'Loading…',
       maNoAnswer: 'Music Assistant did not answer',
       noRadios: 'No favourite radios in Music Assistant',
       noPlaylists: 'No favourite playlists in Music Assistant',
+      noAlbums: 'No favourite albums in Music Assistant',
       // Settings
       theme: 'Theme', followLight: 'Follow the light', version: 'Version', default: 'Default',
       themes: {},   // the names of themes without one in themes/themes.js: their key, capitalised
@@ -85,11 +86,12 @@ window.KIOSK_I18N = (() => {
       roomOff: 'Lichter in {room} ausschalten',
       allOff: 'Alle Lichter aus', allOffLabel: 'Alle Lichter ausschalten',
       opensInApp: 'Öffnet sich in Kiosk Satellite',
-      radios: 'Radiosender', playlists: 'Playlists',
+      radios: 'Radiosender', playlists: 'Playlists', albums: 'Alben',
       loading: 'Lädt…',
       maNoAnswer: 'Music Assistant hat nicht geantwortet',
       noRadios: 'Keine Lieblingssender in Music Assistant',
       noPlaylists: 'Keine Lieblings-Playlists in Music Assistant',
+      noAlbums: 'Keine Lieblingsalben in Music Assistant',
       theme: 'Design', followLight: 'Dem Licht folgen', version: 'Version', default: 'Standard',
       themes: { dark: 'Dunkel', light: 'Hell' },
       notWith: 'Nicht mit {theme}', ownColour: '{theme} behält die eigene Farbe', dashboard: 'Kiosk-Dashboard {version}',

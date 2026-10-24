@@ -1,5 +1,5 @@
 // Checks on the Echo Show 5 (960×480) in the bedroom and the Echo Show 8 (1280×800) in the living room.
-import { sleep, check, openPage, mockStates, mockSet, lastCall, callLog, failCalls, ROOT_ITEMS, RADIOS, PLAYLISTS, text, has, activeRoom, lightsOn, onScreen, tapTab, load } from './harness.mjs';
+import { sleep, check, openPage, mockStates, mockSet, lastCall, callLog, failCalls, ROOT_ITEMS, RADIOS, PLAYLISTS, ALBUMS, text, has, activeRoom, lightsOn, onScreen, tapTab, load } from './harness.mjs';
 
 // 4. Bedroom Show (Echo Show 5, 960×480): rail on the right; light theme.
 export async function bedroomShow5() {
@@ -115,6 +115,8 @@ export async function bedroomShow5() {
   await sleep(400);
   await p.tapSel('#folder-menu .fav-switch button:nth-child(2)');
   check(await p.waitFor(`${folderNames} === ${JSON.stringify(`Back,${PLAYLISTS},Music Assistant`)}`) && await p.eval(`document.getElementById('folder-menu').classList.contains('open') && document.querySelector('#folder-menu .fav-switch .on').textContent === 'Playlists'`), 'show 5: Playlists swaps the radios for the playlists, the folder still open');
+  await p.tapSel('#folder-menu .fav-switch button:nth-child(3)');
+  check(await p.waitFor(`${folderNames} === ${JSON.stringify(`Back,${ALBUMS},Music Assistant`)}`) && await p.eval(`document.querySelector('#folder-menu .fav-switch .on').textContent === 'Albums'`), 'show 5: Albums swaps them for the favourite albums');
   const swr = await p.rect('#folder-menu .fav-switch');
   await p.tap(swr.l - 40, swr.y); await sleep(400);
   check(await p.eval(`document.getElementById('folder-menu').hidden`), 'a tap beside the switch closes the folder, as beside the cards');
@@ -138,6 +140,14 @@ export async function bedroomShow5() {
   await p.tapSel('#folder-menu .room-card:nth-child(2) .room-go');
   fl = await lastCall();
   check(fl.domain === 'music_assistant' && fl.service === 'play_media' && fl.target.entity_id === (await p.eval(`window.KIOSK_CONFIG.rooms.bedroom.player`)) && fl.data.media_id === 'library://radio/7' && fl.data.media_type === 'radio', `show 5 showing the office: a radio still plays on the bedroom's player, the room this kiosk belongs to (got ${JSON.stringify(fl)})`);
+  await p.tapSel('#menu .menu-item[aria-label="Music"]');
+  await sleep(400);
+  await p.tapSel('#folder-menu .fav-switch button:nth-child(3)');
+  await p.waitFor(`${folderNames} === ${JSON.stringify(`Back,${ALBUMS},Music Assistant`)}`);
+  await p.tapSel('#folder-menu .room-card:nth-child(4) .room-go');
+  fl = await lastCall();
+  check(fl.domain === 'music_assistant' && fl.service === 'play_media' && fl.data.media_id === 'spotify://album/mock-random-access-memories' && fl.data.media_type === 'album' && await p.waitFor(`document.getElementById('toast').textContent === 'Music · Random Access Memories'`),
+    `show 5: an album plays through Music Assistant, and a toast says which (got ${JSON.stringify(fl)})`);
   bar = await box('.main .bar.group');
   const vw = await box('');
   check(bar.h > 250 && Math.abs((bar.l + bar.r) / 2 - (vw.l + vw.r) / 2) < 10 && !(await has(p, '.view.active .tile')), 'office: the ceiling light\'s dial alone, in the middle');

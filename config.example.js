@@ -51,9 +51,9 @@ window.KIOSK_CONFIG = {
   //              opens as a ring of its own, Back in the middle; on the Show as
   //              a grid of cards, Back first.
   //   favorites  (a folder, before its items) your Music Assistant favourites:
-  //              'radio', 'playlist' or both, then with a switch at the top of
-  //              the screen. They play on the player of the room this kiosk
-  //              belongs to (the room's `player`, below) and show their covers.
+  //              'radio', 'playlist', 'album', or several, then with a switch at
+  //              the top of the screen. They play on the player of the room this
+  //              kiosk belongs to (the room's `player`, below) and show their covers.
   //              The Spot's ring shows the first ten by name.
   //   settings   true: Settings, a folder for the theme and following the light,
   //              set on the kiosk itself, which keeps them (over the theme
@@ -72,8 +72,11 @@ window.KIOSK_CONFIG = {
         { name: 'Alex', icon: 'cellphone', script: 'script.find_alex_phone' }, // <-- entity
         { name: 'Sam', icon: 'cellphone', script: 'script.find_sam_phone' },     // <-- entity
       ] },
-      { name: 'Music', icon: 'music', favorites: ['radio', 'playlist'], items: [
-        { name: 'Music Assistant', icon: 'music-box-multiple', link: 'ks://music-assistant', shape: 'wide' },
+      // Music twice, one for each screen: radios and playlists on the Spot,
+      // albums too and the Music Assistant page on the Show.
+      { name: 'Music', icon: 'music', shape: 'round', favorites: ['radio', 'playlist'] },
+      { name: 'Music', icon: 'music', shape: 'wide', favorites: ['radio', 'playlist', 'album'], items: [
+        { name: 'Music Assistant', icon: 'music-box-multiple', link: 'ks://music-assistant' },
       ] },
       { name: 'Settings', icon: 'cog-outline', settings: true },
     ],
