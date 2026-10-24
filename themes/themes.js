@@ -23,4 +23,7 @@ window.KIOSK_THEMES = {
   starship: { scheme: 'dark', icon: 'rocket-launch-outline', files: ['starship/theme.css?v=1.3.0'] },
   matrix: { scheme: 'dark', mono: true, icon: 'pill', files: ['matrix/theme.css?v=1.3.0', 'matrix/rain.js?v=1.3.0'] },
   synthwave: { scheme: 'dark', icon: 'weather-sunset', files: ['synthwave/theme.css?v=1.3.0', 'synthwave/scene.js?v=1.3.0'] },
+  // Kiosk Satellite's own look, dark and light: two stylesheets in one folder, each theme its own
+  satellite: { scheme: 'dark', icon: 'satellite-variant', files: ['satellite/theme.css?v=1.3.0'] },
+  'satellite-light': { name: 'Satellite light', scheme: 'light', icon: 'satellite-variant', files: ['satellite/light.css?v=1.3.0'] },
 };

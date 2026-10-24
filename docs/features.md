@@ -67,9 +67,10 @@ What the page does, screen by screen. [Configuration](configuration.md) says how
   belongs to. The list comes from Music Assistant each time the folder opens, so a
   station you star there shows up the next time; the Spot's ring shows the first ten by
   name. A script or a favourite says what it did in a short toast.
-- **Themes.** Twelve to choose from: dark, light, Nord, E-ink, an amber CRT, a handheld
+- **Themes.** Fourteen to choose from: dark, light, Nord, E-ink, an amber CRT, a handheld
   console's greens, two desktops of the early 2000s, steampunk brass, a starship's
-  console, and two that move: Matrix's falling code and a synthwave sunset. One for the whole house or one per kiosk, each with its own accent colour, or
+  console, two that move: Matrix's falling code and a synthwave sunset, and Kiosk
+  Satellite's own look, dark and light. One for the whole house or one per kiosk, each with its own accent colour, or
   yours. The accent can take the colour of the light the dial
   controls (the main light on the Show, the light in the main slot on the Spot), fading
   from one to the next. A picture can sit behind every room, or each room its own, faded

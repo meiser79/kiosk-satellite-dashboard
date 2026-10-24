@@ -21,7 +21,7 @@ dependencies, so it loads in a blink where the Home Assistant frontend takes sec
 | --- | --- | --- | --- |
 | <img src="docs/images/themes/synthwave-spot.webp" width="180" alt="Synthwave on an Echo Spot"> | <img src="docs/images/themes/starship-spot.webp" width="180" alt="Starship on an Echo Spot"> | <img src="docs/images/themes/aqua-spot.webp" width="180" alt="Aqua on an Echo Spot"> | <img src="docs/images/themes/crt-spot.webp" width="180" alt="CRT on an Echo Spot"> |
 
-Twelve themes, from e-ink to an early 2000s desktop: the [theme gallery](docs/theme-gallery.md)
+Fourteen themes, from e-ink to an early 2000s desktop and Kiosk Satellite's own look: the [theme gallery](docs/theme-gallery.md)
 shows them all.
 
 *(Demo and screenshots from the mock Home Assistant in `tools/`, with the example configuration.)*

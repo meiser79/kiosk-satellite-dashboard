@@ -1,0 +1,26 @@
+/* Satellite light: Kiosk Satellite's light look, the twin of Satellite
+   (theme.css, which says how it is made), on warm paper. */
+@font-face { font-family: "Kiosk Rubik"; src: url("rubik.woff2") format("woff2"); font-weight: 300 900; font-display: block; }
+
+/* warm paper, the cards white on it */
+html[data-theme="satellite-light"] {
+  --accent-rgb: 69, 127, 129;
+  --on-accent: #ffffff;
+  --shadow: 0 0 0 transparent;
+  --r: 1.5rem;
+  --r-panel: 1.5rem;
+  --r-inner: 0.75rem;
+  --font: "Kiosk Rubik", system-ui, sans-serif;
+  --bg: #f5f4f2;
+  --bg-2: #e8e6e1;
+  --surface: rgba(255, 255, 255, 0.85);
+  --surface-2: rgba(0, 0, 0, 0.06);
+  --surface-solid: #ffffff;
+  --border: rgba(0, 0, 0, 0.08);
+  --text: #444444;
+  --muted: #5d6066;
+  --danger: #a9501f;
+  --veil-rgb: 245, 244, 242;
+  --lift: 0 0 0.6rem rgba(245, 244, 242, 0.9);
+  --pop-scrim: rgba(245, 244, 242, 0.94);
+}

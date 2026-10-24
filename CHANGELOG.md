@@ -17,6 +17,10 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
 - **More icons**: some 200 more Material Design Icons to use in `config.js` without
   fetching them, such as `bed-king-outline`, `radiator`, `window-shutter`, `robot-vacuum`
   and `solar-power` ([Icons](docs/configuration.md#icons)).
+- **Satellite themes**: `satellite` and `satellite-light`, Kiosk Satellite's own look,
+  dark and light, so the dashboard matches the app around it: its teal, flat charcoal
+  or warm paper, large rounded cards and its typeface, Rubik
+  ([gallery](docs/theme-gallery.md#satellite)).
 
 ## 1.3.0 - 2026-10-26
 

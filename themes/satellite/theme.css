@@ -1,0 +1,32 @@
+/* Satellite: after Kiosk Satellite's own look (its
+   app/lib/ui/theme.dart), so the dashboard sits with the app around it.
+   Flat: no shadows, the cards lifted from the ground by their tone and a
+   hairline edge; large rounded cards, pills for chips and rows; its teal
+   for what is on (a step deeper than the app's #488284, so that white on
+   it stays legible), its rust for an alert or Home Assistant lost; a
+   charcoal ground; everything in Rubik (OFL: OFL.txt). Satellite light,
+   light.css, is its twin on warm paper. */
+@font-face { font-family: "Kiosk Rubik"; src: url("rubik.woff2") format("woff2"); font-weight: 300 900; font-display: block; }
+
+/* charcoal, lit at the top and settling deeper below */
+html[data-theme="satellite"] {
+  --accent-rgb: 69, 127, 129;
+  --on-accent: #ffffff;
+  --shadow: 0 0 0 transparent;
+  --r: 1.5rem;
+  --r-panel: 1.5rem;
+  --r-inner: 0.75rem;
+  --font: "Kiosk Rubik", system-ui, sans-serif;
+  --bg: #202124;
+  --bg-2: #18191b;
+  --surface: rgba(255, 255, 255, 0.045);
+  --surface-2: rgba(255, 255, 255, 0.1);
+  --surface-solid: #2a2b2f;
+  --border: rgba(255, 255, 255, 0.09);
+  --text: #e8eaed;
+  --muted: #b6babf;
+  --danger: #d97e4c;
+  --veil-rgb: 32, 33, 36;
+  --on-tile: #202124;
+  --pop-scrim: rgba(32, 33, 36, 0.92);
+}
