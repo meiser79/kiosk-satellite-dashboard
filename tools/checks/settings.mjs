@@ -54,9 +54,9 @@ export async function settingsSpot() {
   await sleep(350);
   const ring = await p.eval(`(() => { const items = [...document.querySelectorAll('#menu .ring-item')], mid = document.querySelector('#menu .ring-close');
     return { names: items.map((e) => e.textContent).join(), back: mid.classList.contains('back'), follow: items[1] && items[1].className + ' ' + items[1].getAttribute('aria-pressed'),
-      themeIcon: items[0] && items[0].querySelector('svg path').getAttribute('d') === KIOSK_ICONS['weather-night'], themeMore: !!(items[0] && items[0].querySelector('.more')) }; })()`);
+      themeIcon: items[0] && items[0].querySelector('svg path').getAttribute('d') === KIOSK_ICONS['weather-night'], themeMore: !document.querySelector('#menu .more') }; })()`);
   check(ring.names === 'Theme,Follow the light,Version' && ring.back, `spot: Settings opens a ring of Theme, Follow the light and Version, Back in the middle (got ${ring.names})`);
-  check(ring.themeIcon && ring.themeMore && /\bon\b/.test(ring.follow) && ring.follow.endsWith('true'), `spot: Theme bears the dark theme's icon and an arrow, Follow the light is on, as config.js says (got ${ring.follow})`);
+  check(ring.themeIcon && ring.themeMore && /\bon\b/.test(ring.follow) && ring.follow.endsWith('true'), `spot: Theme bears the dark theme's icon and no arrow, Follow the light is on, as config.js says (got ${ring.follow})`);
   check(await p.eval(RING_FITS), 'spot: the three inside the rim, apart, their names in their buttons');
   await p.shot('spot-settings.png');
   await p.tapSel('#menu .ring-item[aria-label="Version"]');

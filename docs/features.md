@@ -14,26 +14,30 @@ What the page does, screen by screen. [Configuration](configuration.md) says how
   for things like a projector; when the header has no room for their names, they show
   their icons alone) and a large 24 hour clock. Under it, the dial for
   the room's lights: drag along its arc or across it to dim, tap the name in its middle to
-  toggle, long-press for the panel. Beside it the light tiles: tap toggles, the pill at
-  the bottom is that light's own slider, long-press or the dots open the panel. After them, the room's covers and
-  thermostats as tiles of their own (see *Covers and thermostats*). Both grow
+  toggle, long-press for the panel. Beside it the light tiles, two across: each lies across, its
+  icon, its name and its state, filled from the left as far as its level; tap toggles, a
+  drag across it dims that light alone, long-press opens the panel. After them, the room's
+  covers and thermostats as tiles of their own (see *Covers and thermostats*). Both grow
   to fill the screen; with the media card on, the dial shrinks to a small ring beside the
   name.
 - **Spot.** The dial is a thick rim along the edge of the round screen. From the top: the
   room title, the sensors and the modes as round icons; a large power button for the
   room's lights beside their name and state, faint arrows either side; under it a strip
-  of round light buttons, three in view, that scrolls one light at a time (the media
-  card at its end); a large tab for the menu. No clock. Only the rim dims: a swipe
-  across the main light slides the room's lights through, one after another, like a
+  of tiles lying across as on the Show (icon, name, state, filled as far as the level), two
+  side by side inside the round screen (the media card at its end); a tap toggles, a drag
+  across a tile sets its level as on the Show, a long-press opens the panel; the dots under
+  them move the strip two tiles at a time (a swipe on them, or a tap beside them); a large
+  tab for the menu. No clock. A swipe across the main light dims nothing: it slides
+  the room's lights through, one after another, like a
   carousel (a tap on an arrow does too), and the rim and power button follow the one
   shown (the end of the screensaver brings back the room's main light).
 - **Covers and thermostats.** A room's shutters, blinds, awnings and garage door, and its
-  heating or air conditioning, are tiles after the lights (round buttons at the end of
-  the strip on the Spot). A cover's tile is lit while it is open, its icon shows it open or
-  closed; a tap opens or closes it, or stops it on its way, and its pill sets the
+  heating or air conditioning, are tiles after the lights (at the end of the strip on
+  the Spot). A cover's tile is lit while it is open, its icon shows it open or
+  closed; a tap opens or closes it, or stops it on its way, and a drag across it sets the
   position. Its panel has Open, Stop and Close, the position, and the tilt of slats that
-  turn. A thermostat's tile is orange while it heats and blue while it cools, its pill sets
-  the target temperature, the room's own after its name; a tap turns it on or off. Its
+  turn. A thermostat's tile is orange while it heats and blue while it cools, a drag across
+  it sets the target temperature, the room's own after it; a tap turns it on or off. Its
   panel has the target and chips for its modes and presets.
 - **Single-light room.** Just the dial, in the middle of the screen.
 - **Room menu.** Tap the room title to change room. Every room says how many of its lights

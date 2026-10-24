@@ -74,14 +74,8 @@ html[data-theme="starship"].shape-wide .tile:not(.on) { --lc: #3a3a4a; }
 html[data-theme="starship"] .tile-name { color: var(--lc-peach); font-weight: 700; }
 html[data-theme="starship"] .tile-icon { background: none; color: var(--lc-blue); }
 html[data-theme="starship"].shape-wide .tile.on .tile-icon { background: none; color: rgb(var(--tile-rgb)); }
-html[data-theme="starship"] .tile-more { background: var(--lc); color: #000000; border-radius: 999px; width: 2.6rem; }
-html[data-theme="starship"] .tile-slider { background: #1d1d24; border-radius: 999px; }
-html[data-theme="starship"] .tile-slider .fill { background: rgb(var(--tile-rgb)); }
-html[data-theme="starship"] .tile-slider .tile-state { color: #000000; mix-blend-mode: normal; }
-html[data-theme="starship"] .tile:not(.on) .tile-slider .tile-state { color: var(--muted); }
-/* on the Spot, round lamps in their own colour */
-html[data-theme="starship"].shape-round .tile-icon { background: #1d1d24; color: var(--lc-blue); }
-html[data-theme="starship"].shape-round .tile.on .tile-icon { background: rgb(var(--tile-rgb)); color: #000000; box-shadow: none; }
+/* its level: a bar in its colour along the foot */
+html[data-theme="starship"] .tile > .tile-fill { top: auto; left: 0.6rem; bottom: 0.35rem; height: 0.4rem; width: calc((100% - 1.2rem) * var(--p, 0)); border-radius: 999px; background: rgb(var(--tile-rgb)); }
 
 /* ------------------------------------------ the dial: a ring of blocks */
 html[data-theme="starship"] .dial-track { stroke: #26262f; stroke-linecap: butt; stroke-dasharray: 0.031 0.004; }
@@ -97,7 +91,6 @@ html[data-theme="starship"] .menu-item:nth-child(3n+2) { background: var(--lc-bl
 html[data-theme="starship"] .menu-item:nth-child(3n+3) { background: var(--lc-peach); }
 html[data-theme="starship"] .menu-item:first-child { border-radius: 1.6rem 0.2rem 0.2rem 0.2rem; }
 html[data-theme="starship"] .menu-item:last-child { border-radius: 0.2rem 0.2rem 0.2rem 1.6rem; }
-html[data-theme="starship"] .menu-item .more { background: #000000; color: var(--lc-peach); }
 html[data-theme="starship"] .ring-item { background: #000000; border: 0.25rem solid var(--lc-lilac); color: var(--lc-peach); }
 html[data-theme="starship"] .ring-item .icon { color: var(--lc-lilac); }
 html[data-theme="starship"] .ring-item.on .icon { color: inherit; }

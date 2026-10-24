@@ -55,7 +55,7 @@ html[data-theme="xp"] .glow, html[data-theme="xp"].shape-round .views::before { 
 /* on the desktop, white text with a shadow; in the windows and on the buttons, black */
 html[data-theme="xp"] .view { --text: #ffffff; --muted: #eef4ff; color: var(--text); text-shadow: 0.06rem 0.08rem 0.12rem rgba(0, 0, 0, 0.8); }
 html[data-theme="xp"] .view .chip, html[data-theme="xp"] .view .slider, html[data-theme="xp"] .view .media,
-html[data-theme="xp"].shape-wide .view .tile { --text: #000000; --muted: #4b4b4b; text-shadow: none; }
+html[data-theme="xp"] .view .tile { --text: #000000; --muted: #4b4b4b; text-shadow: none; }
 html[data-theme="xp"] .view .sensor.on { color: #c6f7a8; }
 /* an alert on the desktop: the yellow of a warning balloon, legible on the sky */
 html[data-theme="xp"] .view { --danger: #ffe066; }
@@ -97,23 +97,18 @@ html[data-theme="xp"].shape-wide .tile {
 }
 html[data-theme="xp"].shape-wide .tile::before { display: none; }
 html[data-theme="xp"].shape-wide .tile.on { border-color: #0a4fd6; }
-html[data-theme="xp"].shape-wide .tile-text { position: absolute; left: 0.6rem; right: 2.5rem; top: 0; height: 2.1rem; margin: 0; align-items: center; }
+html[data-theme="xp"].shape-wide .tile-text { position: absolute; grid-area: auto; left: 0.6rem; right: 0.6rem; top: 0; height: 2.1rem; margin: 0; align-items: center; }
+html[data-theme="xp"].shape-wide .tile-text > * { line-height: 2.1rem; }   /* the name in the middle of the bar */
 html[data-theme="xp"].shape-wide .tile-name { color: #ffffff; font-family: var(--font-title); font-weight: 700; text-shadow: 0.06rem 0.06rem 0 #0f1089; }
-html[data-theme="xp"].shape-wide .tile-extra { color: #d8e6ff; }
-html[data-theme="xp"].shape-wide .tile-slider, html[data-theme="xp"].shape-wide .tile > .tile-state { margin-top: auto; }
 /* the room's events: their period in the title bar, the mark of where they are at its end */
 html[data-theme="xp"].shape-wide .events .tile-text { display: flex; }
 html[data-theme="xp"].shape-wide .events-at { top: 0; height: 2.1rem; display: flex; align-items: center; color: #d8e6ff; }
-/* its button in the title bar, as a window's */
-html[data-theme="xp"] .tile-more {
-  top: 0.32rem; right: 0.35rem; width: 1.45rem; height: 1.45rem; border-radius: 0.2rem; border: 1px solid #ffffff; font-size: 1rem;
-  background: linear-gradient(180deg, #73a5f9 0%, #2c6be7 45%, #1455e0 100%); color: #ffffff;
-}
-html[data-theme="xp"] .tile-more.pressed { background: linear-gradient(180deg, #3f78e9, #1240b8); }
-/* its level: a shining bar in its colour */
-html[data-theme="xp"] .tile-slider { background: #ffffff; border: 1px solid #686868; border-radius: 0.2rem; }
-html[data-theme="xp"] .tile-slider .fill {
-  inset: 0.18rem; border-radius: 0.1rem;
+/* its icon and state side by side under the bar, its level a shining bar
+   in its colour along the window's foot */
+html[data-theme="xp"].shape-wide .lights > .tile:not(.events) { grid-template-areas: "icon state"; padding-top: 2.35rem; padding-bottom: 1rem; }
+html[data-theme="xp"].shape-wide .lights > .tile:not(.events) > .tile-line { align-self: center; }
+html[data-theme="xp"] .tile > .tile-fill {
+  top: auto; left: 0.45rem; bottom: 0.3rem; height: 0.5rem; width: calc((100% - 0.9rem) * var(--p, 0)); border-radius: 0.1rem;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.12)),
     linear-gradient(90deg, rgba(var(--tile-rgb), 0.55), rgb(var(--tile-rgb)));
 }
@@ -153,7 +148,6 @@ html[data-theme="xp"] .ring-item:nth-child(5n + 5) .icon { color: #6a3fb8; }
 html[data-theme="xp"] .ring-item.pressed, html[data-theme="xp"] .ring-item.on { background: #316ac5; color: #ffffff; }
 html[data-theme="xp"] .ring-item.pressed .icon, html[data-theme="xp"] .ring-item.on .icon { color: inherit; }
 html[data-theme="xp"] .ring-item.with-cover.pressed { box-shadow: 0 0 0 0.2rem #316ac5; }
-html[data-theme="xp"] .more { border-radius: 0.15rem; background: linear-gradient(180deg, #5fbf5f, #2e852e); color: #ffffff; }
 html[data-theme="xp"] .ring-close { border: 1px solid #ffffff; border-radius: 0.35rem; color: #ffffff; background: var(--xp-close); box-shadow: 0.06rem 0.1rem 0.3rem rgba(0, 0, 0, 0.35); }
 html[data-theme="xp"] .ring-close.pressed { background: linear-gradient(180deg, #b7330b, #d8562b 60%, #e07a55); }
 html[data-theme="xp"] .ring-close.back { border-radius: 50%; background: radial-gradient(circle at 35% 30%, #a8e48c 0%, #4cae3a 45%, #2b7d22 100%); }

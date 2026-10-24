@@ -127,16 +127,16 @@ window.KIOSK_CONFIG = {
   //                  members Home Assistant does not list, the room's own tiles
   //                  that are on). A tile that is another room's main light
   //                  counts there. The power button turns off what it counts.
-  // lights           tiles: tap toggles, long-press (or the dots) opens the detail panel.
+  // lights           tiles: tap toggles, a drag across dims, long-press opens the detail panel.
   //                  controls: extra entities shown in the panel (select, number, switch),
   //                  e.g. the palette / preset / speed / intensity entities WLED creates.
   //                  A room with one light needs no tiles: `main` alone is enough.
   // covers           tiles after the lights for shutters, blinds, awnings, curtains, a
-  //                  garage door: tap opens, closes or stops; the pill sets the position.
+  //                  garage door: tap opens, closes or stops; a drag across sets the position.
   //                  The icon follows the kind and whether it is open (or set icon,
   //                  and iconOpen for the open one).
-  // climate          tiles after the covers for thermostats: tap turns on or off; the
-  //                  pill sets the target temperature; the panel has modes and presets.
+  // climate          tiles after the covers for thermostats: tap turns on or off; a drag
+  //                  across sets the target temperature; the panel has modes and presets.
   // media            a player card, shown while showWhen holds (or always)
   // player           the Music Assistant player (or group of players) the menu's
   //                  favourites play on, for the kiosks that belong to this room

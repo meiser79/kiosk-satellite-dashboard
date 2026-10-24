@@ -14,15 +14,18 @@
 .shape-wide .controls.with-media .main { flex: none; }
 /* the rail on the right: a column of its own under the header */
 .shape-wide .app.with-rail .view { grid-template-columns: minmax(0, 22rem) minmax(0, 1fr) calc(var(--rail-item) + 0.4rem); grid-template-areas: "top top top" "controls lights ."; }
-/* tiles grow with the room there is, up to a point; past that the grid scrolls */
+/* the tiles, two across, of one shape on every Show: two and a half times
+   as wide as tall (taller only for what they hold); past the screen's
+   height the grid scrolls */
 .shape-wide .lights {
-  grid-area: lights; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(8.6rem, 13rem);
+  grid-area: lights; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: min-content; gap: 0.6rem;
   overflow-y: auto; touch-action: pan-y; scrollbar-width: none; padding: 0.15rem; margin: -0.15rem;
 }
 .shape-wide .lights::-webkit-scrollbar { display: none; }
 .shape-wide .lights[data-count="1"] { grid-template-columns: minmax(0, 1fr); }
-.shape-wide .lights[data-count="3"], .shape-wide .lights[data-count="5"], .shape-wide .lights[data-count="6"], .shape-wide .lights[data-count="9"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.shape-wide .lights[data-count="7"], .shape-wide .lights[data-count="8"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+/* a tile (lying across, view.css): a drag across it sets its level, a
+   swipe up or down scrolls the grid */
+.shape-wide .lights > :where(.tile:not(.events)) { aspect-ratio: 5 / 2; min-height: min-content; touch-action: pan-y; }
 /* a room with a single light: its dial alone, in the middle */
 .shape-wide .view.solo .controls { grid-column-end: -1; justify-self: center; width: 100%; max-width: 30rem; }
 /* short wide screens (Echo Show 5): a little tighter */

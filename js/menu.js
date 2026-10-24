@@ -28,12 +28,12 @@
   const kindOf = (it) => (isFolder(it) ? 'folder' : it.script ? 'script' : it.link ? 'link' : '');
 
   /* ------------------------------------------------------------ entries */
-  // An entry of the menu: an icon and a name; a tap picks it. A folder's entry
-  // carries a small arrow in its corner: it opens more. A setting that is on
-  // takes the accent; one that does not apply is faded.
+  // An entry of the menu: an icon and a name; a tap picks it (a folder's
+  // opens it). A setting that is on takes the accent; one that does not
+  // apply is faded.
   function makeItem(item, cls, pick) {
     const folder = isFolder(item) || !!item.opens;
-    const node = el('button', cls + (folder ? ' folder' : '') + (item.on ? ' on' : '') + (item.idle ? ' idle' : ''), icon(item.icon || 'apps') + `<span class="item-label">${esc(item.name || '')}</span>` + (folder ? `<span class="more">${icon('chevron-right')}</span>` : ''));
+    const node = el('button', cls + (folder ? ' folder' : '') + (item.on ? ' on' : '') + (item.idle ? ' idle' : ''), icon(item.icon || 'apps') + `<span class="item-label">${esc(item.name || '')}</span>`);
     node.setAttribute('aria-label', item.name || item.link || '');
     if (item.on != null) node.setAttribute('aria-pressed', String(!!item.on));
     if (item.cover) addCover(node, node, item.cover);

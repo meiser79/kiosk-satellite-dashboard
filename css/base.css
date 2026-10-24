@@ -46,6 +46,9 @@
   transition: --accent-rgb 0.6s ease;
 }
 html.theme-loading { transition: none; }
+/* an Echo Show (any wide screen lying down) scaled by its width too, the
+   smaller of the two: the Show 8 is then the Show 5, larger */
+@media (orientation: landscape) { html.shape-wide { font-size: clamp(12px, min(3.4vmin, 1.7vw), 24px); } }
 html[data-scheme="light"] {
   --accent-rgb: 156, 93, 14;          /* a deeper amber, legible on the light background */
   --on-accent: #ffffff;
@@ -68,7 +71,7 @@ html[data-scheme="light"] {
    js/popover.js). Its text has that colour too, so a tile's level is a
    light fill with an edge, under the text rather than as dark as it. */
 html.mono .tile, html.mono .popover { --tile-rgb: var(--accent-rgb) !important; }
-html.mono .tile-slider .fill { background: rgba(var(--tile-rgb), 0.22); box-shadow: inset -0.15rem 0 0 rgb(var(--tile-rgb)); }
+html.mono .tile-fill { background: rgba(var(--tile-rgb), 0.22); box-shadow: inset -0.15rem 0 0 rgb(var(--tile-rgb)); }
 
 /* -------------------------------------------------------------- reset */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }

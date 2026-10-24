@@ -24,8 +24,9 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
 - **Covers and thermostats**: a room's `covers` (shutters, blinds, awnings, curtains, a
   garage door) and `climate` (a heating, an air conditioner) in your `config.js` are tiles
   after the lights: a tap opens, closes or stops a cover, or turns a thermostat on or off;
-  the pill sets the position or the target temperature; the panel has Open, Stop and Close
-  and the tilt, or the modes and presets ([Rooms](docs/configuration.md#rooms)).
+  a drag across the tile sets the position or the target temperature; the panel has Open,
+  Stop and Close and the tilt, or the modes and presets
+  ([Rooms](docs/configuration.md#rooms)).
 - **Icons alone on the Spot's menu**: `menu: { labels: false }` in your `config.js` leaves
   the names off the ring's buttons, which take the size of the main light's power button;
   the favourites keep theirs ([Menu](docs/configuration.md#menu)).
@@ -33,6 +34,20 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
   dark and light, so the dashboard matches the app around it: its teal, flat charcoal
   or warm paper, large rounded cards and its typeface, Rubik
   ([gallery](docs/theme-gallery.md#satellite)).
+
+### Changed
+
+- **Tiles**: on the Echo Show they lie across, two to a row: the icon, beside it the name
+  and under that the state, the tile filled from the left as far as its level. A drag
+  across a tile sets its level (the pill at the bottom is gone), a long-press opens its
+  panel (the dots in its corner are gone). They are less tall, and a name has room. On
+  the Spot the strip's round buttons are such tiles too, two side by side inside the
+  round screen, and a drag across one sets its level as on the Show; a swipe on the dots
+  under them, or a tap beside them, brings the next two.
+- **No arrows on the menu's folders**: Music, Settings and Find my phone open as before,
+  without the small arrow in their corner.
+- **Echo Show 8**: laid out as the Show 5, larger: the page scales with the width of a
+  Show as well as its height, so the dial and the tiles share the screen alike.
 
 ## 1.3.0 - 2026-10-26
 

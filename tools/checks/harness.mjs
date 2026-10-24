@@ -99,6 +99,7 @@ async function openPage(width, height, scale = 1) {
     async tap(x, y) { await this.touch('touchStart', [{ x, y }]); await sleep(60); await this.touch('touchEnd', []); },
     async tapSel(sel) { const r = await this.rect(sel); if (!r) throw new Error('no element ' + sel); await this.tap(r.x, r.y); await sleep(300); },
     async longPress(x, y, ms = 700) { await this.touch('touchStart', [{ x, y }]); await sleep(ms); await this.touch('touchEnd', []); },
+    async longPressSel(sel) { const r = await this.rect(sel); if (!r) throw new Error('no element ' + sel); await this.longPress(r.x, r.y); await sleep(300); },
     async drag(x1, y1, x2, y2, steps = 10) {
       await this.touch('touchStart', [{ x: x1, y: y1 }]);
       for (let i = 1; i <= steps; i++) { await this.touch('touchMove', [{ x: x1 + ((x2 - x1) * i) / steps, y: y1 + ((y2 - y1) * i) / steps }]); await sleep(40); }

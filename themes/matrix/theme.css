@@ -56,8 +56,8 @@ html[data-theme="matrix"] .dial.rim .dial-knob .knob { transform: scale(1.7); }
 html[data-theme="matrix"] .chip.on, html[data-theme="matrix"] .power, html[data-theme="matrix"] .tab.active, html[data-theme="matrix"] .pop-actions button.on,
 html[data-theme="matrix"] .fav-switch button.on, html[data-theme="matrix"] .room-off, html[data-theme="matrix"] .room-card.current .room-icon, html[data-theme="matrix"] .room-card.on .room-icon,
 html[data-theme="matrix"] .media-btn.play, html[data-theme="matrix"] .menu-item.pressed, html[data-theme="matrix"] .menu-handle.pressed, html[data-theme="matrix"] .pop-tab.pressed,
-html[data-theme="matrix"] .ring-item.pressed, html[data-theme="matrix"] .ring-item.on, html[data-theme="matrix"] .ring-close.pressed, html[data-theme="matrix"] .tile-more.pressed,
-html[data-theme="matrix"].shape-round .tile.on .tile-icon, html[data-theme="matrix"] .pop-power {
+html[data-theme="matrix"] .ring-item.pressed, html[data-theme="matrix"] .ring-item.on, html[data-theme="matrix"] .ring-close.pressed,
+html[data-theme="matrix"] .pop-power {
   background: #063d14; color: #a6ffbc; border-color: transparent;
   box-shadow: inset 0 0 0 0.1rem rgb(var(--accent-rgb)), inset 0 0 0.9rem rgba(0, 255, 65, 0.35), 0 0 0.9rem rgba(0, 255, 65, 0.3);
 }

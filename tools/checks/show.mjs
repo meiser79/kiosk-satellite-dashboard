@@ -47,18 +47,19 @@ export async function bedroomShow5() {
   check((await mockStates())['light.bedroom_lights'].s === 'off', 'a tap on the name in the middle turns the room off');
   await p.tapSel('.view.active .main .bar.group .dial-centre');
   check(await p.waitFor(`document.querySelector('.view.active .main .bar.group').classList.contains('on')`), 'and on again');
-  // Tiles: the pill at the bottom is a slider for that light.
-  await p.dragTo('.view.active .tile:nth-child(2) .tile-slider', 0.6);
+  // Tiles: a drag across one sets that light's level, where the finger is.
+  await p.dragTo('.view.active .tile:nth-child(2)', 0.6);
   st = await mockStates();
-  check(Math.abs(Math.round(st['light.bedroom_ceiling'].a.brightness / 2.55) - 60) <= 3, 'dragging a tile\'s pill dims that light alone');
-  check((await text(p, '.view.active .tile:nth-child(2) .tile-state')).replace('%', '') === String(Math.round(st['light.bedroom_ceiling'].a.brightness / 2.55)), 'the pill shows the level');
-  // A call Home Assistant refuses: a toast says so, and the pill goes back to the level the light has.
+  check(Math.abs(Math.round(st['light.bedroom_ceiling'].a.brightness / 2.55) - 60) <= 3, 'dragging across a tile dims that light alone');
+  check((await text(p, '.view.active .tile:nth-child(2) .tile-state')).replace('%', '') === String(Math.round(st['light.bedroom_ceiling'].a.brightness / 2.55))
+    && Math.abs(await p.eval(`(() => { const t = document.querySelector('.view.active .tile:nth-child(2)'); return t.querySelector('.tile-fill').getBoundingClientRect().width / t.getBoundingClientRect().width; })()`) - st['light.bedroom_ceiling'].a.brightness / 255) < 0.03, 'the tile says the level, filled as far');
+  // A call Home Assistant refuses: a toast says so, and the tile goes back to the level the light has.
   const level = await text(p, '.view.active .tile:nth-child(2) .tile-state');
   await failCalls(true);
-  await p.dragTo('.view.active .tile:nth-child(2) .tile-slider', 0.9);
+  await p.dragTo('.view.active .tile:nth-child(2)', 0.9);
   await failCalls(false);
   check(await p.waitFor(`document.getElementById('toast').textContent === 'Home Assistant did not answer'`) && await p.waitFor(`document.querySelector('.view.active .tile:nth-child(2) .tile-state').textContent === ${JSON.stringify(level)}`, 1500),
-    `a refused call: a toast says so and the pill goes back to ${level} (shows ${await text(p, '.view.active .tile:nth-child(2) .tile-state')})`);
+    `a refused call: a toast says so and the tile goes back to ${level} (shows ${await text(p, '.view.active .tile:nth-child(2) .tile-state')})`);
   check((await text(p, '.view.active .tile:nth-child(3) .tile-extra')).includes('Fireplace'), 'a running effect shows after the light\'s name');
 
   // Room menu: a grid of room cards, then All lights off, each saying how many lights are on, clear of the rail.
@@ -89,7 +90,7 @@ export async function bedroomShow5() {
   // Folders on the rail: Music opens a grid of cards in the room menu's place, Back first, its rail button marked.
   // Back, a tap outside, the rail button again or picking an item closes it.
   const folderNames = `[...document.querySelectorAll('#folder-menu .room-card .room-name')].map((e) => e.textContent).join()`;
-  check(await p.eval(`[...document.querySelectorAll('#menu .menu-item.folder')].map((e) => e.getAttribute('aria-label')).join() === 'Find my phone,Music,Settings' && document.querySelectorAll('#menu .menu-item.folder .more svg').length === 3`), 'show 5: Find my phone, Music and Settings are folders on the rail, a small arrow in their corner');
+  check(await p.eval(`[...document.querySelectorAll('#menu .menu-item.folder')].map((e) => e.getAttribute('aria-label')).join() === 'Find my phone,Music,Settings' && !document.querySelector('#menu .more')`), 'show 5: Find my phone, Music and Settings are folders on the rail, no arrow on them');
   await p.tapSel('#menu .menu-item[aria-label="Music"]');
   check(await p.waitFor(`document.getElementById('folder-menu').classList.contains('open')`), 'show 5: Music on the rail opens its folder');
   await p.waitFor(`${folderNames} === ${JSON.stringify(`Back,${RADIOS},Music Assistant`)}`);
@@ -170,7 +171,7 @@ export async function bedroomShow5() {
 
   // A header too narrow for the mode names shows their icons alone.
   await load(p, 'device=Echo+Show+5+Bedroom');
-  await p.s('Emulation.setDeviceMetricsOverride', { width: 760, height: 480, deviceScaleFactor: 1, mobile: true });
+  await p.s('Emulation.setDeviceMetricsOverride', { width: 600, height: 480, deviceScaleFactor: 1, mobile: true });
   check(await p.waitFor(`document.querySelector('.view.active .modes').classList.contains('icons')`), 'a header too narrow for the mode names shows the icons alone');
   ttl = await box('.title-btn'); clock = await box('.clock');
   first = await box('.modes .chip:first-child'); last = await box('.modes .chip:last-child');
@@ -184,7 +185,7 @@ export async function livingShow8() {
   await load(p, 'device=Echo+Show+8+Living+Room');
   check(await p.eval(`document.querySelector('.view.active .media').hidden`), 'media card hidden while the projector is off');
   check(await p.eval(`(() => { const v = document.querySelector('.view.active'); const r = (s) => v.querySelector(s).getBoundingClientRect(); return !v.querySelector('.modes').classList.contains('icons') && r('.modes .chip:first-child').left >= r('.title').right && r('.modes .chip:first-child').left >= r('.sensors .sensor:last-child').right && r('.modes .chip:last-child').right <= r('.clock').left && [...v.querySelectorAll('.modes .chip .name')].every((n) => n.scrollWidth <= n.clientWidth); })()`), 'show 8: title, sensors, three modes and the clock fit in the top bar');
-  check(await p.eval(`(() => { const v = document.querySelector('.view.active'); const b = v.querySelector('.main .bar.group').getBoundingClientRect(), t = [...v.querySelectorAll('.tile')].pop().getBoundingClientRect(), m = document.querySelector('#menu .menu-panel').getBoundingClientRect(); return m.right > 1240 && t.right <= m.left - 10 && t.bottom > 740 && b.height > 300; })()`), 'show 8: the dial and the tiles fill the view, clear of the rail on the right');
+  check(await p.eval(`(() => { const v = document.querySelector('.view.active'); const b = v.querySelector('.main .bar.group').getBoundingClientRect(), t = [...v.querySelectorAll('.tile')].pop().getBoundingClientRect(), m = document.querySelector('#menu .menu-panel').getBoundingClientRect(); return m.right > 1240 && t.right <= m.left - 10 && t.bottom > 600 && b.height > 300; })()`), 'show 8: the dial fills the view, the tiles beside it clear of the rail on the right');
   await p.shot('show8-living.png');
   await p.tapSel('.view.active .chip:nth-child(1)');
   check(await p.waitFor(`!document.querySelector('.view.active .media').hidden`), 'media card appears when the projector is on');
@@ -204,7 +205,7 @@ export async function livingShow8() {
   check(st['media_player.apple_tv'].a.media_title === 'Next episode', 'next button skips');
 
   // WLED strip: effects, palette select, speed number.
-  await p.tapSel('.view.active .tile:nth-child(4) .tile-more');
+  await p.longPressSel('.view.active .tile:nth-child(4) .tile-text');
   check(await p.waitFor(`!document.getElementById('popover').hidden`), 'WLED popover opens');
   check(await onScreen(p, '#pop-icon') && await onScreen(p, '#pop-close') && await onScreen(p, '.pop-actions') && !(await onScreen(p, '#popover .pop-power')) && !(await onScreen(p, '#pop-tab')), 'wide popover: a card with the light\'s icon, a close button and Off / On');
   const tabs = await p.eval(`[...document.querySelectorAll('#popover .tabs .tab')].map((t) => t.textContent)`);

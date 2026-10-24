@@ -158,28 +158,41 @@
     view.appendChild(controls);
 
     // the tiles, the lights' then the covers' and the thermostats': a grid,
-    // or on the round screen a strip of round buttons (the media card at
-    // its end) that scrolls one button at a time
+    // or on the round screen a strip of tiles (the media card at its end)
+    // that scrolls two tiles at a time
     const lights = el('div', 'lights');
     const tiles = [...(room.lights || []).map(makeTile), ...(room.covers || []).map(makeCoverTile), ...(room.climate || []).map(makeClimateTile)].map(rise);
     if (shape === 'round') {
       lights.append(...tiles);
       if (media) lights.appendChild(media);
-      // A dot for each place the strip comes to rest: every button (and the
-      // card) in the middle, as far as the strip goes.
+      // A dot for each place the strip comes to rest: each pair of tiles
+      // (and the card) in the middle, as far as the strip goes. A drag across
+      // a tile sets its level, so the dots move the strip: a swipe on them
+      // brings the next pair or the one before, a tap on a dot its pair, a
+      // tap either side of them the pair on that side.
       const dots = el('div', 'dots');
       view.appendChild(dots);
+      let rests = [], near = 0;
+      const goTo = (j) => { j = clamp(j, 0, rests.length - 1); lights.scrollTo({ left: rests[j], behavior: 'smooth' }); };
+      attachSwipe(dots, { onDrag: () => {}, onEnd: (dir) => { if (dir) goTo(near + dir); } });
+      dots.addEventListener('click', (e) => {
+        const dot = e.target.closest('span'), box = dots.getBoundingClientRect();
+        goTo(dot ? [...dots.children].indexOf(dot) : near + (e.clientX < box.left + box.width / 2 ? -1 : 1));
+      });
       const updateDots = () => {
-        const box = lights.getBoundingClientRect(), max = lights.scrollWidth - lights.clientWidth, rests = [];
+        const box = lights.getBoundingClientRect(), max = lights.scrollWidth - lights.clientWidth;
+        rests = [];
+        const pad = parseFloat(getComputedStyle(lights).scrollPaddingLeft) || 0;
         for (const c of lights.children) {
-          if (c.hidden) continue;
-          const r = c.getBoundingClientRect();
-          const x = clamp(r.left - box.left + lights.scrollLeft + (r.width - box.width) / 2, 0, max);
+          const align = getComputedStyle(c).scrollSnapAlign;
+          if (c.hidden || align === 'none') continue;
+          const r = c.getBoundingClientRect(), left = r.left - box.left + lights.scrollLeft;
+          const x = clamp(align.startsWith('start') ? left - pad : left + (r.width - box.width) / 2, 0, max);
           if (!rests.some((y) => Math.abs(y - x) < 2)) rests.push(x);
         }
         dots.hidden = rests.length < 2;
         if (dots.children.length !== rests.length) dots.innerHTML = rests.map(() => '<span></span>').join('');
-        const near = rests.reduce((b, x, j) => (Math.abs(x - lights.scrollLeft) < Math.abs(rests[b] - lights.scrollLeft) ? j : b), 0);
+        near = rests.reduce((b, x, j) => (Math.abs(x - lights.scrollLeft) < Math.abs(rests[b] - lights.scrollLeft) ? j : b), 0);
         [...dots.children].forEach((d, j) => setClass(d, 'on', j === near));
       };
       if (media) media.onvisibility = () => requestAnimationFrame(updateDots);

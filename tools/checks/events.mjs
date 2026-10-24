@@ -118,8 +118,9 @@ export async function eventsShow() {
   await p.drag(tile.x, tile.y + 10, tile.x, tile.y - 20, 10); await sleep(700);
   check(await p.waitFor(`document.querySelector('${TILE} .events-at').textContent === '2–4/4'`) && await p.eval(`document.querySelector('.view.active .lights').scrollTop === 0`),
     `show 5: a swipe up inside the tile brings the next event, the grid stays (${await text(p, `${TILE} .events-at`)})`);
-  await p.drag(first.x, first.t + 30, first.x, first.t - 50, 10); await sleep(700);   // from its icon: its pill is a slider
-  check(await p.eval(`document.querySelector('.view.active .lights').scrollTop > 0`), 'show 5: a swipe on the light tiles scrolls the grid');
+  await p.drag(first.x, first.t + 30, first.x, first.t - 50, 10); await sleep(700);   // a swipe up, not across
+  const grid2 = await p.eval(`(() => { const l = document.querySelector('.view.active .lights'); return { more: l.scrollHeight > l.clientHeight + 1, top: l.scrollTop }; })()`);
+  check(grid2.more ? grid2.top > 0 : grid2.top === 0, grid2.more ? 'show 5: a swipe on the light tiles scrolls the grid' : 'show 5: the light tiles all in view, the grid with nothing to scroll');
   await p.eval(`document.querySelector('.view.active .lights').scrollTo({ top: 0, behavior: 'instant' }), true`);
   // A tap on the tile opens the panel: a card with the period, how many, every event, and Open calendar.
   await p.tapSel(TILE);

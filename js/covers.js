@@ -1,11 +1,11 @@
 /* Kiosk dashboard: covers, a room's `covers`: shutters, blinds, awnings,
  * curtains, a garage door. A tile like a light's: a tap opens a closed
- * cover, closes an open one and stops one on its way; its pill sets the
- * position when the cover can take one (100% open, 0% closed) and says it;
- * lit while the cover is open. Its icon shows it open or closed, after its
- * kind (Home Assistant's device class) unless config.js gives one. A
- * long-press (or the dots) opens its panel: Open, Stop and Close, its
- * position, and the tilt of slats that turn. */
+ * cover, closes an open one and stops one on its way; a drag across it
+ * sets the position when the cover can take one (100% open, 0% closed),
+ * which it says and fills to; lit while the cover is open. Its icon shows
+ * it open or closed, after its kind (Home Assistant's device class) unless
+ * config.js gives one. A long-press opens its panel: Open, Stop and Close,
+ * its position, and the tilt of slats that turn. */
 (() => {
   'use strict';
   const K = window.Kiosk;
@@ -43,8 +43,8 @@
   function setPosition(cfg, p) { hold(cfg.entity + ':pos', p); run(cfg, 'set_cover_position', { position: p }); }
 
   // The tile is built before Home Assistant has said what the cover can do:
-  // its pill slides once it says the cover takes a position, and otherwise
-  // says its state, full while it is open.
+  // it slides once Home Assistant says the cover takes a position, and
+  // otherwise says its state, full while it is open.
   function makeCoverTile(cfg) {
     const pct = (f) => clamp(Math.round(f * 100), 0, 100);
     const sliding = () => !!(features(states[cfg.entity]) & F.POSITION);

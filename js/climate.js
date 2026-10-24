@@ -1,10 +1,10 @@
 /* Kiosk dashboard: thermostats, a room's `climate`: a heating, an air
  * conditioner, a heat pump. A tile like a light's: a tap turns it on or
- * off; its pill sets the target temperature and says it, the room's own
- * after its name; lit while it is on, orange while it heats and blue while
- * it cools. A long-press (or the dots) opens its panel: the target
- * temperature, its modes (heat, cool, auto, off…) and its presets (eco,
- * comfort, away…), as Home Assistant lists them. */
+ * off; a drag across it sets the target temperature, which it says, the
+ * room's own after it; lit while it is on, orange while it heats and blue
+ * while it cools. A long-press opens its panel: the target temperature,
+ * its modes (heat, cool, auto, off…) and its presets (eco, comfort,
+ * away…), as Home Assistant lists them. */
 (() => {
   'use strict';
   const K = window.Kiosk;
@@ -43,8 +43,8 @@
   }
 
   // The tile is built before Home Assistant has said what the thermostat can
-  // do: its pill slides once it says it takes a target temperature (and
-  // while it is on), and otherwise says its state.
+  // do: it slides once Home Assistant says it takes a target temperature
+  // (and while it is on), and otherwise says its state.
   function makeClimateTile(cfg) {
     const sliding = () => !!(features(states[cfg.entity]) & F.TARGET);
     const at = (f) => { const { min, max, step } = limits(states[cfg.entity]); return clamp(Number((Math.round((min + f * (max - min)) / step) * step).toFixed(2)), min, max); };
