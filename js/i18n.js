@@ -33,9 +33,10 @@ window.KIOSK_I18N = (() => {
       brightness: 'Brightness',
       white: 'White', colour: 'Colour', effects: 'Effects', more: 'More', lights: 'Lights',
       temperature: 'Temperature', hue: 'Hue', saturation: 'Saturation',
-      // covers and thermostats
+      // covers, thermostats and fans
       open: 'Open', stop: 'Stop', shut: 'Close', position: 'Position', tilt: 'Tilt',
       target: 'Target temperature', mode: 'Mode', preset: 'Preset',
+      speed: 'Speed', oscillate: 'Oscillate', direction: 'Direction',
       // the room view and the room menu
       changeRoom: 'Change room', previousLight: 'Previous light', nextLight: 'Next light',
       lightsOn: { one: '{n} light on', other: '{n} lights on' },
@@ -83,6 +84,7 @@ window.KIOSK_I18N = (() => {
       temperature: 'Farbtemperatur', hue: 'Farbton', saturation: 'Sättigung',
       open: 'Öffnen', stop: 'Stopp', shut: 'Schließen', position: 'Position', tilt: 'Neigung',
       target: 'Solltemperatur', mode: 'Modus', preset: 'Profil',
+      speed: 'Geschwindigkeit', oscillate: 'Schwenken', direction: 'Richtung',
       changeRoom: 'Raum wechseln', previousLight: 'Vorheriges Licht', nextLight: 'Nächstes Licht',
       lightsOn: { one: '{n} Licht an', other: '{n} Lichter an' },
       lightsOff: 'Lichter aus',
@@ -121,6 +123,7 @@ window.KIOSK_I18N = (() => {
       heat: 'Heizen', cool: 'Kühlen', heat_cool: 'Heizen/Kühlen', auto: 'Automatisch', dry: 'Entfeuchten', fan_only: 'Nur Lüfter',
       heating: 'Heizt', cooling: 'Kühlt', drying: 'Entfeuchtet', fan: 'Lüftet', preheating: 'Heizt vor', defrosting: 'Taut ab',
       comfort: 'Komfort', eco: 'Eco', boost: 'Boost', sleep: 'Schlafen', activity: 'Aktivität', none: 'Keins',
+      forward: 'Vorwärts', reverse: 'Rückwärts', natural: 'Natürlich', breeze: 'Brise', smart: 'Smart',
       cleaning: 'Reinigt', docked: 'Angedockt', returning: 'Kehrt zurück', charging: 'Lädt', discharging: 'Entlädt', error: 'Fehler',
       armed_home: 'Scharf (Zuhause)', armed_away: 'Scharf (Abwesend)', armed_night: 'Scharf (Nacht)', armed_vacation: 'Scharf (Urlaub)',
       disarmed: 'Unscharf', arming: 'Wird scharf geschaltet', triggered: 'Ausgelöst', pending: 'Ausstehend',

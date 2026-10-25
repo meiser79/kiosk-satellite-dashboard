@@ -88,6 +88,8 @@ set('climate.living_room', 'heat', {
   friendly_name: 'Living room heating', hvac_modes: ['off', 'heat', 'auto'], hvac_action: 'heating', preset_modes: ['comfort', 'eco', 'away', 'boost'], preset_mode: 'comfort',
   current_temperature: 20.5, temperature: 21.5, min_temp: 7, max_temp: 30, target_temp_step: 0.5, supported_features: 1 | 16 | 128 | 256,
 });
+// the living room's ceiling fan: four speeds, presets, oscillation and direction (1 | 2 | 4 | 8 | 16 | 32)
+set('fan.living_room_ceiling', 'on', { friendly_name: 'Living room ceiling fan', percentage: 50, percentage_step: 25, preset_modes: ['auto', 'sleep'], preset_mode: null, oscillating: false, direction: 'forward', supported_features: 63 });
 // for the checks, not in the example: blinds whose slats turn (and a position: 143), a garage door that only opens and closes (11)
 set('cover.bedroom_blinds', 'closed', { friendly_name: 'Bedroom blinds', device_class: 'blind', current_position: 0, current_tilt_position: 50, supported_features: 143 });
 set('cover.garage_door', 'closed', { friendly_name: 'Garage door', device_class: 'garage', supported_features: 11 });
@@ -252,6 +254,7 @@ function apply(domain, service, data = {}, target = {}) {
     if (d === 'media_player') { media(st, service, data); touch(id); continue; }
     if (d === 'cover') { coverService(st, domain, service, data); touch(id); continue; }
     if (d === 'climate') { climateService(st, domain, service, data); touch(id); continue; }
+    if (d === 'fan') { fanService(st, domain, service, data); touch(id); continue; }
     let on = st.s === 'on';
     if (service === 'toggle') on = !on;
     else if (service === 'turn_on') on = true;
@@ -296,6 +299,18 @@ function climateService(st, domain, service, data) {
   if (service === 'turn_off') st.s = 'off';
   if (service === 'toggle') st.s = st.s === 'off' ? 'heat' : 'off';
   a.hvac_action = st.s === 'off' ? 'off' : a.current_temperature < a.temperature ? 'heating' : 'idle';
+}
+// A fan: on at its last speed, off at none; a speed of 0 turns it off, as in Home Assistant.
+function fanService(st, domain, service, data) {
+  const a = st.a;
+  if (domain !== 'fan' && service !== 'toggle') return;
+  if (service === 'toggle') service = st.s === 'on' ? 'turn_off' : 'turn_on';
+  if (service === 'turn_on') { st.s = 'on'; a.percentage = a.last || a.percentage || 25; }
+  if (service === 'turn_off') { if (a.percentage) a.last = a.percentage; st.s = 'off'; a.percentage = 0; }
+  if (service === 'set_percentage') { a.percentage = data.percentage; st.s = data.percentage ? 'on' : 'off'; }
+  if (service === 'set_preset_mode') { a.preset_mode = data.preset_mode; st.s = 'on'; }
+  if (service === 'oscillate') a.oscillating = data.oscillating;
+  if (service === 'set_direction') a.direction = data.direction;
 }
 function mediaOn() {
   const st = states['media_player.apple_tv'];

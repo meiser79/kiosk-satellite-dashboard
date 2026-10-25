@@ -12,7 +12,7 @@ menu:        { items: [{ name, icon, shape?: 'round' | 'wide', link | script | i
 devices:     { '<Kiosk Satellite device name>': '<room key>' | { room: '<room key>', theme?: '<theme>' } }
 defaultRoom: '<room key>'
 alerts:      [{ entity, icon, on?, unit?, digits?, showWhen? }]
-rooms:       { <key>: { title, icon, sensors, modes, main, lights, covers?, climate?, media, player, events?, background?, fade? } }
+rooms:       { <key>: { title, icon, sensors, modes, main, lights, covers?, climate?, fans?, media, player, events?, background?, fade? } }
 ```
 
 The arrangement is not configurable: it follows the screen. A square screen (the round
@@ -98,6 +98,7 @@ The order of `rooms` is the order in the room menu. Each room has:
 | `lights` | Light tiles: tap toggles, a drag across one dims it, long-press opens the detail panel. A room with one light needs no tiles: `main` alone is enough |
 | `covers` | Tiles after the lights for shutters, blinds, awnings, curtains, a garage door: a tap opens a closed cover, closes an open one and stops one on its way; a drag across the tile sets the position (when the cover takes one), which it says; long-press opens a panel with Open, Stop and Close, the position, and the tilt of slats that turn. The icon follows the cover's kind (its device class) unless you give `icon` (closed) and `iconOpen` |
 | `climate` | Tiles after the covers for thermostats: a tap turns it on or off; a drag across the tile sets the target temperature, the room's own after it; orange while it heats, blue while it cools. Long-press opens a panel with the target and chips for its modes and presets |
+| `fans` | Tiles after the thermostats for fans: a tap turns it on or off; a drag across the tile sets its speed, in the fan's own steps (all the way left turns it off), its preset mode after it. Long-press opens a panel with Off and On, the speed, and chips for its preset modes, oscillation and direction, those it has |
 | `media` | A media player card, shown while `showWhen` matches (or always) |
 | `player` | The Music Assistant player (or group of players) the menu's favourites play on, for the kiosks that belong to this room |
 | `events` | What the room's Home Assistant calendars hold: how many among the sensors, and a list (see [Events](#events)) |
@@ -113,6 +114,7 @@ modes:   { entity, name, icon }
 main, lights: { entity, name, icon, controls?: ['select.x', 'number.y'] }
 covers:  { entity, name, icon?, iconOpen? }
 climate: { entity, name, icon? }
+fans:    { entity, name, icon? }
 media:   { entity, name, icon, showWhen?: { entity, state } }
 player:  'media_player.x'
 events:  { calendars: ['calendar.x' | { entity, color }], period?, max?, chip?, lines?, link? }

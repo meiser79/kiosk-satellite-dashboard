@@ -1,7 +1,7 @@
 /* Kiosk dashboard: the controls of a room view. Sensors and mode chips for
  * the header, the brightness dial, the main control (the room's light group)
- * and the tiles: their frame, and the light tiles (js/covers.js and
- * js/climate.js make the others). */
+ * and the tiles: their frame, and the light tiles (js/covers.js,
+ * js/climate.js and js/fans.js make the others). */
 (() => {
   'use strict';
   const K = window.Kiosk;

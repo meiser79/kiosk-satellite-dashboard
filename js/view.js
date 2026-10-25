@@ -8,7 +8,7 @@
   const K = window.Kiosk;
   const { CFG, t, root, states, el, esc, icon, clamp, isLight, isOn, setText, setClass, warn } = K;
   const { watch, shownPct, setBrightness, followLight, showWallpaper, pressFx, attachSwipe, closeOverlay } = K;
-  const { makeSensor, sensorShown, sensorIds, makeChip, RIM_R, makeDial, makeBar, makeTile, makeCoverTile, makeClimateTile, makeMedia, eventsOf, makeEventsChip, makeEventsList } = K;
+  const { makeSensor, sensorShown, sensorIds, makeChip, RIM_R, makeDial, makeBar, makeTile, makeCoverTile, makeClimateTile, makeFanTile, makeMedia, eventsOf, makeEventsChip, makeEventsList } = K;
 
   const views = {};
   const fits = [];   // each header's fitting of its modes
@@ -157,14 +157,16 @@
     }
     view.appendChild(controls);
 
-    // the tiles, the lights' then the covers' and the thermostats': a grid,
+    // the tiles, the lights' then the covers', the thermostats' and the fans': a grid,
     // or on the round screen a strip of tiles (the media card at its end)
     // that scrolls two tiles at a time
     const lights = el('div', 'lights');
-    const tiles = [...(room.lights || []).map(makeTile), ...(room.covers || []).map(makeCoverTile), ...(room.climate || []).map(makeClimateTile)].map(rise);
+    const tiles = [...(room.lights || []).map(makeTile), ...(room.covers || []).map(makeCoverTile), ...(room.climate || []).map(makeClimateTile), ...(room.fans || []).map(makeFanTile)].map(rise);
     if (shape === 'round') {
       lights.append(...tiles);
       if (media) lights.appendChild(media);
+      // a last tile without a pair comes to rest beside the one before it, not beside the card
+      if (media && tiles.length % 2) tiles[tiles.length - 1].classList.add('alone');
       // A dot for each place the strip comes to rest: each pair of tiles
       // (and the card) in the middle, as far as the strip goes. A drag across
       // a tile sets its level, so the dots move the strip: a swipe on them
@@ -182,12 +184,13 @@
       const updateDots = () => {
         const box = lights.getBoundingClientRect(), max = lights.scrollWidth - lights.clientWidth;
         rests = [];
-        const pad = parseFloat(getComputedStyle(lights).scrollPaddingLeft) || 0;
+        // the room either side of a pair: where the first tile sits with the strip at its start
+        const first = lights.querySelector('.tile'), pad = first ? first.getBoundingClientRect().left - box.left + lights.scrollLeft : 0;
         for (const c of lights.children) {
           const align = getComputedStyle(c).scrollSnapAlign;
           if (c.hidden || align === 'none') continue;
           const r = c.getBoundingClientRect(), left = r.left - box.left + lights.scrollLeft;
-          const x = clamp(align.startsWith('start') ? left - pad : left + (r.width - box.width) / 2, 0, max);
+          const x = clamp(align.startsWith('start') ? left - pad : align.startsWith('end') ? left + r.width + pad - box.width : left + (r.width - box.width) / 2, 0, max);
           if (!rests.some((y) => Math.abs(y - x) < 2)) rests.push(x);
         }
         dots.hidden = rests.length < 2;

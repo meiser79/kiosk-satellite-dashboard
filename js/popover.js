@@ -1,6 +1,6 @@
 /* Kiosk dashboard: the popover, a light's controls, opened by a long press
  * (or the room's events, js/events.js, opened by a tap on them, and a
- * cover's or a thermostat's, js/covers.js and js/climate.js).
+ * cover's, a thermostat's or a fan's, js/covers.js, js/climate.js and js/fans.js).
  * Wide screens: a card with the light's icon, name and state, a close
  * button and Off / On buttons. The Spot has no card: the controls stand on
  * the menus' dark backdrop in a column that keeps inside the circle, the

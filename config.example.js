@@ -137,6 +137,8 @@ window.KIOSK_CONFIG = {
   //                  and iconOpen for the open one).
   // climate          tiles after the covers for thermostats: tap turns on or off; a drag
   //                  across sets the target temperature; the panel has modes and presets.
+  // fans             tiles after the thermostats for fans: tap turns on or off; a drag across
+  //                  sets the speed; the panel has preset modes, oscillation and direction.
   // media            a player card, shown while showWhen holds (or always)
   // player           the Music Assistant player (or group of players) the menu's
   //                  favourites play on, for the kiosks that belong to this room
@@ -217,6 +219,9 @@ window.KIOSK_CONFIG = {
       ],
       climate: [
         { entity: 'climate.living_room', name: 'Heating' }, // <-- entity
+      ],
+      fans: [
+        { entity: 'fan.living_room_ceiling', name: 'Ceiling fan', icon: 'ceiling-fan' }, // <-- entity
       ],
       media: {
         entity: 'media_player.apple_tv', // <-- entity
