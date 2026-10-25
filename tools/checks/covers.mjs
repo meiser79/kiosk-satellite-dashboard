@@ -1,4 +1,4 @@
-// Checks of covers and thermostats: the living room's shutter, awning and heating on the Show and on the Spot, the
+// Checks of covers, thermostats and fans: the living room's shutter, awning, heating and fan on the Show and on the Spot, the
 // tiles' drags and taps, their panels, in English and German; blinds whose slats turn and a garage door that only
 // opens and closes, added to the living room for these checks.
 import { sleep, check, openPage, load, mockStates, mockReaches, mockSet, lastCall, callLog, text, insideRim } from './harness.mjs';
@@ -33,13 +33,13 @@ async function withMore(width, height) {
   return p;
 }
 
-// 24. On the Show 8: the shutter, the awning and the heating after the lights, no taller than they should be; a tap
-// and a drag on each, a cover on its way stopped, their panels.
+// 24. On the Show 8: the shutter, the awning, the heating and the fan after the lights, no taller than they should
+// be; a tap and a drag on each, a cover on its way stopped, their panels.
 export async function coversShow() {
   const p = await openPage(1280, 800);
   await load(p, 'device=Echo+Show+8+Living+Room');
   const names = await p.eval(`[...document.querySelectorAll('.view.active .lights > .tile .tile-name')].map((e) => e.textContent).join()`);
-  check(names === 'Living room,Dining room,Kitchen,TV strip,Shelf strip,Shutter,Awning,Heating', `show 8: the covers and the heating after the lights (got ${names})`);
+  check(names === 'Living room,Dining room,Kitchen,TV strip,Shelf strip,Shutter,Awning,Heating,Ceiling fan', `show 8: the covers, the heating and the fan after the lights (got ${names})`);
   check(await p.eval(`!document.querySelector('.view.active .tile button')`), 'show 8: no buttons on the tiles, a long-press opens their panels');
   const tall = await p.eval(`(() => { const rem = parseFloat(getComputedStyle(document.documentElement).fontSize); return Math.max(...[...document.querySelectorAll('.view.active .lights > .tile')].map((e) => e.getBoundingClientRect().height)) / rem; })()`);
   check(tall <= 10.55, `show 8: the tiles 10.5rem tall at most (got ${tall.toFixed(2)}rem)`);
@@ -103,6 +103,40 @@ export async function coversShow() {
   check(/ · 20\.5°$/.test(await text(p, '#pop-state')), `the line says what it does and the room's temperature (got ${await text(p, '#pop-state')})`);
   await p.shot('show8-climate-panel.png');
   await closePanel(p);
+
+  // the ceiling fan: on at 50%, in four steps; a drag sets its speed, a tap turns it off
+  const FAN = await tileOf(p, 'Ceiling fan');
+  let fa = await tile(p, FAN);
+  check(fa.on && fa.state === '50%' && fa.extra === '' && fa.icon === 'ceiling-fan', `the fan: lit while it runs, its speed, the icon config.js gives (got ${JSON.stringify(fa)})`);
+  await p.dragTo(FAN, 0.8, 0.5, 0.3);
+  check(await mockReaches((st) => st['fan.living_room_ceiling'].a.percentage === 75) && (await lastCall()).service === 'set_percentage', 'a drag across it sets its speed, in its own steps (80% of the way: 75%)');
+  check(await p.waitFor(`document.querySelector('${FAN} .tile-state').textContent === '75%'`), 'the tile says the new speed');
+  await p.tapSel(`${FAN} .tile-text`);
+  check(await mockReaches((st) => st['fan.living_room_ceiling'].s === 'off') && (await lastCall()).service === 'turn_off', 'a tap turns it off, with fan.turn_off');
+  check(await p.waitFor(`(() => { const t = document.querySelector('${FAN}'); return !t.classList.contains('on') && t.querySelector('.tile-state').textContent === 'Off'; })()`), 'off: not lit, it says Off');
+  await p.tapSel(`${FAN} .tile-text`);
+  check(await mockReaches((st) => st['fan.living_room_ceiling'].s === 'on' && st['fan.living_room_ceiling'].a.percentage === 75), 'a tap again turns it on at its speed');
+
+  // its panel: Off and On, the speed, its presets, oscillation and direction, the ones it is in marked
+  await p.longPressSel(`${FAN} .tile-text`);
+  await p.waitFor(panelOpen);
+  await sleep(300);
+  check(await actions(p) === 'Off,On' && await chips(p, 0) === 'Auto,Sleep' && await chips(p, 1) === 'Off*,On' && await chips(p, 2) === 'Forward*,Reverse'
+    && await p.eval(`document.querySelector('#popover .pop-main .slider .label').textContent.trim() === 'Speed'`) && await text(p, '#pop-state') === 'On · 75%',
+  `the fan's panel: Off and On, the speed, its presets, oscillation and direction (got ${await actions(p)}; ${await chips(p, 0)}; ${await chips(p, 1)}; ${await chips(p, 2)}; ${await text(p, '#pop-state')})`);
+  await tapChip(p, 'Sleep');
+  check(await mockReaches((st) => st['fan.living_room_ceiling'].a.preset_mode === 'sleep') && (await lastCall()).service === 'set_preset_mode' && await chips(p, 0) === 'Auto,Sleep*', 'Sleep sets its preset, the chip follows');
+  check(await p.waitFor(`document.querySelector('${FAN} .tile-extra').textContent === '· Sleep'`), 'the tile says its preset after its speed');
+  await tapChip(p, 'On');
+  check(await mockReaches((st) => st['fan.living_room_ceiling'].a.oscillating === true) && (await lastCall()).service === 'oscillate', 'On under Oscillate turns its oscillation on');
+  await tapChip(p, 'Reverse');
+  check(await mockReaches((st) => st['fan.living_room_ceiling'].a.direction === 'reverse') && (await lastCall()).service === 'set_direction' && await chips(p, 2) === 'Forward,Reverse*', 'Reverse turns it the other way');
+  await p.dragTo('#popover .pop-main .slider', 0.3, 0.5, 0.8);
+  check(await mockReaches((st) => st['fan.living_room_ceiling'].a.percentage === 25), `the panel's slider sets its speed, in its steps (got ${(await mockStates())['fan.living_room_ceiling'].a.percentage})`);
+  await p.shot('show8-fan-panel.png');
+  await p.tapSel('#popover .pop-actions button:nth-child(1)');
+  check(await mockReaches((st) => st['fan.living_room_ceiling'].s === 'off') && await p.waitFor(`document.querySelector('#popover .popover').classList.contains('off')`), 'Off turns it off, the panel stays open and follows');
+  await closePanel(p);
   await p.close();
 
   // German: the panels' words
@@ -116,6 +150,13 @@ export async function coversShow() {
   await g.waitFor(panelOpen);
   await sleep(300);
   check(await chips(g, 0) === 'Aus,Heizen*,Automatisch' && await chips(g, 1) === 'Komfort,Eco*,Abwesend,Boost', `german: the heating's modes and presets in German (got ${await chips(g, 0)}; ${await chips(g, 1)})`);
+  await closePanel(g);
+  await g.longPressSel(`${await tileOf(g, 'Ceiling fan')} .tile-text`);
+  await g.waitFor(panelOpen);
+  await sleep(300);
+  const fanWords = await g.eval(`[...document.querySelectorAll('#popover .control-label, #popover .pop-main .slider .label')].map((e) => e.textContent.trim()).join()`);
+  check(fanWords === 'Geschwindigkeit,Profil,Schwenken,Richtung' && await chips(g, 0) === 'Automatisch,Schlafen*' && await chips(g, 2) === 'Vorwärts,Rückwärts*' && await actions(g) === 'Aus,An',
+    `german: the fan's panel in German (got ${fanWords}; ${await chips(g, 0)}; ${await chips(g, 2)}; ${await actions(g)})`);
   await closePanel(g);
   await g.close();
 }
@@ -158,7 +199,7 @@ export async function coversMore() {
   const s = await openPage(480, 480);
   await load(s, 'device=Echo+Spot+Living+Room');
   const strip = await s.eval(`[...document.querySelectorAll('.view.active .lights > .tile .tile-name')].map((e) => e.textContent).join()`);
-  check(strip.endsWith('Shutter,Awning,Heating'), `spot: the covers and the heating at the end of the strip (got ${strip})`);
+  check(strip.endsWith('Shutter,Awning,Heating,Ceiling fan'), `spot: the covers, the heating and the fan at the end of the strip (got ${strip})`);
   const r = await s.rect(`${await tileOf(s, 'Shutter')} .tile-icon`);
   await s.longPress(r.x, r.y);
   check(await s.waitFor(panelOpen), 'spot: a long-press opens the shutter\'s panel');
@@ -166,5 +207,17 @@ export async function coversMore() {
   check(await actions(s) === 'Open,Stop,Close' && await s.eval(`document.querySelector('#popover .pop-actions').offsetWidth > 0`) && await insideRim(s, '#popover .pop-actions button, #popover .pop-main .slider, #popover .pop-name'),
     'spot: its buttons and slider shown, inside the rim');
   await s.shot('spot-cover-panel.png');
+  await s.eval(`Kiosk.closePopover(), true`);
+  await s.waitFor(`document.getElementById('popover').hidden`);
+  // the fan on the Spot: a drag across its tile sets its speed, as on the Show; its panel inside the rim
+  const FAN = await tileOf(s, 'Ceiling fan');
+  await s.dragTo(FAN, 0.95, 0.5, 0.3);
+  check(await mockReaches((st) => st['fan.living_room_ceiling'].a.percentage === 100), 'spot: a drag across the fan\'s tile sets its speed');
+  const fr = await s.rect(`${FAN} .tile-icon`);
+  await s.longPress(fr.x, fr.y);
+  check(await s.waitFor(panelOpen), 'spot: a long-press opens the fan\'s panel');
+  await sleep(400);
+  check(await insideRim(s, '#popover .pop-actions button, #popover .pop-main .slider, #popover .pop-name'), 'spot: the fan\'s buttons and slider inside the rim');
+  await s.shot('spot-fan-panel.png');
   await s.close();
 }

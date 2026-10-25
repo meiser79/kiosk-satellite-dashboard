@@ -27,6 +27,10 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
   a drag across the tile sets the position or the target temperature; the panel has Open,
   Stop and Close and the tilt, or the modes and presets
   ([Rooms](docs/configuration.md#rooms)).
+- **Fans**: a room's `fans` in your `config.js` are tiles after the thermostats: a tap
+  turns one on or off, a drag across the tile sets its speed in the fan's own steps; the
+  panel has the speed and chips for its preset modes, oscillation and direction
+  ([Rooms](docs/configuration.md#rooms)).
 - **Icons alone on the Spot's menu**: `menu: { labels: false }` in your `config.js` leaves
   the names off the ring's buttons, which take the size of the main light's power button;
   the favourites keep theirs ([Menu](docs/configuration.md#menu)).

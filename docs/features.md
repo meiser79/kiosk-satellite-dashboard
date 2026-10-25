@@ -17,7 +17,7 @@ What the page does, screen by screen. [Configuration](configuration.md) says how
   toggle, long-press for the panel. Beside it the light tiles, two across: each lies across, its
   icon, its name and its state, filled from the left as far as its level; tap toggles, a
   drag across it dims that light alone, long-press opens the panel. After them, the room's
-  covers and thermostats as tiles of their own (see *Covers and thermostats*). Both grow
+  covers, thermostats and fans as tiles of their own (see *Covers, thermostats and fans*). Both grow
   to fill the screen; with the media card on, the dial shrinks to a small ring beside the
   name.
 - **Spot.** The dial is a thick rim along the edge of the round screen. From the top: the
@@ -31,14 +31,17 @@ What the page does, screen by screen. [Configuration](configuration.md) says how
   the room's lights through, one after another, like a
   carousel (a tap on an arrow does too), and the rim and power button follow the one
   shown (the end of the screensaver brings back the room's main light).
-- **Covers and thermostats.** A room's shutters, blinds, awnings and garage door, and its
-  heating or air conditioning, are tiles after the lights (at the end of the strip on
+- **Covers, thermostats and fans.** A room's shutters, blinds, awnings and garage door, its
+  heating or air conditioning, and its fans are tiles after the lights (at the end of the strip on
   the Spot). A cover's tile is lit while it is open, its icon shows it open or
   closed; a tap opens or closes it, or stops it on its way, and a drag across it sets the
   position. Its panel has Open, Stop and Close, the position, and the tilt of slats that
   turn. A thermostat's tile is orange while it heats and blue while it cools, a drag across
   it sets the target temperature, the room's own after it; a tap turns it on or off. Its
-  panel has the target and chips for its modes and presets.
+  panel has the target and chips for its modes and presets. A fan's tile is lit while it
+  runs; a tap turns it on or off, a drag across it sets its speed in the fan's own steps,
+  its preset mode after it. Its panel has Off and On, the speed, and chips for its preset
+  modes, oscillation and direction.
 - **Single-light room.** Just the dial, in the middle of the screen.
 - **Room menu.** Tap the room title to change room. Every room says how many of its lights
   are on (what its main light says under its name: the members of its group that are on;

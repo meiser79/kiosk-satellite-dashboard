@@ -108,6 +108,7 @@
 .shape-round .lights::before, .shape-round .lights::after { content: ""; flex: 1 0 calc(20% - var(--gap) * 1.5); }
 .shape-round .lights > .tile { flex: none; width: 30%; margin-top: 2.3rem; }
 .shape-round .lights > .tile:nth-child(odd) { scroll-snap-align: start; }   /* the first of each pair */
+.shape-round .lights > .tile.alone { scroll-snap-align: end; }   /* a last one alone, before the card: with the one before it */
 .shape-round .lights > .media { flex: none; width: calc(60% + var(--gap)); margin-top: 0.6rem; scroll-snap-align: center; }
 .shape-round .lights > :where(.tile) { padding: 0.65rem 0.55rem; column-gap: 0.45rem; touch-action: none; }   /* a drag across sets its level */
 .shape-round .lights > .tile .tile-icon { width: 2rem; height: 2rem; font-size: 1.1rem; }

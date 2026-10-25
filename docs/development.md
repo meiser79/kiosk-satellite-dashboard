@@ -30,6 +30,7 @@ need Node.js 22 or later, and Google Chrome for the checks; Python 3 only to add
 | `js/controls.js` | Sensors, mode chips, the dial, the main control, light tiles and the frame every tile shares |
 | `js/covers.js` | Cover tiles and their panel: shutters, blinds, awnings, a garage door |
 | `js/climate.js` | Thermostat tiles and their panel: the target, modes and presets |
+| `js/fans.js` | Fan tiles and their panel: the speed, preset modes, oscillation and direction |
 | `js/media.js` | The media card |
 | `js/events.js` | A room's events: asking its calendars, the count, the list, the panel's rows |
 | `js/view.js` | Building the room views, switching between them, the clock |
@@ -43,7 +44,7 @@ need Node.js 22 or later, and Google Chrome for the checks; Python 3 only to add
 | `tools/mock-ha.mjs` | A stand-in for Home Assistant |
 | `tools/shoot.mjs` | The check suite: runs the files in `tools/checks/` in order |
 | `tools/checks/harness.mjs` | Headless Chrome, touch input, the mock's test hooks, shared helpers |
-| `tools/checks/*.mjs` | The checks, by part of the page: the Spot, the Show, Kiosk Satellite, the room menu, the menu, signing in, the themes, Settings, the alerts, the events, the music card, the language, covers and thermostats |
+| `tools/checks/*.mjs` | The checks, by part of the page: the Spot, the Show, Kiosk Satellite, the room menu, the menu, signing in, the themes, Settings, the alerts, the events, the music card, the language, covers, thermostats and fans |
 | `tools/fetch_icons.py` | Adds icons to `js/icons.js` |
 | `tools/release.mjs` | Prepares a release: every `?v=` and the changelog at its version ([Changes and releases](#changes-and-releases)) |
 | `custom_components/kiosk_dashboard/` | The integration HACS installs: it serves the page from its `www/`, which a release fills, at `/local/kiosk_dashboard/`, and your `config.js` from `/config/www/kiosk/` ([Security](security.md#through-the-integration)) |

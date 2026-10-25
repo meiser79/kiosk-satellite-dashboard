@@ -255,12 +255,17 @@ export async function livingSpot() {
   await load(p, 'device=Echo+Spot+Living+Room');
   const h = await p.rect('#menu-handle');
   check(await has(p, '#menu-handle svg') && Math.abs(h.x - 240) < 1 && h.t + h.h > 460, 'living spot: the menu tab at the bottom, an arrow on it');
-  check(await p.eval(`(() => { const v = document.querySelector('.view.active'); return v.querySelectorAll('.lights > .tile').length === 8 && v.querySelector('.lights > .media').hidden && v.querySelectorAll(':scope > .dots span').length === 4; })()`), 'five lights, two covers and the heating in one strip (a place to rest for each pair); the media card hidden while the projector is off');
+  check(await p.eval(`(() => { const v = document.querySelector('.view.active'); return v.querySelectorAll('.lights > .tile').length === 9 && v.querySelector('.lights > .media').hidden && v.querySelectorAll(':scope > .dots span').length === 5; })()`), 'five lights, two covers, the heating and the fan in one strip (a place to rest for each pair, the last two at its end); the media card hidden while the projector is off');
   await p.shot('spot-living.png');
   await p.tapSel('.view.active .chip:nth-child(1)');
   let st = await mockStates();
   check(st['input_boolean.projector'].s === 'on', 'projector chip runs the turn-on script');
-  check(await p.waitFor(`!document.querySelector('.view.active .lights > .media').hidden && document.querySelectorAll('.view.active > .dots span').length === 5`), 'the media card joins the end of the strip when the projector is on');
+  check(await p.waitFor(`!document.querySelector('.view.active .lights > .media').hidden && document.querySelectorAll('.view.active > .dots span').length === 6`), 'the media card joins the end of the strip when the projector is on');
+  // The fan, the last tile and without a pair, comes to rest beside the heating, not beside the card.
+  await p.eval(`(() => { const l = document.querySelector('.view.active .lights'), t = l.querySelectorAll('.tile'); l.scrollTo({ left: t[8].offsetLeft + t[8].offsetWidth - l.clientWidth * 0.8, behavior: 'instant' }); })(), true`);
+  await sleep(500);
+  check(await p.eval(`(() => { const t = document.querySelectorAll('.view.active .lights > .tile'), r = (e) => e.getBoundingClientRect(); return [t[7], t[8]].every((e) => r(e).left > 480 * 0.19 && r(e).right < 480 * 0.81) && document.querySelector('.view.active > .dots span:nth-child(5)').classList.contains('on'); })()`),
+    'spot: the last tile alone comes to rest with the one before it, both whole, its own dot');
   await p.eval(`document.querySelector('.view.active .lights').scrollTo({ left: 1e4, behavior: 'instant' }), true`);
   await sleep(500);
   check((await text(p, '.view.active .media-title')) === 'Severance', 'the media card shows what is playing');
