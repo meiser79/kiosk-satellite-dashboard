@@ -7,6 +7,8 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
 
 ## Unreleased
 
+## 1.3.0 - 2026-10-26
+
 ### Added
 
 - **Gradient backgrounds**: `background`, the theme's or a room's, can be a colour the
