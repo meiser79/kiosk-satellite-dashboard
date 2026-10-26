@@ -93,10 +93,10 @@
 .room-off.pressed { transform: scale(0.9); }
 /* the last card turns off every light: set apart, faded while none is on;
    a folder's Back card is set apart the same way. A setting that does not
-   apply is faded too. */
+   apply is faded too, and a kiosk that cannot take a call. */
 .room-card.all-off .room-go, .room-card.back .room-go { border: var(--border-w) dashed var(--muted); }
 .room-card.all-off .room-icon { color: var(--accent); }
-.room-card.idle .room-go { opacity: 0.55; }
+.room-card.idle .room-go > * { opacity: 0.55; }   /* its icon and words: the card stays solid over the room */
 /* wide: a grid of cards, the power button top right, clear of the rail */
 .shape-wide .room-menu { padding: 0.6rem; }
 .app.with-rail .room-menu { padding-right: calc(var(--rail-item) + 2.6rem); }
@@ -139,7 +139,7 @@
 .ring-item .item-label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; text-align: center; line-height: 1.12; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }   /* up to two lines */
 .ring-item.pressed, .ring-item.on { background: var(--accent); color: var(--on-accent); border-color: transparent; }
 .ring-item.pressed .icon, .ring-item.on .icon { color: inherit; }
-.ring-item.idle { opacity: 0.55; }   /* a setting that does not apply */
+.ring-item.idle > * { opacity: 0.55; }   /* a setting that does not apply, a kiosk that cannot take a call: its icon and name */
 /* menu: { labels: false }: the icon alone, in the middle; a ring of them is
    no larger than the main light's power button, its icon as large as that one's */
 .ring-item.icon-only .item-label { display: none; }

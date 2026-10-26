@@ -1,5 +1,5 @@
 // Checks inside Kiosk Satellite, with a stand-in for its bridge.
-import { check, openPage, ROOT_ITEMS, has, menuOpen, load } from './harness.mjs';
+import { check, openPage, ROOT_ITEMS, has, menuOpen, load, sleep } from './harness.mjs';
 
 // 3. Inside Kiosk Satellite (a stand-in for its bridge): Now playing shows only while its player has something
 //    loaded, on the Spot's ring and on the Show's rail.
@@ -26,5 +26,88 @@ export async function insideKioskSatellite() {
   check(await q.waitFor(`${rail} === '${ROOT_ITEMS}'`), 'show: a paused player keeps Now playing on the rail');
   await tell(q, 'idle');
   check(await q.waitFor(`${rail} === '${REST}'`), 'show: an idle one takes it off the rail');
+  await q.close();
+}
+
+// 3b. The intercom's kiosks (a stand-in for Kiosk Satellite's intercom events): the Intercom item (ks://intercom,
+//     items: true) opens the Call a kiosk sheet until Kiosk Satellite names them, then is a folder of one item per
+//     other kiosk, by its room (by its device name where its room has more than one), the ones that cannot take a
+//     call faded; a tap calls one. The list is kept across a reload and follows a change with the folder open; where
+//     this kiosk's intercom is off, the item opens the sheet again.
+export async function intercomKiosks() {
+  const ks = `window.kioskSatellite = { platform: 'kiosksatellite', version: 'test', getDeviceInfo: () => Promise.resolve({}),
+    getKioskState: () => Promise.resolve({ screenOn: true, mediaPlayer: { state: 'playing' } }) };`;
+  // The ks:// link a tap followed. Chrome has no app for it, and its tab takes no more touches: it is closed.
+  const follows = async (p, tap) => { await tap(); await sleep(300); const link = p.leftFor(); await p.close(); return link; };
+  const kiosk = (id, name, status = 'ready') => ({ id, name, status, statusText: status, address: '10.0.0.9', port: 2324 });
+  const roster = (over = {}, enabled = true) => ({ enabled, state: 'idle', self: { id: 'spot-bed', name: 'Echo Spot Bedroom' },
+    kiosks: [kiosk('spot-bed', 'Echo Spot Bedroom'), kiosk('show-bed', 'Echo Show 5 Bedroom'), kiosk('spot-liv', 'Echo Spot Living Room'),
+      kiosk('show-liv', 'Echo Show 8 Living Room', 'dnd'), kiosk('spot-kit', 'Echo Spot Kitchen'), kiosk('spot-off', 'Echo Spot Office', 'offline'),
+      kiosk('tab 1', 'Garage Tablet'), kiosk('dot-hall', 'Echo Dot Hall'), kiosk('old-tab', 'Garage Tablet', 'offline'), kiosk('old-spot', 'Echo Spot Bedroom', 'offline')].map((k) => ({ ...k, ...(over[k.id] || {}) })) });
+  const tell = (p, status) => p.eval(`dispatchEvent(new CustomEvent('kiosksatellite:intercom', { detail: ${JSON.stringify(status)} })), true`);
+  const NAMES = 'Bedroom,Echo Show 8 Living Room,Echo Spot Kitchen,Echo Spot Living Room,Office,Echo Dot Hall,Garage Tablet';   // the rooms' in their order, then the rest
+  const ring = `[...document.querySelectorAll('#menu .ring-item')].map((e) => e.textContent).join()`;
+  const faded = `[...document.querySelectorAll('#menu .ring-item.idle')].map((e) => e.textContent).join()`;
+  const openMenu = async (p) => {
+    await p.tapSel('#menu-handle');
+    await p.waitFor(`document.getElementById('menu').classList.contains('open')`);
+  };
+  const openIntercom = async (p) => { await openMenu(p); await p.tapSel(`#menu .ring-item[aria-label="Intercom"]`); await sleep(300); };
+  const isFolder = (p) => p.eval(`document.querySelector('#menu .ring-item[aria-label="Intercom"]').classList.contains('folder')`);
+  const tapNamed = async (p, name) => {
+    const r = await p.eval(`(() => { const e = [...document.querySelectorAll('#menu .ring-item')].find((b) => b.textContent === ${JSON.stringify(name)}); if (!e) return null; const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+    if (r) { await p.tap(r.x, r.y); await sleep(300); }
+    return !!r;
+  };
+
+  const spot = async () => { const p = await openPage(480, 480); await p.s('Page.addScriptToEvaluateOnNewDocument', { source: ks }); await load(p, 'device=Echo+Spot+Bedroom'); return p; };
+  const iconOf = (p, name) => p.eval(`(() => { const e = [...document.querySelectorAll('#menu .ring-item')].find((b) => b.textContent === ${JSON.stringify(name)}); return e ? e.querySelector('svg path').getAttribute('d') : ''; })()`);
+
+  let p = await spot();
+  await p.eval(`localStorage.removeItem('kiosk.intercom'), true`);   // a kiosk Kiosk Satellite has not yet named any to
+  await load(p, 'device=Echo+Spot+Bedroom');
+  await openMenu(p);
+  check(!(await isFolder(p)), 'intercom: before Kiosk Satellite names its kiosks, the Intercom item is a link');
+  check((await follows(p, () => p.tapSel(`#menu .ring-item[aria-label="Intercom"]`))) === 'ks://intercom', 'intercom: and opens the Call a kiosk sheet');
+
+  p = await spot();
+  await openMenu(p);
+  await tell(p, roster());
+  check(await p.waitFor(`document.querySelector('#menu .ring-item[aria-label="Intercom"]').classList.contains('folder')`) && await menuOpen(p), 'intercom: once they are named, a folder, the menu open meanwhile');
+  await p.tapSel(`#menu .ring-item[aria-label="Intercom"]`);
+  await sleep(300);
+  check((await p.eval(ring)) === NAMES, 'intercom: the other kiosks, the rooms\' first by room or device name, then the rest; the kiosk itself and old entries under a name left out');
+  check((await p.eval(faded)) === 'Echo Show 8 Living Room,Office', 'intercom: the ones in Do not disturb and offline faded');
+  check((await iconOf(p, 'Echo Dot Hall')) === (await p.eval('KIOSK_ICONS.speaker')) && (await iconOf(p, 'Office')) === (await p.eval('KIOSK_ICONS.desk')) && (await iconOf(p, 'Garage Tablet')) === (await p.eval(`KIOSK_ICONS['account-voice']`)),
+    'intercom: a kiosk without a room takes the icon devices gives it, one with a room its room\'s, one with neither the intercom\'s');
+  await p.shot('spot-intercom.png');
+  await load(p, 'device=Echo+Spot+Bedroom');
+  await openIntercom(p);
+  check((await p.eval(ring)) === NAMES, 'intercom: the kiosk keeps the list across a reload, before Kiosk Satellite says anything');
+  await tell(p, roster({ 'show-liv': { status: 'ready' } }));
+  check(await p.waitFor(`${faded} === 'Office'`), 'intercom: one out of Do not disturb comes back, the folder open');
+  await tell(p, roster({}, false));
+  check(await p.waitFor(`${ring}.split(',').includes('Intercom')`) && !(await isFolder(p)), 'intercom: where this kiosk\'s intercom is off, the item is a link again');
+  await tell(p, roster());
+  check(await p.waitFor(`${ring}.split(',').includes('Intercom')`) && await isFolder(p), 'intercom: and a folder once it is on');
+  await p.tapSel(`#menu .ring-item[aria-label="Intercom"]`);
+  await sleep(300);
+  check((await follows(p, () => tapNamed(p, 'Bedroom'))) === 'ks://intercom/show-bed', 'intercom: a tap calls that kiosk straight away');
+  p = await spot();
+  await openIntercom(p);
+  check((await follows(p, () => tapNamed(p, 'Garage Tablet'))) === 'ks://intercom/tab%201', 'intercom: a kiosk no device names keeps its own name and calls by its id');
+
+  const q = await openPage(960, 480);
+  await q.s('Page.addScriptToEvaluateOnNewDocument', { source: ks });
+  await load(q, 'device=Echo+Show+5+Bedroom');
+  await tell(q, { ...roster(), self: { id: 'show-bed', name: 'Echo Show 5 Bedroom' } });
+  await q.tapSel('#menu .menu-item[aria-label="Intercom"]');
+  await sleep(400);
+  const cards = await q.eval(`[...document.querySelectorAll('#folder-menu .room-card')].map((c) => [c.querySelector('.room-name').textContent, (c.querySelector('.room-state') || {}).textContent || '', c.classList.contains('idle')])`);
+  check(cards.map((c) => c[0]).join() === 'Back,Bedroom,Echo Show 8 Living Room,Echo Spot Kitchen,Echo Spot Living Room,Office,Echo Dot Hall,Garage Tablet',
+    'show 5: the Intercom folder\'s cards, the Show itself left out and the Spot in its room named after it');
+  check(JSON.stringify(cards.filter((c) => c[2]).map((c) => c[1])) === JSON.stringify(['Do not disturb', 'Offline']), 'show 5: a faded card says why');
+  await q.shot('show-intercom.png');
+  await q.eval(`localStorage.removeItem('kiosk.intercom'), true`);
   await q.close();
 }
