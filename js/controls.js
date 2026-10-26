@@ -148,6 +148,8 @@
   // long-press `open`. When the tile `slide`s, a drag across it sets the
   // level where the finger is (onPreview and onCommit of a fraction), on the
   // Spot as on the Show; on the Show a swipe up or down scrolls the tiles.
+  // With a showWhen, the tile shows only while it holds (sensorIds: the
+  // entities it watches).
   function tileFrame(cfg, { icon: ic, tap, open, slide }) {
     const node = el('div', 'tile' + (slide ? ' slides' : ''));
     node.innerHTML = `<span class="tile-fill"></span><span class="tile-icon">${icon(ic)}</span>`
@@ -155,6 +157,7 @@
       + '<span class="tile-line"><span class="tile-state"></span><span class="tile-extra"></span></span>';
     if (slide) attachTrack(node, { ...slide, onTap: tap, onHold: open, lock: true });
     else attachPress(node, { onTap: tap, onHold: open });
+    if (cfg.showWhen) watch(sensorIds(cfg), () => { node.hidden = !matches(cfg.showWhen, cfg.entity); });
     return { node, iconEl: node.querySelector('.tile-icon'), stateEl: node.querySelector('.tile-state'), extraEl: node.querySelector('.tile-extra') };
   }
 

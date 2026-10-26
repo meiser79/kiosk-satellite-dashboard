@@ -31,6 +31,9 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
   turns one on or off, a drag across the tile sets its speed in the fan's own steps; the
   panel has the speed and chips for its preset modes, oscillation and direction
   ([Rooms](docs/configuration.md#rooms)).
+- **Tiles shown when**: a light, cover, thermostat or fan in your `config.js` takes a
+  `showWhen`, like a sensor's: its tile shows only while it holds, for example only while
+  the projector is on ([Shown when](docs/configuration.md#shown-when)).
 - **Icons alone on the Spot's menu**: `menu: { labels: false }` in your `config.js` leaves
   the names off the ring's buttons, which take the size of the main light's power button;
   the favourites keep theirs ([Menu](docs/configuration.md#menu)).
@@ -50,6 +53,9 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
   under them, or a tap beside them, brings the next two.
 - **No arrows on the menu's folders**: Music, Settings and Find my phone open as before,
   without the small arrow in their corner.
+- **Lights apart on the Show**: in a room with covers, thermostats or fans as well, the light
+  tiles sit under the dial (a small ring beside the name) and above the media card, the
+  others beside them, their rows on the same lines.
 - **Echo Show 8**: laid out as the Show 5, larger: the page scales with the width of a
   Show as well as its height, so the dial and the tiles share the screen alike.
 

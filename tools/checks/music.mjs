@@ -13,9 +13,10 @@ export async function musicShow8() {
   const p = await openPage(1280, 800);
   await load(p, 'device=Echo+Show+8+Living+Room');
   check(await p.waitFor(`document.querySelectorAll('.view.active .music-fav').length === 7`) && (await names(p)) === RADIOS, `show 8: the music card lists the favourite radios (got ${await names(p)})`);
-  const [dial, card, controls] = [await box(p, '.main'), await box(p, '.music'), await box(p, '.controls')];
-  check(card.t >= dial.b && Math.abs(card.l - controls.l) < 1 && Math.abs(card.r - controls.r) < 1 && card.b <= 800 && dial.h > 300,
-    `show 8: the card under the dial, across its column, the dial still large (dial ${dial.h.toFixed(0)}px, card ${card.h.toFixed(0)}px)`);
+  // The living room's covers, thermostat and fan take the grid beside, so its lights are under the dial, the card under them.
+  const [dial, card, controls, lights] = [await box(p, '.main'), await box(p, '.music'), await box(p, '.controls'), await box(p, '.controls > .lights')];
+  check(lights.t >= dial.b && card.t >= lights.b - 1 && Math.abs(card.l - controls.l) < 1 && Math.abs(card.r - controls.r) < 1 && card.b <= 800,
+    `show 8: the dial, its lights, then the card across the column (dial ${dial.h.toFixed(0)}px, card ${card.h.toFixed(0)}px)`);
   check(await p.eval(`document.querySelector('.view.active .music .fav-switch .on').textContent === 'Radios'`) && await p.waitFor(`document.querySelectorAll('.view.active .music-fav.with-cover').length === 5`)
     && await p.eval(`(() => { const s = document.querySelector('.view.active .music-strip'); return s.scrollWidth > s.clientWidth; })()`),
   'show 8: the switch on Radios, the five covers there are, more than the card shows at once');
@@ -50,13 +51,13 @@ export async function musicShow8() {
   check(await p.waitFor(`document.querySelector('.view.active .music').getBoundingClientRect().height > 0`), 'show 8: and back once it goes');
   await p.close();
 
-  // On an Echo Show 8 as Kiosk Satellite lays it out: the card, the dial and three lights all fit.
+  // On an Echo Show 8 as Kiosk Satellite lays it out: the dial, three lights and the card all fit.
   const q = await openPage(960, 600);
   await changeRoom(q, 'living', { lights: [{ entity: 'light.living_room', name: 'Living room' }, { entity: 'light.dining_room', name: 'Dining room' }, { entity: 'light.kitchen', name: 'Kitchen' }] });
   await load(q, 'device=Echo+Show+8+Living+Room');
-  const [d, c] = [await box(q, '.main'), await box(q, '.music')];
-  check(d.h > 12.5 * 20.4 && c.t >= d.b && c.b <= 600 - 10 && await q.eval(`(() => { const g = document.querySelector('.view.active .lights'); return g.scrollHeight <= g.clientHeight + 1; })()`),
-    `show 8 at 960×600: the dial, the card under it and the three lights in view (dial ${(d.h / 20.4).toFixed(1)}rem)`);
+  const [d, l, c] = [await box(q, '.main'), await box(q, '.controls > .lights'), await box(q, '.music')];
+  check(l.t >= d.b && c.t >= l.b - 1 && c.b <= 600 - 10 && await q.eval(`(() => { const g = document.querySelector('.view.active .controls > .lights'); return g.scrollHeight <= g.clientHeight + 1; })()`),
+    `show 8 at 960×600: the dial, the three lights under it and the card, all in view (lights ${l.t.toFixed(0)}–${l.b.toFixed(0)}px, card ${c.t.toFixed(0)}–${c.b.toFixed(0)}px)`);
   await q.shot('show8-960-music.png');
   await q.close();
 

@@ -112,13 +112,14 @@ span.title-btn { cursor: default; }
 }
 .dial-centre .bar-text { align-items: center; max-width: 100%; }
 .dial-centre.pressed { background: var(--surface-2); transform: translate(-50%, -50%) scale(0.96); }
-/* with the media card on screen (.with-media on the view): a row, the ring small beside the name */
-.with-media .controls .bar { display: block; }
-.with-media .controls .dial.gauge { display: flex; align-items: center; gap: 0.6rem; height: auto; }
-.with-media .controls .dial.gauge > svg { width: 5.4rem; height: 5.4rem; flex: none; }
-.with-media .controls .dial-centre { position: static; transform: none; width: auto; flex: 1; flex-direction: row; justify-content: flex-start; text-align: left; gap: 0.8rem; padding: 0.5rem 0.8rem; }
-.with-media .controls .dial-centre.pressed { transform: scale(0.98); }
-.with-media .controls .dial-centre .bar-text { align-items: flex-start; }
+/* with the media card on screen (.with-media on the view), or the light tiles under it: a row, the
+   ring small beside the name */
+:is(.with-media .controls, .controls.with-lights) .bar { display: block; }
+:is(.with-media .controls, .controls.with-lights) .dial.gauge { display: flex; align-items: center; gap: 0.6rem; height: auto; }
+:is(.with-media .controls, .controls.with-lights) .dial.gauge > svg { width: 5.4rem; height: 5.4rem; flex: none; }
+:is(.with-media .controls, .controls.with-lights) .dial-centre { position: static; transform: none; width: auto; flex: 1; flex-direction: row; justify-content: flex-start; text-align: left; gap: 0.8rem; padding: 0.5rem 0.8rem; }
+:is(.with-media .controls, .controls.with-lights) .dial-centre.pressed { transform: scale(0.98); }
+:is(.with-media .controls, .controls.with-lights) .dial-centre .bar-text { align-items: flex-start; }
 /* the main slot: its lights stacked, the current one shown. The others wait
    faded out, a slot's width away on the side they come in from (--side, set
    by js/view.js; 0 crossfades in place), hidden from touch as well. */
