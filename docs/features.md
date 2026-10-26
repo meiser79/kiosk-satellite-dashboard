@@ -85,6 +85,10 @@ What the page does, screen by screen. [Configuration](configuration.md) says how
   belongs to. The list comes from Music Assistant each time the folder opens, so a
   station you star there shows up the next time; the Spot's ring shows the first ten by
   name. A script or a favourite says what it did in a short toast.
+- **Calling a kiosk.** A folder (*Intercom*) lists the other Echos on Kiosk Satellite's
+  intercom, named after their rooms, and a tap calls one straight away, without Kiosk
+  Satellite's *Call a kiosk* sheet. One that cannot take a call now (offline, *Do not
+  disturb*) shows faded. A new Echo shows up by itself.
 - **Themes.** Fourteen to choose from: dark, light, Nord, E-ink, an amber CRT, a handheld
   console's greens, two desktops of the early 2000s, steampunk brass, a starship's
   console, two that move: Matrix's falling code and a synthwave sunset, and Kiosk

@@ -50,6 +50,13 @@ window.KIOSK_CONFIG = {
   //   items      a folder of more items, one level deep. On the Spot a folder
   //              opens as a ring of its own, Back in the middle; on the Show as
   //              a grid of cards, Back first.
+  //              With link: 'ks://intercom', items: true makes it a folder of the
+  //              other kiosks on Kiosk Satellite's intercom, a tap calling one
+  //              straight away. The rooms' kiosks come first, each with its room's
+  //              title and icon (its device name when the room has more than one
+  //              kiosk), then those devices does not name; one that cannot take a
+  //              call now shows faded. Until Kiosk Satellite has named them, and
+  //              where this kiosk's intercom is off, the item opens the link.
   //   favorites  (a folder, before its items) your Music Assistant favourites:
   //              'radio', 'playlist', 'album', or several, then with a switch at
   //              the top of the screen. They play on the player of the room this
@@ -69,7 +76,7 @@ window.KIOSK_CONFIG = {
     items: [
       { name: 'Now playing', icon: 'play-circle-outline', link: 'ks://now-playing' },
       { name: 'Screensaver', icon: 'weather-night', link: 'ks://screensaver' },
-      { name: 'Intercom', icon: 'account-voice', link: 'ks://intercom' },
+      { name: 'Intercom', icon: 'account-voice', link: 'ks://intercom', items: true },
       { name: 'Cameras', icon: 'cctv', link: 'ks://camera' },
       { name: 'Find my phone', icon: 'cellphone-sound', items: [
         { name: 'Alex', icon: 'cellphone', script: 'script.find_alex_phone' }, // <-- entity
@@ -88,7 +95,10 @@ window.KIOSK_CONFIG = {
   /* ---------------------------------------------------------- devices */
   // Keys are the device name in Kiosk Satellite (Settings > Device), values the
   // room that kiosk starts on, or { room, theme } for a kiosk with a theme of
-  // its own. Matching ignores case, punctuation and a "ks-" prefix.
+  // its own. Matching ignores case, punctuation and a "ks-" prefix. An icon
+  // ({ icon }, with or without a room) shows the kiosk in the menu's intercom
+  // folder (ks://intercom with items: true): an Echo Dot or a phone without
+  // the dashboard needs no room.
   devices: {
     'Echo Spot Bedroom': 'bedroom',
     'Echo Show 5 Bedroom': 'bedroom',
@@ -96,6 +106,7 @@ window.KIOSK_CONFIG = {
     'Echo Show 8 Living Room': 'living',
     'Echo Spot Kitchen': 'living',
     'Echo Spot Office': { room: 'office', theme: 'light' },
+    'Echo Dot Hall': { icon: 'speaker' },
   },
   // Room shown when the device is not listed above (and on a desktop browser).
   defaultRoom: 'bedroom',

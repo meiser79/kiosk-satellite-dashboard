@@ -45,6 +45,8 @@ window.KIOSK_I18N = (() => {
       allOff: 'All lights off', allOffLabel: 'Turn off every light',
       // the menu
       opensInApp: 'Opens in Kiosk Satellite',
+      kioskOff: 'Intercom off', kioskDnd: 'Do not disturb', kioskOffline: 'Offline', kioskUnreachable: 'Unreachable',
+      kioskKey: 'Different key', kioskTls: 'Encryption mismatch', kioskChecking: 'Checking…',
       radios: 'Radios', playlists: 'Playlists', albums: 'Albums',
       loading: 'Loading…',
       maNoAnswer: 'Music Assistant did not answer',
@@ -91,6 +93,8 @@ window.KIOSK_I18N = (() => {
       roomOff: 'Lichter in {room} ausschalten',
       allOff: 'Alle Lichter aus', allOffLabel: 'Alle Lichter ausschalten',
       opensInApp: 'Öffnet sich in Kiosk Satellite',
+      kioskOff: 'Gegensprechanlage aus', kioskDnd: 'Bitte nicht stören', kioskOffline: 'Offline', kioskUnreachable: 'Nicht erreichbar',
+      kioskKey: 'Anderer Schlüssel', kioskTls: 'Verschlüsselung passt nicht', kioskChecking: 'Wird geprüft…',
       radios: 'Radiosender', playlists: 'Playlists', albums: 'Alben',
       loading: 'Lädt…',
       maNoAnswer: 'Music Assistant hat nicht geantwortet',

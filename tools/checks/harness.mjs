@@ -37,6 +37,7 @@ let seq = 0;
 const waiting = new Map();
 const consoleErrors = [];
 const layerTrees = new Map();   // by page: the compositor's layers, as last reported
+const leaving = new Map();   // by page: the addresses it asked to go to, a ks:// link among them
 ws.onmessage = (ev) => {
   const m = JSON.parse(ev.data);
   if (m.id && waiting.has(m.id)) { const { resolve, reject } = waiting.get(m.id); waiting.delete(m.id); m.error ? reject(new Error(m.error.message)) : resolve(m.result); }
@@ -44,6 +45,7 @@ ws.onmessage = (ev) => {
   if (m.method === 'Runtime.consoleAPICalled' && m.params.type === 'error') consoleErrors.push(m.params.args.map((a) => a.value || a.description).join(' '));
   if (m.method === 'Fetch.requestPaused') servePicture(m.sessionId, m.params);
   if (m.method === 'LayerTree.layerTreeDidChange' && m.params.layers) layerTrees.set(m.sessionId, m.params.layers);
+  if (m.method === 'Page.frameRequestedNavigation') leaving.set(m.sessionId, [...(leaving.get(m.sessionId) || []), m.params.url]);
 };
 // A call Chrome leaves unanswered for half a minute stops the run, saying which, instead of holding it for good.
 const cdp = (method, params = {}, sessionId) => new Promise((resolve, reject) => {
@@ -92,6 +94,8 @@ async function openPage(width, height, scale = 1) {
   const page = {
     s, targetId,
     async goto(url) { await s('Page.navigate', { url }); await sleep(150); },
+    // The last address the page asked to go to by itself (a link it followed), or ''.
+    leftFor() { const all = leaving.get(sessionId) || []; return all[all.length - 1] || ''; },
     async eval(expr) { const r = await s('Runtime.evaluate', { expression: expr, returnByValue: true, awaitPromise: true }); if (r.exceptionDetails) throw new Error(r.exceptionDetails.text + ' ' + (r.exceptionDetails.exception?.description || '')); return r.result.value; },
     async waitFor(expr, ms = 6000) { const t0 = Date.now(); while (Date.now() - t0 < ms) { try { if (await this.eval(expr)) return true; } catch { /* navigating */ } await sleep(100); } return false; },
     async rect(sel) { return this.eval(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return null; const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, l: r.left, t: r.top, w: r.width, h: r.height }; })()`); },

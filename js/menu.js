@@ -4,7 +4,8 @@
  * a tap or a swipe on the tab at the bottom; picking one, or a tap anywhere
  * but on one, closes it. An item is a link, a Home Assistant script, or a
  * folder of such items (one level) that may also hold Music Assistant
- * favourites (js/favorites.js), or Settings (js/settings.js): on the Spot a
+ * favourites (js/favorites.js) or the intercom's kiosks (js/intercom.js),
+ * or Settings (js/settings.js): on the Spot a
  * folder opens as a ring of its own, Back in the middle; on the Show, as a
  * grid of cards like the room menu's, Back first. Settings' list of themes
  * is a list like the room menu's on both. An item may be kept to one
@@ -18,7 +19,7 @@
   const K = window.Kiosk;
   const { CFG, HA, t, $, KS, params, el, esc, icon, setClass, toast, warn } = K;
   const { pressFx, armIdle, dim, undim, closeOverlay, dimmed, showView } = K;
-  const { homePlayer, favoriteKinds, folderItems, favoritesBar, loadFavorites, settingsItems } = K;
+  const { homePlayer, favoriteKinds, folderItems, favoritesBar, loadFavorites, settingsItems, isIntercom, intercomItems } = K;
 
   const app = $('app'), menuEl = $('menu'), handle = $('menu-handle');
   let swipedAt = 0, menuRoot = [], ringFolder = null;   // the folder on the Spot's ring, if one is
@@ -98,6 +99,12 @@
       if (!it || !kindOf(it)) { console.warn('config.js: a menu item needs a link, a script, items or favorites:', it); continue; }
       if (isFolder(it) && depth) { console.warn(`config.js: menu folders go one level deep; "${it.name}" is left out`); continue; }
       if ((it.shape && it.shape !== K.shape) || (!playerLoaded && isNowPlaying(it))) continue;
+      if (it.items === true) {   // the intercom's kiosks, once Kiosk Satellite has named them; else the link
+        if (!isIntercom(it)) console.warn(`config.js: items: true goes with the link ks://intercom; "${it.name}" stays a link`);
+        const link = { ...it, items: undefined };
+        out.push(isIntercom(it) && !depth && intercomItems().length ? { ...link, items: [], favorites: [], list: intercomItems, kiosks: true } : link);
+        continue;
+      }
       if (!isFolder(it)) { out.push(it); continue; }
       if (it.settings) { out.push({ ...it, items: [], favorites: [], list: settingsItems }); continue; }
       const inside = menuItems(it.items, depth + 1), kinds = homePlayer() ? favoriteKinds(it) : [];
@@ -105,9 +112,9 @@
     }
     return out;
   }
-  // What a folder holds: Settings and its list of themes as they stand, or
-  // its favourites and its items.
-  const contents = (folder, most) => (folder.list ? folder.list() : folderItems(folder, most));
+  // What a folder holds: Settings and its list of themes, or the intercom's
+  // kiosks, as they stand, or its favourites and its items; `most` at most.
+  const contents = (folder, most) => (folder.list ? folder.list().slice(0, most) : folderItems(folder, most));
   // An entry that opens more of Settings (its list of themes), and Back from there.
   const sub = (it, parent) => ({ items: [], favorites: [], ...it.opens, parent });
   // A setting changes as it is picked: the folder stays open, then shows it.
@@ -282,6 +289,11 @@
     if (ringFolder && ringFolder.favorites.includes(kind) && menuEl.classList.contains('open')) showRing(ringFolder);
     if (folderShown && folderShown.favorites.includes(kind)) fillFolder();
   }
+  // The intercom's kiosks changed: redraw their folder, if it is on screen.
+  function redrawIntercom() {
+    if (ringFolder && ringFolder.kiosks && menuEl.classList.contains('open')) showRing(ringFolder, false);
+    if (folderShown && folderShown.kiosks) fillFolder(true);
+  }
   // The kinds of favourites the menu's folders show, to fetch before one opens.
   const menuFavoriteKinds = () => [...new Set(menuRoot.flatMap((it) => (isFolder(it) ? it.favorites : [])))];
 
@@ -304,5 +316,5 @@
     warn(`config.js: the link "${link}" is not supported`);
   }
 
-  Object.assign(K, { buildMenu, followPlayer, redrawFavorites, menuFavoriteKinds, follow });
+  Object.assign(K, { buildMenu, followPlayer, redrawFavorites, redrawIntercom, menuFavoriteKinds, follow });
 })();

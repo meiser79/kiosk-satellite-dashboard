@@ -9,7 +9,7 @@ its use; this page is the reference.
 language?:   'en' | 'de'
 theme:       { name: 'dark', accent?: '#f2af48', followLight?: true, background?: '<picture>' | '#colour' | 'accent' | 'complement', fade?: 0.5 }
 menu:        { items: [{ name, icon, shape?: 'round' | 'wide', link | script | items | settings, favorites? }] }
-devices:     { '<Kiosk Satellite device name>': '<room key>' | { room: '<room key>', theme?: '<theme>' } }
+devices:     { '<Kiosk Satellite device name>': '<room key>' | { room?: '<room key>', theme?: '<theme>', icon?: '<icon>' } }
 defaultRoom: '<room key>'
 alerts:      [{ entity, icon, on?, unit?, digits?, showWhen? }]
 rooms:       { <key>: { title, icon, sensors, modes, main, lights, covers?, climate?, fans?, media, player, events?, background?, fade? } }
@@ -84,6 +84,15 @@ in place of the room alone.
 
 The room a kiosk starts on is also the room it *belongs to*: Music Assistant favourites
 play on that room's `player`, whichever room is on screen.
+
+An `icon` shows the kiosk in the menu's intercom folder (see [Calling a
+kiosk](#calling-a-kiosk)), over its room's. An Echo Dot or a phone that does not run the
+dashboard needs no room:
+
+```js
+'Echo Dot Hall': { icon: 'speaker' },
+'Pixel 9a': { icon: 'cellphone' },
+```
 
 ## Rooms
 
@@ -227,6 +236,7 @@ ring of buttons on the Spot. Each item has a `name`, an `icon` and one of:
 | `items: [...]` | A folder of items, one level deep. On the Spot it opens as a ring of its own, *Back* in the middle; on the Show as a grid of cards, *Back* first |
 | `favorites: ['radio', 'playlist', 'album']` | (on a folder) Your Music Assistant favourites, before the folder's own items |
 | `settings: true` | Settings: the theme and following the light, set on the kiosk itself (see [Settings](#settings)) |
+| `link: 'ks://intercom', items: true` | A folder of the other kiosks on Kiosk Satellite's intercom, a tap calling one (see [Calling a kiosk](#calling-a-kiosk)) |
 
 - `shape: 'round'` keeps an item to the Echo Spot, `shape: 'wide'` to the Echo Show.
 - A `ks://now-playing` item shows only while Kiosk Satellite has something to play.
@@ -259,6 +269,31 @@ screen with `shape`, as `config.example.js` does:
   did not answer*.
 - A cover that does not load, for example an `http://` image on an `https://` dashboard,
   leaves the icon in its place.
+
+### Calling a kiosk
+
+`{ name: 'Intercom', icon: 'account-voice', link: 'ks://intercom', items: true }` adds a folder with one item
+per other kiosk Kiosk Satellite's intercom knows. A tap calls that kiosk straight away
+(`ks://intercom/<id>`), without Kiosk Satellite's *Call a kiosk* sheet, whose close
+button is out of reach on the round Spot. A new Echo shows up by itself.
+
+- The kiosks of the rooms come first, in the order of `rooms`, each with the title and
+  icon of its room, found through `devices`. Where the folder lists more than one kiosk
+  of a room, each keeps its device name. Then come the others (an Echo Dot, a phone), by
+  their device names, with the `icon` of their entry in `devices` if they have one.
+- An `icon` in a kiosk's entry in `devices` goes over its room's.
+- A kiosk Kiosk Satellite lists twice under one name (its fleet keeps an old entry of a
+  device set up again) shows once, as the entry that can take a call.
+- A kiosk that cannot take a call now (offline, its intercom off, *Do not disturb*)
+  shows faded; on the Show its card says why. A tap still tries, and Kiosk Satellite
+  says what is wrong.
+- Kiosk Satellite tells the page about its kiosks only when something changes: a kiosk
+  found or lost, a call, a check of the others (every 30 seconds while its *Call a kiosk*
+  sheet or Remote Admin is open). The page keeps the last list on the kiosk, in its
+  browser's storage, and starts from it. Until it has one, the item opens Kiosk
+  Satellite's sheet, as its `link` says: opening it once fills the list.
+- On a kiosk whose intercom is off, the item opens the sheet too. So does one inside
+  another folder, as folders go one level deep.
 
 ### Settings
 

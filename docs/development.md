@@ -35,6 +35,7 @@ Node.js 22 or later, and Google Chrome for the checks; Python 3 only to add icon
 | `js/room-menu.js` | The room menu, and the lights it counts and turns off |
 | `js/favorites.js` | Music Assistant favourites |
 | `js/settings.js` | Settings in the menu: its entries, the list of themes, the version |
+| `js/intercom.js` | The intercom's kiosks for the menu, as Kiosk Satellite names them, kept on the kiosk |
 | `js/menu.js` | The menu: its items, the Spot's ring, the Show's rail and folders, links |
 | `js/popover.js` | The detail panel and its tabs, or the room's events |
 | `js/main.js` | Boot: which kiosk, which room, which shape; the status pill |
@@ -128,7 +129,9 @@ toggles in its middle, the tiles' own sliders, the panel's sliders, long-presses
 projector scripts and media card, WLED effects, palette and speed, group members, the
 Spot's menu ring (tap and swipe on its tab, picking an item, closed by a tap beside its
 items, rings of one to ten buttons sized to fit), the Show's rail, items kept to one
-shape, Now playing following a stand-in for Kiosk Satellite's player, the menu folders
+shape, Now playing following a stand-in for Kiosk Satellite's player, the intercom's
+kiosks following a stand-in for its intercom (a link until it names them, by room, faded,
+kept across a reload), the menu folders
 on both (a ring with Back in the middle, a grid with Back first), a script and a
 favourite reaching the mock with the right player and the toast that follows, Music
 Assistant's favourites (asked for as the page connects, for the player's instance, the
