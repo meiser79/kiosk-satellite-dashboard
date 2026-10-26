@@ -4,7 +4,7 @@
 // docs/configuration.md describes every option.
 //
 // Structure
-//   theme     the theme, its accent colour and the background picture
+//   theme     the theme, its accent colour and the background (a picture or a colour)
 //   menu      the launcher for the kiosk's own features
 //   devices   the room (and theme) of each kiosk, keyed by its Kiosk Satellite device name
 //   alerts    values of the house every room shows while they need attention
@@ -27,9 +27,12 @@ window.KIOSK_CONFIG = {
                            // the Spot), and the colour above while it is off
     // background: '/local/kiosk/wallpaper.jpg',   // a picture behind every room: a web
                            // address, or a file in Home Assistant's www/ folder. A room
-                           // can have its own (see the rooms below).
-    fade: 0.5,             // 0 to 1: how far the picture fades into the theme's colour,
-                           // so that text on it stays legible
+                           // can have its own (see the rooms below). Or a colour the
+                           // page draws as a gradient: '#5b3fd1', 'accent' (the light's
+                           // with followLight), or 'complement', the accent's opposite
+                           // on the colour wheel, so that it stands out
+    fade: 0.5,             // 0 to 1: how far the picture or the gradient fades into the
+                           // theme's colour, so that text on it stays legible
   },
 
   /* ------------------------------------------------------------- menu */
@@ -132,8 +135,8 @@ window.KIOSK_CONFIG = {
   //                  lines      the lines of the list on each shape: { round: 1,
   //                             wide: 3 } unless said (the Spot has room for one,
   //                             the Show for six); a number for both, 0 for none
-  // background, fade the room's own picture behind it, and how far it fades
-  //                  (over the theme's)
+  // background, fade the room's own picture or colour behind it, and how far it
+  //                  fades (over the theme's)
   rooms: {
     bedroom: {
       title: 'Bedroom',

@@ -24,8 +24,8 @@ address: the covers of your Music Assistant favourites, from wherever Music Assi
 says they are (its own server or the streaming service), the artwork of a media card
 when the player's integration gives Home Assistant a web address for it (a streaming
 service's, say) rather than passing it through itself, and the background pictures
-you put in `config.js`. Keep the pictures in `www/` if the kiosk should load nothing
-from elsewhere. A theme's name in the address (`?theme=`), or the one Settings keeps on
+you put in `config.js`. Keep the pictures in `www/`, or have the page draw a gradient
+instead, if the kiosk should load nothing from elsewhere. A theme's name in the address (`?theme=`), or the one Settings keeps on
 the kiosk, only chooses among the themes listed in `themes/themes.js`, whose files sit next to the page; a theme's script (Matrix's,
 Synthwave's) runs inside the page like the page's own code.
 

@@ -73,7 +73,9 @@ What the page does, screen by screen. [Configuration](configuration.md) says how
   yours. The accent can take the colour of the light the dial
   controls (the main light on the Show, the light in the main slot on the Spot), fading
   from one to the next. A picture can sit behind every room, or each room its own, faded
-  into the theme so that the text stays legible.
+  into the theme so that the text stays legible; or a gradient the page draws from a
+  colour of yours, from the accent, or from the accent's opposite, following the light
+  with it.
 - **Fast.** Live states come over the Home Assistant WebSocket, subscribed to just the
   entities on the page (plus the members of a light group, once it says who they are).
   Only the widgets whose entity changed are redrawn, in one frame. A level you set stays

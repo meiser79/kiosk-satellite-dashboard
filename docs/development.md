@@ -21,7 +21,7 @@ Node.js 22 or later, and Google Chrome for the checks; Python 3 only to add icon
 | `js/ha.js` | The Home Assistant connection: sign-in, WebSocket, subscriptions, service calls |
 | `js/core.js` | Creates `window.Kiosk`: configuration, DOM and state helpers, colours, toast |
 | `js/live.js` | Watching entities, redrawing in one frame, holding values in flight, service calls |
-| `js/theme.js` | The theme and its files, switching to another in place, its scene, the accent and the light it follows, what Settings keeps on the kiosk, the rooms' background pictures |
+| `js/theme.js` | The theme and its files, switching to another in place, its scene, the accent and the light it follows, what Settings keeps on the kiosk, the rooms' background pictures and drawn gradients |
 | `js/touch.js` | Press, long-press, drag and swipe; the slider |
 | `js/overlays.js` | The backdrop the menus open over |
 | `js/controls.js` | Sensors, mode chips, the dial, the main control, light tiles |
@@ -145,7 +145,8 @@ both shapes (following the light turned off and on, the version, the list of the
 switched in place looking as on a fresh page, a scene stopped and started again, a theme
 picked before the last one's files have come, what the kiosk keeps across a reload, a
 kept theme since removed, a kiosk's own theme as its default), the rooms'
-pictures (each room's own, none, one that does not load), the login round-trip, a token
+pictures (each room's own, none, one that does not load), the gradients drawn instead
+(from a colour, the accent following the light, its opposite, none on a mono theme), the login round-trip, a token
 in the address being ignored, a login's token renewed before it runs out and when Home
 Assistant refuses it, a refused kiosk token, and the rooms' events (the page's clock set
 to 10:00: what Home Assistant is asked, their order, the count, the Spot's line and the

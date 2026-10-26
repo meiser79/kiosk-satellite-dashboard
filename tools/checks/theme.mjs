@@ -109,6 +109,57 @@ export async function pictures() {
   }
 }
 
+// 13b. Backgrounds drawn from a colour: the accent's opposite in the bedroom, a colour of its own in the office,
+// the accent (the theme's background) in the living room.
+export async function gradients() {
+  await reset();
+  const drawn = `(() => { let v; Object.defineProperty(window, 'KIOSK_CONFIG', { configurable: true, get: () => v, set: (c) => {
+    c.theme.background = 'accent'; c.rooms.bedroom.background = 'complement'; c.rooms.office.background = '#5B3FD1'; delete c.rooms.living.background; v = c; } }); })();`;
+  const paint = async (p) => { await sleep(1000); return p.eval(`(() => { const s = document.querySelector('#wallpaper .paper.show'), cs = s && getComputedStyle(s), n = (v) => cs ? cs.getPropertyValue(v).replace(/\\s/g, '') : '';
+    return { shown: document.querySelectorAll('#wallpaper .paper.show').length, drawn: !!s && s.classList.contains('paint') && !s.querySelector('img'), a: n('--paint-rgb'), b: n('--paint-2-rgb'),
+      on: document.getElementById('app').classList.contains('with-wallpaper') }; })()`); };
+  const room = async (p, n) => { await p.tapSel('.view.active .title-btn'); await sleep(400); await p.tapSel(`#room-menu .room-card:nth-child(${n}) .room-go`); };
+  {
+    const p = await openPage(480, 480);
+    await p.s('Page.addScriptToEvaluateOnNewDocument', { source: drawn });
+    await load(p, 'device=Echo+Spot+Bedroom');
+    let w = await paint(p);
+    check(w.shown === 1 && w.drawn && w.on, 'spot: the bedroom\'s background is drawn, with no picture to load');
+    check(near(w.a, 216) && near(w.b, 256) && hsl(w.b).l < hsl(w.a).l, `spot: the theme's amber accent gives its opposite, a blue, running to a deeper indigo (got ${w.a} to ${w.b})`);
+    await p.shot('spot-bedroom-complement.png');
+    await p.tapSel('.view.active .main-arrow[data-dir="1"]');
+    await p.tapSel('.view.active .main-arrow[data-dir="1"]');
+    w = await paint(p);
+    check(near(await accent(p), 340) && near(w.a, 160) && near(w.b, 200), `spot: the pink strip in the main slot, a pink accent on its opposite, a green running to blue (got ${w.a} to ${w.b})`);
+    await room(p, 3);
+    w = await paint(p);
+    check((await activeRoom(p)) === 'office' && w.drawn && w.a === '91,63,209' && near(w.b, 291), `spot: the office's own colour, whatever its light (got ${w.a} to ${w.b})`);
+    await room(p, 2);
+    w = await paint(p);
+    const a = await accent(p);
+    check(w.drawn && w.a === a, `spot: the living room has the theme's background, the accent (got ${w.a}, the accent ${a})`);
+    check(await p.eval(`document.querySelectorAll('#wallpaper .paper').length === 3 && !document.querySelector('#wallpaper img')`), 'one layer for each colour, none of them a picture');
+    await load(p, 'device=Echo+Spot+Bedroom&theme=nord');
+    w = await paint(p);
+    check(near(w.a, 13), `spot, nord: drawn from the opposite of the theme's own accent, its frosty blue giving a peach (got ${w.a})`);
+    await load(p, 'device=Echo+Spot+Bedroom&theme=eink');
+    w = await paint(p);
+    check(w.shown === 0 && !w.on, 'spot, eink: a mono theme keeps its plain background');
+    await p.close();
+  }
+  {
+    const p = await openPage(1280, 800);
+    await p.s('Page.addScriptToEvaluateOnNewDocument', { source: drawn });
+    await load(p, 'device=Echo+Show+8+Living+Room');
+    await lightOn(p, 'light.downstairs', { hs_color: [200, 90] });
+    const w = await paint(p), a = await accent(p);
+    check(near(a, 200) && w.drawn && w.a === a && near(w.b, 240), `show 8: the main light turned blue, the background follows the accent (got ${w.a} to ${w.b})`);
+    check(await p.eval(`getComputedStyle(document.querySelector('.view.active .tile')).backgroundColor`) === 'rgba(18, 17, 16, 0.76)', 'show 8: on it the tiles are more solid, as on a picture');
+    await p.shot('show8-living-accent.png');
+    await p.close();
+  }
+}
+
 // The page's colours as numbers, and how far two stand apart (WCAG's contrast ratio, 1 to 21).
 const COLOURS = `((names) => Object.fromEntries(names.map((n) => { const d = document.body.appendChild(document.createElement('i')); d.style.color = 'var(' + n + ')';
   const c = getComputedStyle(d).color.match(/[\\d.]+/g).slice(0, 3).join(','); d.remove(); return [n, c]; })))`;

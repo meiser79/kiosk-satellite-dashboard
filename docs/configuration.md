@@ -6,7 +6,7 @@ JavaScript: one object, `window.KIOSK_CONFIG`. The example documents every optio
 its use; this page is the reference.
 
 ```js
-theme:       { name: 'dark', accent?: '#f2af48', followLight?: true, background?: '<picture>', fade?: 0.5 }
+theme:       { name: 'dark', accent?: '#f2af48', followLight?: true, background?: '<picture>' | '#colour' | 'accent' | 'complement', fade?: 0.5 }
 menu:        { items: [{ name, icon, shape?: 'round' | 'wide', link | script | items | settings, favorites? }] }
 devices:     { '<Kiosk Satellite device name>': '<room key>' | { room: '<room key>', theme?: '<theme>' } }
 defaultRoom: '<room key>'
@@ -39,10 +39,23 @@ follow the light. A kiosk can have a theme of its own (see [Devices](#devices)),
   Assistant's `www/` folder (`'/local/kiosk/wallpaper.jpg'`). A room's own `background`
   replaces it for that room. The pictures load from the start; one that does not load
   leaves the usual background. Around 1280 pixels wide is plenty for an Echo Show 8.
-- **`fade`**, from 0 to 1 (0.5 when not set), covers the picture with the theme's own
-  colour, dark or light, so that the text on it stays legible: the busier or brighter
-  the picture, the higher. A room can have its own. On a picture, the tiles and chips
-  are more solid and the text stands out with a soft shadow.
+
+  It can instead be a colour, which the page draws as a gradient, from that colour in
+  the top corner to a deeper neighbour of it in the far one (amber runs to red, blue to
+  indigo). Nothing is loaded:
+  - a colour of yours, any CSS hex colour (`'#5b3fd1'`), for instance one for each room;
+  - `'accent'`, the accent: with `followLight`, the colour of the room's light, changing
+    with it;
+  - `'complement'`, the accent's opposite on the colour wheel, so that the accent stands
+    out from it: the dark theme's amber on a blue running to indigo, a pink light's
+    accent on a green. It follows the light the same way.
+
+  A theme of one colour keeps its plain background instead.
+- **`fade`**, from 0 to 1 (0.5 when not set), covers the picture or the gradient with
+  the theme's own colour, dark or light, so that the text on it stays legible: the
+  busier or brighter the picture, the higher. A room can have its own. On a picture or
+  a gradient, the tiles and chips are more solid and the text stands out with a soft
+  shadow.
 
 ## Devices
 
@@ -75,7 +88,7 @@ The order of `rooms` is the order in the room menu. Each room has:
 | `media` | A media player card, shown while `showWhen` matches (or always) |
 | `player` | The Music Assistant player (or group of players) the menu's favourites play on, for the kiosks that belong to this room |
 | `events` | What the room's Home Assistant calendars hold: how many among the sensors, and a list (see [Events](#events)) |
-| `background`, `fade` | The room's own picture behind it, and how far it fades, over the theme's (see [Theme](#theme)) |
+| `background`, `fade` | The room's own picture or colour behind it, and how far it fades, over the theme's (see [Theme](#theme)) |
 
 The entries:
 

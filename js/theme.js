@@ -2,9 +2,10 @@
  * its files and the scene it may move behind the rooms; the accent colour,
  * which can take the colour of the light the dial controls (the room's
  * main light on the Show, the light in the main slot on the Spot); and a
- * picture behind the rooms, faded toward the theme's colour so that text
- * on it stays legible. Settings in the menu (js/settings.js) can change
- * the theme and following the light on the kiosk itself, which keeps them. */
+ * picture behind the rooms, or a gradient drawn from a colour, faded toward
+ * the theme's colour so that text on it stays legible. Settings in the menu
+ * (js/settings.js) can change the theme and following the light on the
+ * kiosk itself, which keeps them. */
 (() => {
   'use strict';
   const K = window.Kiosk;
@@ -72,6 +73,8 @@
       setClass(root, 'mono', !!mono);
       const meta = document.querySelector('meta[name="theme-color"]');
       if (meta) meta.content = root.dataset.scheme === 'light' ? '#f3f1ec' : '#000000';
+      setAccent(null);   // the theme's own accent, read for a background drawn from it
+      themeAccent = getComputedStyle(root).getPropertyValue('--accent-rgb').split(',').map(Number);
       base = mono ? null : hexToRgb(theme.accent);
       paintAccent();
       getComputedStyle(root).getPropertyValue('--accent-rgb');   // the theme's accent in place, before fades come back
@@ -121,7 +124,7 @@
   // a mono theme never follows.
   const keptFollow = kept(KEPT.follow);
   let follow = keptFollow === 'on' || (keptFollow !== 'off' && !!theme.followLight);
-  let followed = null;
+  let followed = null, themeAccent = null, shownAccent = null;   // the theme's own accent; the one on screen, for a background drawn from it
   const watched = new Set();
   function followLight(entity) {
     followed = entity || null;
@@ -132,7 +135,10 @@
     const st = follow && !(THEMES[current] || {}).mono ? states[followed] : null;
     const a = isOn(st) ? st.attributes : {};
     const rgb = lightRgb(st) || (a.color_mode === 'color_temp' && a.color_temp_kelvin ? kelvinRgb(a.color_temp_kelvin) : null);
-    setAccent(rgb ? accentOf(rgb) : base);
+    const accent = rgb ? accentOf(rgb) : base;
+    setAccent(accent);
+    shownAccent = accent || themeAccent;
+    paintDrawn();
   }
   // Following the light, as Settings sets it on this kiosk.
   function setFollow(on) {
@@ -165,19 +171,26 @@
   // the theme's), and on it the stylesheet makes the panels more solid and
   // lifts the text. A picture comes in once it has loaded, crossfading from
   // the last room's: one that does not load leaves the usual background.
+  // `background` may instead be a colour, which the page draws as a
+  // gradient: one of its own ('#5b3fd1'), the accent ('accent', the
+  // light's while the accent follows it) or the accent's opposite on the
+  // colour wheel ('complement'). A mono theme keeps its plain background.
   const app = $('app'), paper = $('wallpaper');
-  const layers = new Map(), loaded = new Set();   // address -> its layer; the ones that loaded
+  const layers = new Map(), loaded = new Set();   // address or colour -> its layer; the ones ready to show
+  const DRAWN = /^(accent|complement|#([0-9a-f]{3}){1,2})$/i;
   let wanted = null, fade = 0.5;
-  // A web address or a path on Home Assistant; anything else is ignored.
+  // A colour to draw, or a web address or a path on Home Assistant; anything else is ignored.
   function imageOf(room) {
     const src = (room && room.background) || theme.background;
     const s = typeof src === 'string' ? src.trim() : '';
+    if (DRAWN.test(s)) return s.toLowerCase();
     return s && (!/^[a-z][a-z\d+.-]*:/i.test(s) || /^https?:/i.test(s)) ? s : null;
   }
   function layerFor(url) {
     if (!url || layers.has(url)) return;
     const layer = paper.appendChild(el('div', 'paper'));
     layers.set(url, layer);
+    if (DRAWN.test(url)) { layer.classList.add('paint'); loaded.add(url); paintDrawn(); return; }
     const img = layer.appendChild(el('img'));
     img.alt = '';
     img.referrerPolicy = 'no-referrer';   // the page's address stays home
@@ -193,10 +206,37 @@
     paintWallpaper();
   }
   function paintWallpaper() {
-    const ready = loaded.has(wanted);
+    const ready = loaded.has(wanted) && !(DRAWN.test(wanted) && (THEMES[current] || {}).mono);
     for (const [url, layer] of layers) setClass(layer, 'show', ready && url === wanted);
     if (ready) setVar(layers.get(wanted), '--fade', fade);
     setClass(app, 'with-wallpaper', ready);
+  }
+  // A drawn background's two colours: its own, and a deeper neighbour 40°
+  // round the colour wheel toward violet (so that amber runs to red, blue
+  // to indigo), the gradient going from one to the other. The accent's and
+  // its opposite change with the accent, fading as it does.
+  function paintDrawn() {
+    for (const [key, layer] of layers) {
+      if (!DRAWN.test(key)) continue;
+      const rgb = key === 'accent' ? shownAccent : key === 'complement' ? shownAccent && turned(shownAccent, 180) : hexToRgb(key);
+      if (!rgb) continue;
+      const toViolet = ((260 - hueOf(rgb) + 540) % 360) - 180;
+      setVar(layer, '--paint-rgb', rgb.join(', '));
+      setVar(layer, '--paint-2-rgb', turned(rgb, toViolet < 0 ? -40 : 40, 0.75).join(', '));
+    }
+    paintWallpaper();
+  }
+  function hueOf([r, g, b]) {
+    const max = Math.max(r, g, b), c = max - Math.min(r, g, b);
+    return !c ? 0 : (max === r ? ((g - b) / c + 6) % 6 : max === g ? (b - r) / c + 2 : (r - g) / c + 4) * 60;
+  }
+  // A colour turned round the colour wheel by `by` degrees, as colourful, its lightness times `light`.
+  function turned(rgb, by, light = 1) {
+    const [r, g, b] = rgb.map((v) => v / 255), max = Math.max(r, g, b), min = Math.min(r, g, b);
+    const l = (max + min) / 2, s = max === min ? 0 : (max - min) / (1 - Math.abs(2 * l - 1));
+    const h = (hueOf(rgb) + by + 360) % 360, L = l * light, k = s * (1 - Math.abs(2 * L - 1));
+    const x = k * (1 - Math.abs(((h / 60) % 2) - 1)), m = L - k / 2;
+    return [[k, x, 0], [x, k, 0], [0, k, x], [0, x, k], [x, 0, k], [k, 0, x]][Math.floor(h / 60) % 6].map((v) => Math.round((v + m) * 255));
   }
 
   /* ------------------------------------------------------------- scene */
