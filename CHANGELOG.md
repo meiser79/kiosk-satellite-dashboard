@@ -7,6 +7,14 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
 
 ## Unreleased
 
+### Added
+
+- **Gradient backgrounds**: `background`, the theme's or a room's, can be a colour the
+  page draws as a gradient instead of a picture, with nothing to load: a colour of yours
+  (`'#5b3fd1'`), `'accent'`, or `'complement'`, the accent's opposite on the colour
+  wheel, so that it stands out (the dark theme's amber on blue). With `followLight` the
+  last two change with the room's light ([Theme](docs/configuration.md#theme)).
+
 ## 1.2.0 - 2026-10-23
 
 ### Added

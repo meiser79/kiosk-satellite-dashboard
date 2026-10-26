@@ -74,8 +74,8 @@ of its own, below).
 | `--text`, `--muted` | Text, and quieter text and icons |
 | `--danger` | The status pill when Home Assistant is lost |
 | `--shadow` | The shadow of what floats: menus, the detail panel |
-| `--veil-rgb` | The colour a background picture fades into, as three numbers |
-| `--lift` | The shadow that lifts text off a background picture |
+| `--veil-rgb` | The colour a background picture or gradient fades into, as three numbers |
+| `--lift` | The shadow that lifts text off a background picture or gradient |
 | `--knob` | The dial's knob and a slider's thumb |
 | `--on-tile` | An icon on a button in its light's colour (the Spot) |
 | `--scrim`, `--pop-scrim`, `--pop-dim` | Behind the menus; behind the Spot's detail panel, whose text sits on it; behind the Show's, a card |
