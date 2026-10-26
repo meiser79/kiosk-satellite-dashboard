@@ -11,10 +11,24 @@
 .shape-wide .controls { grid-area: controls; display: flex; flex-direction: column; gap: 0.75rem; min-height: 0; }
 /* the dial takes what the media card leaves */
 .shape-wide .main { flex: 1 1 0; min-height: 4.2rem; display: grid; grid-template-rows: minmax(0, 1fr); }   /* the column's height, not its content's */
-.shape-wide .controls.with-media .main { flex: none; }
+.shape-wide .controls:is(.with-media, .with-lights) .main { flex: none; }
+/* the light tiles under the dial, above the media card, when the grid beside
+   holds the room's covers, thermostats and fans: as tall as they need, the
+   rest of them a swipe up away */
+.shape-wide .controls > .lights { flex: 0 1 auto; min-height: 0; }
+.shape-wide .controls > .lights.more { -webkit-mask-image: linear-gradient(#000 calc(100% - 2.2rem), transparent); mask-image: linear-gradient(#000 calc(100% - 2.2rem), transparent); }   /* more under the card: fading out */
+/* the two halves alike, for the tiles on either side to be of one size */
+.shape-wide .view.lights-left { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.shape-wide .app.with-rail .view.lights-left { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) calc(var(--rail-item) + 0.4rem); }
+/* the grid beside: its tiles start on the line of the first light tiles,
+   under the ring (--beside, from js/view.js), their rows side by side; the
+   room's events stay at its top, beside the ring, as tall as it */
+.shape-wide .view.lights-left > .lights { margin-top: var(--beside, 0px); }
+.shape-wide .view.lights-left.with-events > .lights { margin-top: -0.15rem; grid-template-rows: calc(var(--beside, 0px) - 0.45rem); }
+.shape-wide .view.lights-left.with-events > .lights > .events { min-height: 0; overflow: hidden; }
 /* the rail on the right: a column of its own under the header */
 .shape-wide .app.with-rail .view { grid-template-columns: minmax(0, 22rem) minmax(0, 1fr) calc(var(--rail-item) + 0.4rem); grid-template-areas: "top top top" "controls lights ."; }
-/* the tiles, two across, of one shape on every Show: two and a half times
+/* the tiles, two across (a single one too), of one shape on every Show: two and a half times
    as wide as tall (taller only for what they hold); past the screen's
    height the grid scrolls */
 .shape-wide .lights {
@@ -22,7 +36,6 @@
   overflow-y: auto; touch-action: pan-y; scrollbar-width: none; padding: 0.15rem; margin: -0.15rem;
 }
 .shape-wide .lights::-webkit-scrollbar { display: none; }
-.shape-wide .lights[data-count="1"] { grid-template-columns: minmax(0, 1fr); }
 /* a tile (lying across, view.css): a drag across it sets its level, a
    swipe up or down scrolls the grid */
 .shape-wide .lights > :where(.tile:not(.events)) { aspect-ratio: 5 / 2; min-height: min-content; touch-action: pan-y; }

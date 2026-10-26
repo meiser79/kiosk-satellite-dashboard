@@ -19,7 +19,9 @@ What the page does, screen by screen. [Configuration](configuration.md) says how
   drag across it dims that light alone, long-press opens the panel. After them, the room's
   covers, thermostats and fans as tiles of their own (see *Covers, thermostats and fans*). Both grow
   to fill the screen; with the media card on, the dial shrinks to a small ring beside the
-  name.
+  name. A room with covers, thermostats or fans as well as lights keeps them apart: the
+  dial as a small ring, its light tiles under it and above the media card, the others
+  beside them, their rows on the same lines.
 - **Spot.** The dial is a thick rim along the edge of the round screen. From the top: the
   room title, the sensors and the modes as round icons; a large power button for the
   room's lights beside their name and state, faint arrows either side; under it a strip

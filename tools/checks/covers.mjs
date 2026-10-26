@@ -3,11 +3,12 @@
 // opens and closes, added to the living room for these checks.
 import { sleep, check, openPage, load, mockStates, mockReaches, mockSet, lastCall, callLog, text, insideRim } from './harness.mjs';
 
-// A tile of the room on screen, by name, scrolled into view: its selector (nth-child among the tiles).
+// A tile of the room on screen, by name, scrolled into view: its selector (the tile marked with its name, in
+// whichever grid it is).
 const tileOf = async (p, name) => {
-  const n = await p.eval(`[...document.querySelectorAll('.view.active .lights > *')].findIndex((e) => (e.querySelector('.tile-name') || {}).textContent === ${JSON.stringify(name)}) + 1`);
-  if (!n) throw new Error('no tile ' + name);
-  const sel = `.view.active .lights > :nth-child(${n})`;
+  const found = await p.eval(`(() => { const t = [...document.querySelectorAll('.view.active .lights > *')].find((e) => (e.querySelector('.tile-name') || {}).textContent === ${JSON.stringify(name)}); if (t) t.dataset.check = ${JSON.stringify(name)}; return !!t; })()`);
+  if (!found) throw new Error('no tile ' + name);
+  const sel = `.view.active .lights > [data-check="${name}"]`;
   await p.eval(`document.querySelector('${sel}').scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'instant' }), true`);
   await sleep(300);
   return sel;
@@ -166,12 +167,12 @@ export async function coversShow() {
 export async function coversMore() {
   const p = await withMore(1280, 800);
   await load(p, 'device=Echo+Show+8+Living+Room');
-  await p.eval(`document.querySelector('.view.active .lights').style.maxHeight = '20rem', true`);   // shorter, for there to be more to scroll to
-  const before = (await callLog()).length, top0 = await p.eval(`document.querySelector('.view.active .lights').scrollTop`);
-  const first = await p.rect('.view.active .lights > .tile:nth-child(3)');
+  await p.eval(`document.querySelector('.view.active > .lights').style.maxHeight = '12rem', true`);   // the grid beside the dial, shorter, for there to be more to scroll to
+  const before = (await callLog()).length, top0 = await p.eval(`document.querySelector('.view.active > .lights').scrollTop`);
+  const first = await p.rect('.view.active > .lights > .tile:nth-child(3)');
   await p.drag(first.x, first.y + 40, first.x + 8, first.y - 60, 10); await sleep(700);
-  check((await callLog()).length === before && await p.eval(`document.querySelector('.view.active .lights').scrollTop`) > top0, 'a swipe up across the tiles scrolls them and sets no light');
-  await p.eval(`(() => { const l = document.querySelector('.view.active .lights'); l.style.maxHeight = ''; l.scrollTo({ top: 0, behavior: 'instant' }); return true; })()`);
+  check((await callLog()).length === before && await p.eval(`document.querySelector('.view.active > .lights').scrollTop`) > top0, 'a swipe up across the tiles scrolls them and sets no light');
+  await p.eval(`(() => { const l = document.querySelector('.view.active > .lights'); l.style.maxHeight = ''; l.scrollTo({ top: 0, behavior: 'instant' }); return true; })()`);
   const GARAGE = await tileOf(p, 'Garage');
   check(await p.waitFor(`document.querySelector('${GARAGE} .tile-state').textContent === 'Closed'`) && (await tile(p, GARAGE)).icon === 'garage', 'a garage door without positions: it says Closed, a garage\'s icon');
   await p.dragTo(`${GARAGE}`, 0.8, 0.5, 0.2);
@@ -220,4 +221,35 @@ export async function coversMore() {
   check(await insideRim(s, '#popover .pop-actions button, #popover .pop-main .slider, #popover .pop-name'), 'spot: the fan\'s buttons and slider inside the rim');
   await s.shot('spot-fan-panel.png');
   await s.close();
+
+  // showWhen on tiles: the awning only while the projector is on, the lights too. On the Show, with no light to
+  // show, the covers, the heating and the fan keep the grid beside the dial to themselves; the projector on brings
+  // the lights under the dial and the awning back. On the Spot, the strip pairs the tiles shown.
+  const when = `const on = { entity: 'input_boolean.projector', state: 'on' }; c.rooms.living.covers[1].showWhen = on; for (const l of c.rooms.living.lights) l.showWhen = on;`;
+  const w = await openPage(1280, 800);
+  await w.s('Page.addScriptToEvaluateOnNewDocument', { source: `(() => { let v; Object.defineProperty(window, 'KIOSK_CONFIG', { configurable: true, get: () => v, set: (c) => { ${when} v = c; } }); })();` });
+  await mockSet('input_boolean.projector', 'off');
+  await load(w, 'device=Echo+Show+8+Living+Room');
+  const shown = (q) => q.eval(`(() => { const v = document.querySelector('.view.active'), names = (g) => g && !g.hidden ? [...g.querySelectorAll('.tile:not([hidden]) .tile-name')].map((n) => n.textContent).join() : '';
+    return { left: names(v.querySelector('.controls > .lights')), right: names(v.querySelector(':scope > .lights')), ring: v.querySelector('.controls').classList.contains('with-lights') }; })()`);
+  let g = await shown(w);
+  check(g.left === '' && g.right === 'Shutter,Heating,Ceiling fan' && !g.ring, `showWhen: the projector off, no lights, no awning; the others beside the dial (got ${JSON.stringify(g)})`);
+  await mockSet('input_boolean.projector', 'on');
+  check(await w.waitFor(`document.querySelectorAll('.view.active .controls > .lights > .tile:not([hidden])').length === 5`), 'showWhen: the projector on brings the lights, under the dial');
+  g = await shown(w);
+  check(g.right === 'Shutter,Awning,Heating,Ceiling fan' && g.ring, `showWhen: and the awning back among the others (got ${JSON.stringify(g)})`);
+  await w.close();
+  const sp = await openPage(480, 480);
+  await sp.s('Page.addScriptToEvaluateOnNewDocument', { source: `(() => { let v; Object.defineProperty(window, 'KIOSK_CONFIG', { configurable: true, get: () => v, set: (c) => { c.rooms.living.covers[1].showWhen = { entity: 'input_boolean.projector', state: 'on' }; v = c; } }); })();` });
+  await mockSet('input_boolean.projector', 'off');
+  await load(sp, 'device=Echo+Spot+Living+Room');
+  const pairs = () => sp.eval(`[...document.querySelectorAll('.view.active .lights > .tile:not([hidden])')].map((t) => (t.classList.contains('pair') ? '|' : '') + t.querySelector('.tile-name').textContent).join(' ') + ' dots ' + document.querySelectorAll('.view.active > .dots span').length`);
+  let sPairs = await pairs();
+  check(sPairs === '|Living room Dining room |Kitchen TV strip |Shelf strip Shutter |Heating Ceiling fan dots 4', `showWhen, spot: the awning hidden, the strip pairs the tiles shown (got ${sPairs})`);
+  await mockSet('input_boolean.projector', 'on');
+  await sleep(600);
+  sPairs = await pairs();
+  check(sPairs === '|Living room Dining room |Kitchen TV strip |Shelf strip Shutter |Awning Heating |Ceiling fan dots 6', `showWhen, spot: the awning back, paired again, the card's dot too (got ${sPairs})`);
+  await mockSet('input_boolean.projector', 'off');
+  await sp.close();
 }

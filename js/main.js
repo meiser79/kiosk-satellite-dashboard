@@ -43,8 +43,8 @@
       for (const s of r.sensors || []) ids.push(...sensorIds(s));
       for (const c of r.modes || []) ids.push(c.entity);
       if (r.main) ids.push(r.main.entity);
-      for (const l of r.lights || []) { ids.push(l.entity); for (const c of l.controls || []) ids.push(c); }
-      for (const c of [...(r.covers || []), ...(r.climate || []), ...(r.fans || [])]) ids.push(c.entity);
+      for (const l of r.lights || []) for (const c of l.controls || []) ids.push(c);
+      for (const c of [...(r.lights || []), ...(r.covers || []), ...(r.climate || []), ...(r.fans || [])]) ids.push(...sensorIds(c));
       if (r.media) { ids.push(r.media.entity); if (r.media.showWhen) ids.push(r.media.showWhen.entity); }
       const events = eventsOf(r);
       if (events) ids.push(...events.calendars.map((c) => c.entity));

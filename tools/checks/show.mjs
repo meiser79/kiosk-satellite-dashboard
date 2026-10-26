@@ -12,6 +12,8 @@ export async function bedroomShow5() {
   check(railNames === ROOT_ITEMS, `show 5: every item on the rail; outside Kiosk Satellite, Now playing too (got ${railNames})`);
   check(await p.eval(`document.documentElement.classList.contains('density-compact')`), 'show 5: compact density');
   check((await text(p, '.view.active .main .bar.group .state')) !== '', 'group bar shows a state');
+  check(await p.eval(`(() => { const v = document.querySelector('.view.active'); return !v.querySelector('.controls > .lights') && !v.querySelector('.controls').classList.contains('with-lights') && v.querySelectorAll(':scope > .lights > .tile:not(.events)').length === 4; })()`),
+    'show 5: a room of lights alone keeps them beside the dial');
   let st, r;
   await p.shot('show5-bedroom.png');
   await load(p, 'device=Echo+Show+5+Bedroom&theme=light');
@@ -185,12 +187,25 @@ export async function livingShow8() {
   await load(p, 'device=Echo+Show+8+Living+Room');
   check(await p.eval(`document.querySelector('.view.active .media').hidden`), 'media card hidden while the projector is off');
   check(await p.eval(`(() => { const v = document.querySelector('.view.active'); const r = (s) => v.querySelector(s).getBoundingClientRect(); return !v.querySelector('.modes').classList.contains('icons') && r('.modes .chip:first-child').left >= r('.title').right && r('.modes .chip:first-child').left >= r('.sensors .sensor:last-child').right && r('.modes .chip:last-child').right <= r('.clock').left && [...v.querySelectorAll('.modes .chip .name')].every((n) => n.scrollWidth <= n.clientWidth); })()`), 'show 8: title, sensors, three modes and the clock fit in the top bar');
-  check(await p.eval(`(() => { const v = document.querySelector('.view.active'); const b = v.querySelector('.main .bar.group').getBoundingClientRect(), t = [...v.querySelectorAll('.tile')].pop().getBoundingClientRect(), m = document.querySelector('#menu .menu-panel').getBoundingClientRect(); return m.right > 1240 && t.right <= m.left - 10 && t.bottom > 600 && b.height > 300; })()`), 'show 8: the dial fills the view, the tiles beside it clear of the rail on the right');
+  // With covers, a thermostat and a fan in the room, its light tiles go under the dial, the ring small beside the
+  // name; the grid beside holds the others, starting on the same line, clear of the rail; the tiles of one size.
+  const sides = await p.eval(`(() => { const v = document.querySelector('.view.active'), r = (e) => e.getBoundingClientRect(), names = (g) => [...g.querySelectorAll('.tile-name')].map((n) => n.textContent).join();
+    const left = v.querySelector('.controls > .lights'), right = v.querySelector(':scope > .lights'), main = r(v.querySelector('.main')), m = r(document.querySelector('#menu .menu-panel'));
+    const [a, b] = [left, right].map((g) => r(g.querySelector('.tile')));
+    return { left: left && names(left), right: names(right), under: left && r(left).top >= main.bottom, ring: main.height < 150 && v.querySelector('.controls').classList.contains('with-lights'),
+      clear: [...right.querySelectorAll('.tile')].every((t) => r(t).right <= m.left - 10), alike: Math.abs(a.width - b.width) < 2 && Math.abs(a.height - b.height) < 2, level: Math.abs(a.top - b.top) < 1, beside: b.left > r(left).right }; })()`);
+  check(sides.left === 'Living room,Dining room,Kitchen,TV strip,Shelf strip' && sides.right === 'Shutter,Awning,Heating,Ceiling fan' && sides.under && sides.ring && sides.clear && sides.alike && sides.level && sides.beside,
+    `show 8: the lights under the dial, the ring small; the covers, the heating and the fan beside them on the same line, clear of the rail; the tiles alike (got ${JSON.stringify(sides)})`);
   await p.shot('show8-living.png');
   await p.tapSel('.view.active .chip:nth-child(1)');
   check(await p.waitFor(`!document.querySelector('.view.active .media').hidden`), 'media card appears when the projector is on');
   await sleep(400);
   check(await p.eval(`document.querySelector('.view.active .controls').classList.contains('with-media') && document.querySelector('.view.active .main .bar.group').getBoundingClientRect().height < 200`), 'the main card shrinks to a row beside the media card');
+  check(await p.eval(`(() => { const v = document.querySelector('.view.active'), r = (s) => v.querySelector(s).getBoundingClientRect(), l = v.querySelector('.controls > .lights');
+    return r('.controls > .lights').bottom <= r('.controls > .media').top + 1 && r('.controls > .media').bottom <= 800 && l.scrollHeight > l.clientHeight && l.classList.contains('more'); })()`),
+    'show 8: the light tiles above the media card, the card whole; the rest a swipe up away, fading out');
+  await p.eval(`(() => { const l = document.querySelector('.view.active .controls > .lights'); l.scrollTop = l.scrollHeight; return true; })()`);
+  check(await p.waitFor(`!document.querySelector('.view.active .controls > .lights').classList.contains('more')`), 'scrolled to the last, no fading');
   check((await text(p, '.view.active .media-title')) === 'Severance', 'media card shows the title');
   check(await p.eval(`document.querySelectorAll('.view.active .media-sources .chip').length`) === 5, 'media card lists the sources');
   await p.shot('show8-living-media.png');
@@ -252,4 +267,25 @@ export async function livingShow8() {
   await sleep(300);
   await p.shot('show8-office.png');
   await p.close();
+
+  // The living room with events too, on the Show 5: the events stay beside the ring, the covers on the line of the
+  // first light tiles; and with one light alone, its tile as large as one of two in a row.
+  const withLiving = async (change) => {
+    const q = await openPage(960, 480);
+    await q.s('Page.addScriptToEvaluateOnNewDocument', { source: `(() => { let v; Object.defineProperty(window, 'KIOSK_CONFIG', { configurable: true, get: () => v, set: (c) => { ${change}; v = c; } }); })();` });
+    await load(q, 'device=Echo+Show+8+Living+Room');
+    await sleep(500);
+    return q;
+  };
+  const tops = (q) => q.eval(`(() => { const v = document.querySelector('.view.active'), r = (s) => { const e = v.querySelector(s); if (!e) return null; const { top, bottom, width, height } = e.getBoundingClientRect(); return { top, bottom, width, height }; };
+    return { ring: r('.main'), events: r(':scope > .lights > .events'), light: r('.controls > .lights > .tile'), cover: r(':scope > .lights > .tile:not(.events)') }; })()`);
+  let q = await withLiving(`c.rooms.living.events = { calendars: ['calendar.family'], period: 'day' }`);
+  let b = await tops(q);
+  check(Math.abs(b.events.top - b.ring.top) < 4 && b.events.bottom <= b.light.top && Math.abs(b.light.top - b.cover.top) < 1, `show 5: the events beside the ring, the covers on the line of the first light tiles (events ${b.events.top.toFixed(0)}–${b.events.bottom.toFixed(0)}px, lights ${b.light.top.toFixed(0)}px, covers ${b.cover.top.toFixed(0)}px)`);
+  await q.shot('show5-living-events.png');
+  await q.close();
+  q = await withLiving(`c.rooms.living.lights = c.rooms.living.lights.slice(0, 1)`);
+  b = await tops(q);
+  check(Math.abs(b.light.width - b.cover.width) < 2 && Math.abs(b.light.height - b.cover.height) < 2, `show 5: one light alone, its tile as large as one of two in a row (${b.light.width.toFixed(0)}×${b.light.height.toFixed(0)}px, a cover's ${b.cover.width.toFixed(0)}×${b.cover.height.toFixed(0)}px)`);
+  await q.close();
 }

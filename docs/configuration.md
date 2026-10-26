@@ -111,10 +111,11 @@ sensors: { entity, icon, unit, digits, showWhen? }
          { entity, icon, iconOff, on: 'Present', off: 'Away' }     // a binary sensor
 modes:   { entity, name, icon }
          { entity, name, icon, turnOn: 'script.a', turnOff: 'script.b' }
-main, lights: { entity, name, icon, controls?: ['select.x', 'number.y'] }
-covers:  { entity, name, icon?, iconOpen? }
-climate: { entity, name, icon? }
-fans:    { entity, name, icon? }
+main:    { entity, name, icon, controls?: ['select.x', 'number.y'] }
+lights:  { entity, name, icon, controls?: ['select.x', 'number.y'], showWhen? }
+covers:  { entity, name, icon?, iconOpen?, showWhen? }
+climate: { entity, name, icon?, showWhen? }
+fans:    { entity, name, icon?, showWhen? }
 media:   { entity, name, icon, showWhen?: { entity, state } }
 player:  'media_player.x'
 events:  { calendars: ['calendar.x' | { entity, color }], period?, max?, chip?, lines?, link? }
@@ -138,8 +139,9 @@ events:  { calendars: ['calendar.x' | { entity, color }], period?, max?, chip?, 
 
 ### Shown when
 
-`showWhen` on a sensor (or an alert, or the media card) shows it only while a state
-holds, of its own entity or of another one named with `entity`:
+`showWhen` on a sensor (or an alert, the media card, or a light's, cover's, thermostat's
+or fan's tile) shows it only while a state holds, of its own entity or of another one
+named with `entity`:
 
 ```js
 showWhen: { state: 'on' }                  // 'on' when not given; or a list: ['open', 'opening']
@@ -148,7 +150,8 @@ showWhen: { above: 1000 }                  // a number above, below, or both
 showWhen: { entity: 'input_boolean.guests', state: 'on' }   // another entity's state
 ```
 
-The example's living room shows its CO2 level only above 1000 ppm.
+The example's living room shows its CO2 level only above 1000 ppm. A tile that hides
+leaves no gap: the tiles after it move up, on the Spot the strip pairs the tiles shown.
 
 ### Alerts
 

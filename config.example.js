@@ -139,6 +139,8 @@ window.KIOSK_CONFIG = {
   //                  across sets the target temperature; the panel has modes and presets.
   // fans             tiles after the thermostats for fans: tap turns on or off; a drag across
   //                  sets the speed; the panel has preset modes, oscillation and direction.
+  //                  Lights, covers, thermostats and fans take a showWhen too, like a
+  //                  sensor's: the tile shows only while it holds.
   // media            a player card, shown while showWhen holds (or always)
   // player           the Music Assistant player (or group of players) the menu's
   //                  favourites play on, for the kiosks that belong to this room

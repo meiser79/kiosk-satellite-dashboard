@@ -165,8 +165,14 @@
     if (shape === 'round') {
       lights.append(...tiles);
       if (media) lights.appendChild(media);
-      // a last tile without a pair comes to rest beside the one before it, not beside the card
-      if (media && tiles.length % 2) tiles[tiles.length - 1].classList.add('alone');
+      // The tiles shown, in pairs: the first of each marked; a last one
+      // without a pair comes to rest beside the one before it, not beside the
+      // card. Again whenever a tile's showWhen shows or hides it.
+      const pairUp = () => {
+        const shown = tiles.filter((t) => !t.hidden);
+        tiles.forEach((t) => { setClass(t, 'pair', shown.indexOf(t) % 2 === 0); setClass(t, 'alone', !!media && shown.length % 2 === 1 && t === shown[shown.length - 1]); });
+        requestAnimationFrame(() => updateDots());
+      };
       // A dot for each place the strip comes to rest: each pair of tiles
       // (and the card) in the middle, as far as the strip goes. A drag across
       // a tile sets its level, so the dots move the strip: a swipe on them
@@ -199,13 +205,44 @@
         [...dots.children].forEach((d, j) => setClass(d, 'on', j === near));
       };
       if (media) media.onvisibility = () => requestAnimationFrame(updateDots);
+      pairUp();
+      new MutationObserver(pairUp).observe(lights, { attributes: true, attributeFilter: ['hidden'], subtree: true });
       let t = null;
       lights.addEventListener('scroll', () => { if (!t) t = requestAnimationFrame(() => { t = null; updateDots(); }); }, { passive: true });
       new ResizeObserver(updateDots).observe(lights);
     } else {
+      // When the room has covers, thermostats or fans too, its light tiles
+      // go under the dial, above the media card, the ring small beside the
+      // name; the grid beside holds the others.
+      // As a tile's showWhen shows or hides it, the lights move back beside
+      // the dial when they or the others have none left to show.
+      const own = (room.lights || []).length, ownTiles = tiles.slice(0, own), others = tiles.slice(own);
       if (list) lights.appendChild(list);
-      for (const t of tiles) lights.appendChild(t);
-      lights.dataset.count = String(tiles.length);
+      lights.append(...tiles);
+      if (own && others.length) {
+        const side = el('div', 'lights');
+        side.hidden = true;
+        controls.insertBefore(side, media);
+        // the grid beside starts on the line of the first light tiles, for their rows to line up
+        new ResizeObserver(() => view.style.setProperty('--beside', `${side.offsetTop - controls.offsetTop}px`)).observe(main);   // both grids' own edges alike
+        // more tiles than show fade out at the foot, until scrolled to the last
+        const more = () => setClass(side, 'more', side.scrollTop + side.clientHeight < side.scrollHeight - 2);
+        side.addEventListener('scroll', more, { passive: true });
+        new ResizeObserver(more).observe(side);
+        let apart = false;
+        const arrange = () => {
+          const shown = (t) => !t.hidden, now = ownTiles.some(shown) && others.some(shown);
+          if (now === apart) return;
+          apart = now;
+          if (apart) side.append(...ownTiles);
+          else others[0].before(...ownTiles);   // back first in the grid beside, after the events
+          side.hidden = !apart;
+          setClass(controls, 'with-lights', apart);
+          setClass(view, 'lights-left', apart);
+        };
+        arrange();
+        new MutationObserver(arrange).observe(view, { attributes: true, attributeFilter: ['hidden'], subtree: true });
+      }
     }
     view.appendChild(lights);
     // The stylesheet gives a room without modes, or with nothing but its main slider, more room.
