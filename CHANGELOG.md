@@ -11,8 +11,10 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
 
 - **Calling a kiosk**: a menu item `ks://intercom` with `items: true` lists the other kiosks on
   Kiosk Satellite's intercom, named after their rooms, and a tap calls one straight away,
-  without the *Call a kiosk* sheet. A kiosk that cannot take a call shows faded. A kiosk
-  without a room gets an icon in `devices`: `'Echo Dot': { icon: 'speaker' }`. Replace
+  without the *Call a kiosk* sheet. A kiosk without a room in `devices`, such as an Echo
+  Dot, takes the name and icon of its area in Home Assistant; `devices` can give it an
+  icon of its own: `'Echo Dot': { icon: 'speaker' }`. A kiosk that cannot take a call
+  shows faded. Replace
   a hand-written folder of `ks://intercom/<id>` links with
   `{ name: 'Intercom', icon: 'account-voice', link: 'ks://intercom', items: true }`.
 - **German**: the page speaks English or German, the kiosk's own language unless

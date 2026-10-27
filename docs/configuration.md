@@ -86,12 +86,11 @@ The room a kiosk starts on is also the room it *belongs to*: Music Assistant fav
 play on that room's `player`, whichever room is on screen.
 
 An `icon` shows the kiosk in the menu's intercom folder (see [Calling a
-kiosk](#calling-a-kiosk)), over its room's. An Echo Dot or a phone that does not run the
-dashboard needs no room:
+kiosk](#calling-a-kiosk)), over its room's or its area's. An Echo Dot or a phone that does
+not run the dashboard needs no room:
 
 ```js
 'Echo Dot Hall': { icon: 'speaker' },
-'Pixel 9a': { icon: 'cellphone' },
 ```
 
 ## Rooms
@@ -278,10 +277,18 @@ per other kiosk Kiosk Satellite's intercom knows. A tap calls that kiosk straigh
 button is out of reach on the round Spot. A new Echo shows up by itself.
 
 - The kiosks of the rooms come first, in the order of `rooms`, each with the title and
-  icon of its room, found through `devices`. Where the folder lists more than one kiosk
-  of a room, each keeps its device name. Then come the others (an Echo Dot, a phone), by
-  their device names, with the `icon` of their entry in `devices` if they have one.
-- An `icon` in a kiosk's entry in `devices` goes over its room's.
+  icon of its room, found through `devices`.
+- Then the others (an Echo Dot, a phone) with the name and icon of their area in Home
+  Assistant, by name. Kiosk Satellite adds each kiosk to Home Assistant as an ESPHome
+  device under its device name; put that device in an area (Settings > Devices &
+  services > ESPHome) and give the area an icon (Settings > Areas). An area's icon the
+  page does not carry leaves the intercom's (`tools/fetch_icons.py` adds icons, see
+  [Development](development.md#icons)). A device of another integration named like the
+  kiosk, such as an Echo's own, does not count.
+- Then the rest, by their device names.
+- Where two kiosks would take the same name (two in one room or area), each keeps its
+  device name.
+- An `icon` in a kiosk's entry in `devices` goes over its room's or area's.
 - A kiosk Kiosk Satellite lists twice under one name (its fleet keeps an old entry of a
   device set up again) shows once, as the entry that can take a call.
 - A kiosk that cannot take a call now (offline, its intercom off, *Do not disturb*)

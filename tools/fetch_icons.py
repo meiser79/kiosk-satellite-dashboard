@@ -58,6 +58,8 @@ home-lock-open shield-home-outline shield-lock-outline alarm-light-outline
 smoke-detector-variant doorbell doorbell-video bell-outline bell-ring-outline
 bell-sleep-outline cctv-off key-outline water-alert-outline fire-alert door
 dresser dresser-outline wardrobe door-closed door-sliding window-closed window-open
+bed bed-king bathtub home tree flower baby-face-outline office-building briefcase
+dumbbell coat-rack library
 window-closed-variant window-open-variant window-shutter-alert window-shutter-auto
 window-shutter-cog window-shutter-settings
 window-shutter window-shutter-open blinds blinds-open curtains curtains-closed

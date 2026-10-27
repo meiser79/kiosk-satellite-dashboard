@@ -53,9 +53,10 @@ window.KIOSK_CONFIG = {
   //              With link: 'ks://intercom', items: true makes it a folder of the
   //              other kiosks on Kiosk Satellite's intercom, a tap calling one
   //              straight away. The rooms' kiosks come first, each with its room's
-  //              title and icon (its device name when the room has more than one
-  //              kiosk), then those devices does not name; one that cannot take a
-  //              call now shows faded. Until Kiosk Satellite has named them, and
+  //              title and icon, then the others with the name and icon of their
+  //              area in Home Assistant, then the rest by device name (as does any
+  //              kiosk whose name another one takes); one that cannot take a call
+  //              now shows faded. Until Kiosk Satellite has named them, and
   //              where this kiosk's intercom is off, the item opens the link.
   //   favorites  (a folder, before its items) your Music Assistant favourites:
   //              'radio', 'playlist', 'album', or several, then with a switch at
@@ -97,8 +98,7 @@ window.KIOSK_CONFIG = {
   // room that kiosk starts on, or { room, theme } for a kiosk with a theme of
   // its own. Matching ignores case, punctuation and a "ks-" prefix. An icon
   // ({ icon }, with or without a room) shows the kiosk in the menu's intercom
-  // folder (ks://intercom with items: true): an Echo Dot or a phone without
-  // the dashboard needs no room.
+  // folder (ks://intercom with items: true), over its room's or area's.
   devices: {
     'Echo Spot Bedroom': 'bedroom',
     'Echo Show 5 Bedroom': 'bedroom',

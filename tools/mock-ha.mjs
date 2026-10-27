@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // A stand-in for Home Assistant to try the page without an instance:
 // serves this folder, answers the WebSocket API subset the page uses
-// (auth, subscribe_entities, call_service, config/entity_registry/get) and
+// (auth, subscribe_entities, call_service, config/entity_registry/get, the
+// device and area registries' lists, for the kiosks' areas) and
 // fakes the login endpoints, Music Assistant's library (its favourites,
 // with covers) and two calendars' events. It signs in as Home Assistant does: a login's token runs out,
 // and a refused token ends the connection. The entities match the ones in
@@ -178,6 +179,22 @@ function getEvents(c, m) {
 // their icon.
 const MA_ENTRY = 'mock-music-assistant';   // the config entry of its integration
 const MA_PLAYERS = ['media_player.bedroom_speakers', 'media_player.living_room_speakers', 'media_player.office_speakers'];
+// The kiosks' ESPHome devices and their areas, as Home Assistant's registries list them: an Echo Dot in the
+// kitchen (an area with an icon the page carries), one in the hall (no icon), a tablet in the garage (an icon the
+// page does not carry), and an Alexa device named like the kitchen's Dot, in another area.
+const AREAS = [
+  { area_id: 'bedroom', name: 'Bedroom', icon: 'mdi:bed' },
+  { area_id: 'kitchen', name: 'Kitchen', icon: 'mdi:countertop' },
+  { area_id: 'hall', name: 'Hall', icon: null },
+  { area_id: 'garage', name: 'Garage', icon: 'mdi:car-wrench' },
+];
+const DEVICES = [
+  { id: 'd1', name: 'Echo Dot Kitchen', name_by_user: null, area_id: 'garage', identifiers: [['alexa_media', 'G0911']] },
+  { id: 'd2', name: 'Echo Spot Bedroom', name_by_user: null, area_id: 'bedroom', identifiers: [['esphome', 'aa:bb:cc:00:00:01']] },
+  { id: 'd3', name: 'Echo Dot Kitchen', name_by_user: null, area_id: 'kitchen', identifiers: [['esphome', 'aa:bb:cc:00:00:02']] },
+  { id: 'd4', name: 'Echo Dot Hall', name_by_user: null, area_id: 'hall', identifiers: [['esphome', 'aa:bb:cc:00:00:03']] },
+  { id: 'd5', name: 'Garage Tablet', name_by_user: 'Workbench tablet', area_id: 'garage', identifiers: [['esphome', 'aa:bb:cc:00:00:04']] },
+];
 const cover = (name) => `/mock/cover/${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.svg`;
 const libItem = (media_type, uri, name, image = cover(name), favorite = true) => ({ media_type, uri, name, version: '', image, favorite, explicit: null });
 const LIBRARY = () => ({
@@ -445,6 +462,12 @@ function onMessage(c, m) {
       c.send({ id: m.id, type: 'result', success: true, result: { entity_id: m.entity_id, platform: ma ? 'music_assistant' : 'mock', config_entry_id: ma ? MA_ENTRY : 'mock-other' } });
       break;
     }
+    case 'config/device_registry/list':
+      c.send({ id: m.id, type: 'result', success: true, result: DEVICES });
+      break;
+    case 'config/area_registry/list':
+      c.send({ id: m.id, type: 'result', success: true, result: AREAS });
+      break;
     case 'ping':
       c.send({ id: m.id, type: 'pong' });
       break;

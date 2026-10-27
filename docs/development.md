@@ -93,8 +93,8 @@ Open `http://127.0.0.1:8123/index.html?device=Echo+Spot+Bedroom` in a browser, t
 "sign in" pill (the mock accepts anything) and play with the lights. The mock keeps light
 groups in sync with their members, runs the projector scripts, answers the WLED and media
 player services, and stands in for Music Assistant's library (favourite radios and
-playlists with made-up covers) and for two calendars, their events placed on the day the
-page asks from. It signs in as Home Assistant does: a login's token runs
+playlists with made-up covers), for two calendars, their events placed on the day the
+page asks from, and for the areas of a few kiosks' ESPHome devices. It signs in as Home Assistant does: a login's token runs
 out after half an hour, and a refused token ends the connection. It serves
 `config.example.js` as `config.js`; `--config config.js` serves yours instead, though the
 mock only knows the example's entities.
@@ -130,8 +130,8 @@ projector scripts and media card, WLED effects, palette and speed, group members
 Spot's menu ring (tap and swipe on its tab, picking an item, closed by a tap beside its
 items, rings of one to ten buttons sized to fit), the Show's rail, items kept to one
 shape, Now playing following a stand-in for Kiosk Satellite's player, the intercom's
-kiosks following a stand-in for its intercom (a link until it names them, by room, faded,
-kept across a reload), the menu folders
+kiosks following a stand-in for its intercom (a link until it names them, by room or by
+their area in the mock's registries, faded, kept across a reload), the menu folders
 on both (a ring with Back in the middle, a grid with Back first), a script and a
 favourite reaching the mock with the right player and the toast that follows, Music
 Assistant's favourites (asked for as the page connects, for the player's instance, the
