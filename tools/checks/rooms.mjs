@@ -98,3 +98,24 @@ export async function sevenRooms() {
   check(box.n === 8 && box.rows === 2 && box.t >= 0 && box.b <= 480 && box.r < box.rail, 'show 5, seven rooms: eight cards in two rows, on screen and clear of the rail');
   await q.close();
 }
+
+// 6b. A room's icon from its area in Home Assistant (the mock's registry), where config.js gives it none: the
+//     office by its key, the living room by its title, the bedroom by its `area` (over the one its key names).
+//     A room with an icon keeps it.
+export async function roomAreaIcons() {
+  const p = await openPage(960, 480);
+  await p.s('Page.addScriptToEvaluateOnNewDocument', { source: `(() => { let v; Object.defineProperty(window, 'KIOSK_CONFIG', { configurable: true, get: () => v, set: (c) => {
+    delete c.rooms.living.icon; delete c.rooms.bedroom.icon; c.rooms.bedroom.area = 'Kitchen'; v = c; } }); })();` });
+  await load(p, 'device=Echo+Show+5+Bedroom');
+  await p.tapSel('.view.active .title-btn');
+  await sleep(400);
+  const icons = `[...document.querySelectorAll('#room-menu .room-card:not(.all-off) .room-icon path')].map((e) => Object.keys(KIOSK_ICONS).find((k) => KIOSK_ICONS[k] === e.getAttribute('d'))).join()`;
+  check(await p.waitFor(`${icons} === 'countertop,sofa,desk'`), 'show 5: rooms without an icon take their area\'s: by area, by title, by key');
+  await p.close();
+  const q = await openPage(960, 480);
+  await load(q, 'device=Echo+Show+5+Bedroom');
+  await q.tapSel('.view.active .title-btn');
+  await sleep(400);
+  check(await q.waitFor(`${icons} === 'bed-outline,sofa-outline,desk'`), 'show 5: a room\'s own icon goes before its area\'s');
+  await q.close();
+}
