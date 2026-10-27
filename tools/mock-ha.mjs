@@ -179,12 +179,15 @@ function getEvents(c, m) {
 // their icon.
 const MA_ENTRY = 'mock-music-assistant';   // the config entry of its integration
 const MA_PLAYERS = ['media_player.bedroom_speakers', 'media_player.living_room_speakers', 'media_player.office_speakers'];
-// The kiosks' ESPHome devices and their areas, as Home Assistant's registries list them: an Echo Dot in the
+// The areas (the office's icon is its room's in config.js) and the kiosks' ESPHome devices, as Home Assistant's
+// registries list them: an Echo Dot in the
 // kitchen (an area with an icon the page carries), one in the hall (no icon), a tablet in the garage (an icon the
 // page does not carry), and an Alexa device named like the kitchen's Dot, in another area.
 const AREAS = [
   { area_id: 'bedroom', name: 'Bedroom', icon: 'mdi:bed' },
   { area_id: 'kitchen', name: 'Kitchen', icon: 'mdi:countertop' },
+  { area_id: 'office', name: 'Office', icon: 'mdi:desk' },
+  { area_id: 'living_room', name: 'Living room', icon: 'mdi:sofa' },
   { area_id: 'hall', name: 'Hall', icon: null },
   { area_id: 'garage', name: 'Garage', icon: 'mdi:car-wrench' },
 ];

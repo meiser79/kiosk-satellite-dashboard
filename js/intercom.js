@@ -3,9 +3,9 @@
  * Satellite's intercom knows, a tap calling one straight away
  * (ks://intercom/<id>), without the Call a kiosk sheet. The kiosks of the
  * rooms come first, in the room menu's order, each named after its room in
- * config.js, with the room's icon; then the kiosks devices gives no room,
- * named after their area in Home Assistant (the one of their ESPHome
- * device), with its icon, by name; then the rest, by device name. Where two
+ * config.js, with the room's icon (js/areas.js); then the kiosks devices
+ * gives no room, named after their area in Home Assistant (the one of their
+ * ESPHome device), with its icon, by name; then the rest, by device name. Where two
  * would take one name, each keeps its device name. An icon in a kiosk's entry
  * in devices goes over all of these. One that
  * cannot take a call now (offline, intercom off, Do not disturb) shows
@@ -18,7 +18,8 @@
 (() => {
   'use strict';
   const K = window.Kiosk;
-  const { CFG, ICONS, HA, KS, t, lookup, slug } = K;
+  const { CFG, KS, t, lookup, slug } = K;
+  const { roomIcon, deviceArea, onAreas } = K;
 
   const KEPT = 'kiosk.intercom';
   // Which of two entries under one name to show: the one most ready for a call.
@@ -36,33 +37,7 @@
   // A menu item that lists the intercom's kiosks.
   const isIntercom = (it) => it.items === true && /^ks:\/\/intercom\/*$/.test(String(it.link || ''));
 
-  // Home Assistant's areas of the kiosks, by device name: { name, icon }.
-  // Asked for once connected, and again after every reconnect. A device of
-  // ESPHome (where Kiosk Satellite shows up) goes before another integration's
-  // device of the same name, such as an Echo's own.
-  let areas = new Map();
-  function loadAreas() {
-    if (!((CFG.menu && CFG.menu.items) || []).some((it) => it && isIntercom(it))) return;
-    Promise.all([HA.request({ type: 'config/device_registry/list' }), HA.request({ type: 'config/area_registry/list' })]).then(([devices, list]) => {
-      const byId = new Map((list || []).map((a) => [a.area_id, a]));
-      const esphome = (d) => (d.identifiers || []).some((i) => i && i[0] === 'esphome');
-      const now = new Map(), seen = new Set();
-      for (const d of [...(devices || [])].sort((a, b) => esphome(b) - esphome(a))) {
-        const area = byId.get(d.area_id);
-        for (const n of [d.name, d.name_by_user].filter(Boolean).map(slug)) {
-          if (seen.has(n)) continue;
-          seen.add(n);
-          if (area) now.set(n, { name: area.name, icon: area.icon || '' });
-        }
-      }
-      if (JSON.stringify([...now]) === JSON.stringify([...areas])) return;
-      areas = now;
-      K.redrawIntercom();
-    }, (e) => console.warn('The kiosks\' areas in Home Assistant:', e));
-  }
-  HA.onStatus((s) => { if (!s) loadAreas(); });
-  // An icon of Home Assistant's (mdi:sofa) the page can draw, or ''.
-  const drawable = (name) => { const key = String(name || '').replace(/^mdi:/, ''); return Object.hasOwn(ICONS, key) ? key : ''; };
+  onAreas(() => K.redrawIntercom());
 
   // The other kiosks as items: the rooms' first, then the areas', then the
   // rest; none while the list is unknown or this kiosk's intercom is off.
@@ -80,9 +55,9 @@
     const roomOf = (k) => (rooms[entry(k).room] ? entry(k).room : null);
     // Each kiosk's room in config.js, else its area in Home Assistant: a name, an icon, a place in the list.
     const where = (k) => {
-      const key = roomOf(k), area = !key && areas.get(slug(k.name));
-      if (key) return { name: rooms[key].title, icon: rooms[key].icon, place: order.indexOf(key) };
-      if (area) return { name: area.name, icon: drawable(area.icon), place: order.length };
+      const key = roomOf(k), area = !key && deviceArea(k.name);
+      if (key) return { name: rooms[key].title, icon: roomIcon(key), place: order.indexOf(key) };
+      if (area) return { name: area.name, icon: area.icon, place: order.length };
       return { name: '', icon: '', place: order.length + 1 };
     };
     const found = others.map((k) => ({ k, at: where(k) }));

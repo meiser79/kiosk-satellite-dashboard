@@ -1,7 +1,8 @@
 /* Kiosk dashboard: the room menu. Opened by a tap on the room title: a card
  * for every room, the current one marked, with how many lights it has on
  * and a power button that turns them off; last, a card that turns off every
- * light. Picking a room switches to it; turning lights off leaves the menu
+ * light. A room without an icon of its own shows its Home Assistant area's
+ * (js/areas.js). Picking a room switches to it; turning lights off leaves the menu
  * open. On the Spot the cards are the rows of a list that scrolls; on the
  * wide screens, a grid. */
 (() => {
@@ -9,6 +10,7 @@
   const K = window.Kiosk;
   const { HA, t, $, states, el, esc, icon, isLight, isOn, groupMembers, setText, setClass } = K;
   const { watch, call, pressFx, armIdle, dim, undim, showView, activeRoom } = K;
+  const { roomIcon, onAreas } = K;
 
   /* -------------------------------------------------------- room lights */
   // A room's lights are its main light and its light tiles. When the main
@@ -70,7 +72,8 @@
     };
     const nodes = entries.map(([key, room]) => {
       const name = room.title || key;
-      const node = card(name, name, room.icon || 'home-outline', () => showView(key));
+      const node = card(name, name, roomIcon(key) || 'home-outline', () => showView(key));
+      onAreas(() => { node.querySelector('.room-icon').innerHTML = icon(roomIcon(key) || 'home-outline'); });   // an area's icon, once Home Assistant names it
       const off = el('button', 'room-off', icon('power'));
       off.setAttribute('aria-label', t('roomOff', { room: name }));
       pressFx(off);

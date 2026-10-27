@@ -122,7 +122,10 @@ window.KIOSK_CONFIG = {
 
   /* ------------------------------------------------------------ rooms */
   // The order here is the order in the room menu.
-  // title, icon      header and room menu
+  // title, icon      header and room menu. Without an icon, the room takes the
+  //                  icon of its area in Home Assistant (the office below): the
+  //                  area `area` names (its id or name), else the one whose id is
+  //                  the room's key, else the one named like its title.
   // sensors          small read-only values in the header. showWhen shows one only
   //                  while a state holds: { state: 'on' } (or a list), { not: 'idle' },
   //                  { above: 1000 }, { below: 10 }, of its own entity or another:
@@ -248,8 +251,7 @@ window.KIOSK_CONFIG = {
     },
 
     office: {
-      title: 'Office',
-      icon: 'desk',
+      title: 'Office',   // its icon: the Office area's in Home Assistant
       sensors: [
         { entity: 'sensor.office_temperature', icon: 'thermometer', unit: '°', digits: 1 }, // <-- entity
         { entity: 'sensor.office_humidity', icon: 'water-percent', unit: '%', digits: 0 }, // <-- entity

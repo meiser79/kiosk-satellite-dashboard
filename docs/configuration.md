@@ -12,7 +12,7 @@ menu:        { items: [{ name, icon, shape?: 'round' | 'wide', link | script | i
 devices:     { '<Kiosk Satellite device name>': '<room key>' | { room?: '<room key>', theme?: '<theme>', icon?: '<icon>' } }
 defaultRoom: '<room key>'
 alerts:      [{ entity, icon, on?, unit?, digits?, showWhen? }]
-rooms:       { <key>: { title, icon, sensors, modes, main, lights, covers?, climate?, fans?, media, player, events?, background?, fade? } }
+rooms:       { <key>: { title, icon?, area?, sensors, modes, main, lights, covers?, climate?, fans?, media, player, events?, background?, fade? } }
 ```
 
 The arrangement is not configurable: it follows the screen. A square screen (the round
@@ -99,7 +99,8 @@ The order of `rooms` is the order in the room menu. Each room has:
 
 | Key | What it is |
 | --- | --- |
-| `title`, `icon` | Shown in the header and in the room menu |
+| `title`, `icon` | Shown in the header and in the room menu. Without an `icon`, the room takes the icon of its area in Home Assistant |
+| `area` | The room's area in Home Assistant, its id or name, for its icon. Left out, the area whose id is the room's key, else the one named like its `title` |
 | `sensors` | Small read-only values in the header. One without a value is left out, and one with a `showWhen` is shown only while it holds |
 | `modes` | Toggle chips in the header: anything with on/off. The header has room for three or four |
 | `main` | The room's main light, usually a light group: the dial on the Show, the power button and rim on the Spot. The room menu counts the lights of its group that are on, and its power button turns those off (see *Groups* below) |
@@ -288,7 +289,8 @@ button is out of reach on the round Spot. A new Echo shows up by itself.
 - Then the rest, by their device names.
 - Where two kiosks would take the same name (two in one room or area), each keeps its
   device name.
-- An `icon` in a kiosk's entry in `devices` goes over its room's or area's.
+- An `icon` in a kiosk's entry in `devices` goes over its room's or area's. A room without
+  an `icon` takes its area's here too.
 - A kiosk Kiosk Satellite lists twice under one name (its fleet keeps an old entry of a
   device set up again) shows once, as the entry that can take a call.
 - A kiosk that cannot take a call now (offline, its intercom off, *Do not disturb*)

@@ -32,6 +32,7 @@ Node.js 22 or later, and Google Chrome for the checks; Python 3 only to add icon
 | `js/media.js` | The media card |
 | `js/events.js` | A room's events: asking its calendars, the count, the list, the panel's rows |
 | `js/view.js` | Building the room views, switching between them, the clock |
+| `js/areas.js` | Home Assistant's areas: a room's icon where `config.js` gives none, a kiosk's area for the intercom's folder |
 | `js/room-menu.js` | The room menu, and the lights it counts and turns off |
 | `js/favorites.js` | Music Assistant favourites |
 | `js/settings.js` | Settings in the menu: its entries, the list of themes, the version |

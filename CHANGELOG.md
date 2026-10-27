@@ -14,7 +14,8 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
   without the *Call a kiosk* sheet. A kiosk without a room in `devices`, such as an Echo
   Dot, takes the name and icon of its area in Home Assistant; `devices` can give it an
   icon of its own: `'Echo Dot': { icon: 'speaker' }`. A kiosk that cannot take a call
-  shows faded. Replace
+  shows faded. A room without an `icon` in `config.js` takes its area's in Home Assistant
+  (by `area`, its key or its title). Replace
   a hand-written folder of `ks://intercom/<id>` links with
   `{ name: 'Intercom', icon: 'account-voice', link: 'ks://intercom', items: true }`.
 - **German**: the page speaks English or German, the kiosk's own language unless
