@@ -89,7 +89,8 @@ What the page does, screen by screen. [Configuration](configuration.md) says how
   while they play nothing, the favourites in a strip, a tap to play one there; while they
   play, the cover and title with pause, next and the volume.
 - **Calling a kiosk.** A folder (*Intercom*) lists the other Echos on Kiosk Satellite's
-  intercom, named after their rooms, and a tap calls one straight away, without Kiosk
+  intercom, named after their rooms (or their areas in Home Assistant), and a tap calls
+  one straight away, without Kiosk
   Satellite's *Call a kiosk* sheet. One that cannot take a call now (offline, *Do not
   disturb*) shows faded. A new Echo shows up by itself.
 - **Themes.** Fourteen to choose from: dark, light, Nord, E-ink, an amber CRT, a handheld

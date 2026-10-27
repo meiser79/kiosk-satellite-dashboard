@@ -31,8 +31,9 @@ export async function insideKioskSatellite() {
 
 // 3b. The intercom's kiosks (a stand-in for Kiosk Satellite's intercom events): the Intercom item (ks://intercom,
 //     items: true) opens the Call a kiosk sheet until Kiosk Satellite names them, then is a folder of one item per
-//     other kiosk, by its room (by its device name where its room has more than one), the ones that cannot take a
-//     call faded; a tap calls one. The list is kept across a reload and follows a change with the folder open; where
+//     other kiosk: the rooms' (by their device names where a room has more than one), then the others by their
+//     area in Home Assistant (the mock's registries), then the rest; the ones that cannot take a call faded; a tap
+//     calls one. The list is kept across a reload and follows a change with the folder open; where
 //     this kiosk's intercom is off, the item opens the sheet again.
 export async function intercomKiosks() {
   const ks = `window.kioskSatellite = { platform: 'kiosksatellite', version: 'test', getDeviceInfo: () => Promise.resolve({}),
@@ -43,9 +44,9 @@ export async function intercomKiosks() {
   const roster = (over = {}, enabled = true) => ({ enabled, state: 'idle', self: { id: 'spot-bed', name: 'Echo Spot Bedroom' },
     kiosks: [kiosk('spot-bed', 'Echo Spot Bedroom'), kiosk('show-bed', 'Echo Show 5 Bedroom'), kiosk('spot-liv', 'Echo Spot Living Room'),
       kiosk('show-liv', 'Echo Show 8 Living Room', 'dnd'), kiosk('spot-kit', 'Echo Spot Kitchen'), kiosk('spot-off', 'Echo Spot Office', 'offline'),
-      kiosk('tab 1', 'Garage Tablet'), kiosk('dot-hall', 'Echo Dot Hall'), kiosk('old-tab', 'Garage Tablet', 'offline'), kiosk('old-spot', 'Echo Spot Bedroom', 'offline')].map((k) => ({ ...k, ...(over[k.id] || {}) })) });
+      kiosk('tab 1', 'Garage Tablet'), kiosk('dot-hall', 'Echo Dot Hall'), kiosk('dot-kit', 'Echo Dot Kitchen'), kiosk('pixel', 'Pixel 9a'), kiosk('old-tab', 'Garage Tablet', 'offline'), kiosk('old-spot', 'Echo Spot Bedroom', 'offline')].map((k) => ({ ...k, ...(over[k.id] || {}) })) });
   const tell = (p, status) => p.eval(`dispatchEvent(new CustomEvent('kiosksatellite:intercom', { detail: ${JSON.stringify(status)} })), true`);
-  const NAMES = 'Bedroom,Echo Show 8 Living Room,Echo Spot Kitchen,Echo Spot Living Room,Office,Echo Dot Hall,Garage Tablet';   // the rooms' in their order, then the rest
+  const NAMES = 'Bedroom,Echo Show 8 Living Room,Echo Spot Kitchen,Echo Spot Living Room,Office,Garage,Hall,Kitchen,Pixel 9a';   // the rooms' in their order, the areas', the rest
   const ring = `[...document.querySelectorAll('#menu .ring-item')].map((e) => e.textContent).join()`;
   const faded = `[...document.querySelectorAll('#menu .ring-item.idle')].map((e) => e.textContent).join()`;
   const openMenu = async (p) => {
@@ -76,14 +77,15 @@ export async function intercomKiosks() {
   check(await p.waitFor(`document.querySelector('#menu .ring-item[aria-label="Intercom"]').classList.contains('folder')`) && await menuOpen(p), 'intercom: once they are named, a folder, the menu open meanwhile');
   await p.tapSel(`#menu .ring-item[aria-label="Intercom"]`);
   await sleep(300);
-  check((await p.eval(ring)) === NAMES, 'intercom: the other kiosks, the rooms\' first by room or device name, then the rest; the kiosk itself and old entries under a name left out');
+  check(await p.waitFor(`${ring} === '${NAMES}'`), 'intercom: the other kiosks, the rooms\' first by room or device name, then by their area in Home Assistant (ESPHome\'s device before an Alexa one of the same name), then the rest; the kiosk itself and old entries under a name left out');
   check((await p.eval(faded)) === 'Echo Show 8 Living Room,Office', 'intercom: the ones in Do not disturb and offline faded');
-  check((await iconOf(p, 'Echo Dot Hall')) === (await p.eval('KIOSK_ICONS.speaker')) && (await iconOf(p, 'Office')) === (await p.eval('KIOSK_ICONS.desk')) && (await iconOf(p, 'Garage Tablet')) === (await p.eval(`KIOSK_ICONS['account-voice']`)),
-    'intercom: a kiosk without a room takes the icon devices gives it, one with a room its room\'s, one with neither the intercom\'s');
+  const icons = async (names) => { const out = []; for (const [n, i] of names) out.push((await iconOf(p, n)) === (await p.eval(`KIOSK_ICONS[${JSON.stringify(i)}]`))); return out.every(Boolean); };
+  check(await icons([['Office', 'desk'], ['Kitchen', 'countertop'], ['Hall', 'speaker'], ['Garage', 'account-voice'], ['Pixel 9a', 'account-voice']]),
+    'intercom: a room\'s icon, an area\'s, the one devices gives, and the intercom\'s for an area icon the page does not carry and a kiosk Home Assistant does not know');
   await p.shot('spot-intercom.png');
   await load(p, 'device=Echo+Spot+Bedroom');
   await openIntercom(p);
-  check((await p.eval(ring)) === NAMES, 'intercom: the kiosk keeps the list across a reload, before Kiosk Satellite says anything');
+  check(await p.waitFor(`${ring} === '${NAMES}'`), 'intercom: the kiosk keeps the list across a reload, before Kiosk Satellite says anything');
   await tell(p, roster({ 'show-liv': { status: 'ready' } }));
   check(await p.waitFor(`${faded} === 'Office'`), 'intercom: one out of Do not disturb comes back, the folder open');
   await tell(p, roster({}, false));
@@ -95,7 +97,8 @@ export async function intercomKiosks() {
   check((await follows(p, () => tapNamed(p, 'Bedroom'))) === 'ks://intercom/show-bed', 'intercom: a tap calls that kiosk straight away');
   p = await spot();
   await openIntercom(p);
-  check((await follows(p, () => tapNamed(p, 'Garage Tablet'))) === 'ks://intercom/tab%201', 'intercom: a kiosk no device names keeps its own name and calls by its id');
+  await p.waitFor(`${ring}.split(',').includes('Garage')`);
+  check((await follows(p, () => tapNamed(p, 'Garage'))) === 'ks://intercom/tab%201', 'intercom: a kiosk named after its area calls by its id');
 
   const q = await openPage(960, 480);
   await q.s('Page.addScriptToEvaluateOnNewDocument', { source: ks });
@@ -103,8 +106,9 @@ export async function intercomKiosks() {
   await tell(q, { ...roster(), self: { id: 'show-bed', name: 'Echo Show 5 Bedroom' } });
   await q.tapSel('#menu .menu-item[aria-label="Intercom"]');
   await sleep(400);
+  await q.waitFor(`[...document.querySelectorAll('#folder-menu .room-name')].some((e) => e.textContent === 'Kitchen')`);
   const cards = await q.eval(`[...document.querySelectorAll('#folder-menu .room-card')].map((c) => [c.querySelector('.room-name').textContent, (c.querySelector('.room-state') || {}).textContent || '', c.classList.contains('idle')])`);
-  check(cards.map((c) => c[0]).join() === 'Back,Bedroom,Echo Show 8 Living Room,Echo Spot Kitchen,Echo Spot Living Room,Office,Echo Dot Hall,Garage Tablet',
+  check(cards.map((c) => c[0]).join() === 'Back,Bedroom,Echo Show 8 Living Room,Echo Spot Kitchen,Echo Spot Living Room,Office,Garage,Hall,Kitchen,Pixel 9a',
     'show 5: the Intercom folder\'s cards, the Show itself left out and the Spot in its room named after it');
   check(JSON.stringify(cards.filter((c) => c[2]).map((c) => c[1])) === JSON.stringify(['Do not disturb', 'Offline']), 'show 5: a faded card says why');
   await q.shot('show-intercom.png');
