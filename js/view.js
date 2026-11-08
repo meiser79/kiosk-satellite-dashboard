@@ -225,7 +225,9 @@
       if (own && others.length) {
         const side = el('div', 'lights');
         side.hidden = true;
-        controls.insertBefore(side, media);
+        // right under the dial, before the media and music cards
+        const dial = controls.querySelector(':scope > .main');
+        controls.insertBefore(side, dial ? dial.nextSibling : controls.firstChild);
         // the grid beside starts on the line of the first light tiles, for their rows to line up
         new ResizeObserver(() => view.style.setProperty('--beside', `${side.offsetTop - controls.offsetTop}px`)).observe(main);   // both grids' own edges alike
         // more tiles than show fade out at the foot, until scrolled to the last

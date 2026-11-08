@@ -68,6 +68,11 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
 - **Echo Show 8**: laid out as the Show 5, larger: the page scales with the width of a
   Show as well as its height, so the dial and the tiles share the screen alike.
 
+### Fixed
+
+- **Music card**: its switch stays at the top of the card when the kind picked has no
+  favourites, instead of moving down with the line that says so.
+
 ## 1.5.1 - 2026-10-30
 
 ### Fixed

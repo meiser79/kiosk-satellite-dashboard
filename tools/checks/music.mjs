@@ -1,6 +1,6 @@
 // Checks of a room's music card: the living room's, on the Echo Show 8 (1280×800) and as Kiosk Satellite lays an Echo
 // Show 8 out (960×600).
-import { check, openPage, mockReaches, lastCall, RADIOS, PLAYLISTS, has, load, changeRoom } from './harness.mjs';
+import { check, openPage, mockReaches, lastCall, RADIOS, PLAYLISTS, has, load, changeRoom, setLibrary, sleep } from './harness.mjs';
 
 const names = (p) => p.eval(`[...document.querySelectorAll('.view.active .music-fav')].map((b) => b.getAttribute('aria-label')).join()`);
 const shown = (p, sel) => p.eval(`(() => { const e = document.querySelector('.view.active ' + ${JSON.stringify(sel)}); return !!e && !e.hidden && e.getBoundingClientRect().height > 0; })()`);
@@ -60,6 +60,38 @@ export async function musicShow8() {
     `show 8 at 960×600: the dial, the three lights under it and the card, all in view (lights ${l.t.toFixed(0)}–${l.b.toFixed(0)}px, card ${c.t.toFixed(0)}–${c.b.toFixed(0)}px)`);
   await q.shot('show8-960-music.png');
   await q.close();
+
+  // Without a media card, with the room's events and three kinds, none of them playlists: the light tiles still right
+  // under the dial and the card under them, the events' tile as tall as without the card; the switch where it was
+  // when Playlists shows a line in the strip's place.
+  const living = (music) => ({ media: null, music, events: { calendars: ['calendar.family'], period: 'day' } });
+  const boxes = (p) => p.eval(`(() => { const v = document.querySelector('.view.active'), r = (s) => { const e = v.querySelector(s); if (!e) return null; const { top, bottom, height } = e.getBoundingClientRect(); return { t: top, b: bottom, h: height }; };
+    return { dial: r('.main'), lights: r('.controls > .lights'), card: r('.music'), events: r(':scope > .lights > .events'), sw: r('.music .fav-switch') }; })()`);
+  await setLibrary({ playlist: [] });
+  const w = await openPage(960, 600);
+  await changeRoom(w, 'living', living(['radio', 'album', 'playlist']));
+  await load(w, 'device=Echo+Show+8+Living+Room');
+  await w.waitFor(`document.querySelectorAll('.view.active .music-fav').length > 0`);
+  await sleep(300);
+  const a = await boxes(w);
+  check(a.lights.t >= a.dial.b && a.lights.t - a.dial.b < 20 && a.card.t >= a.lights.b - 1 && a.card.b <= 600,
+    `show 8 without a media card: the light tiles right under the dial, the card under them (dial ${a.dial.b.toFixed(0)}px, lights ${a.lights.t.toFixed(0)}–${a.lights.b.toFixed(0)}px, card ${a.card.t.toFixed(0)}px)`);
+  await w.tapSel('.view.active .music .fav-switch button:nth-child(3)');
+  check(await w.waitFor(`!!document.querySelector('.view.active .music .music-note')`), 'show 8: no favourite playlists, a line in the strip\'s place');
+  const e = await boxes(w);
+  check(Math.abs(e.sw.t - a.sw.t) < 1, `show 8: the switch stays at the top of the card (${a.sw.t.toFixed(0)}px, then ${e.sw.t.toFixed(0)}px)`);
+  await w.shot('show8-960-music-events.png');
+  await w.close();
+  const x = await openPage(960, 600);
+  await changeRoom(x, 'living', living(null));
+  await load(x, 'device=Echo+Show+8+Living+Room');
+  await x.waitFor(`document.querySelectorAll('.view.active .events .event').length > 0`);
+  await sleep(300);
+  const b = await boxes(x);
+  check(!b.card && Math.abs(b.events.h - a.events.h) < 1 && Math.abs(b.lights.t - a.lights.t) < 1,
+    `show 8: the events' tile as tall with the card as without (${a.events.h.toFixed(0)}px, ${b.events.h.toFixed(0)}px without)`);
+  await x.close();
+  await setLibrary(null);
 
   // The Spot has no music card; a room's music without a player is left out.
   const s = await openPage(480, 480);

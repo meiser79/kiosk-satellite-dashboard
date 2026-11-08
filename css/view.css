@@ -230,8 +230,11 @@ span.title-btn { cursor: default; }
 .music .media-btn.prev, .music .media-btn.pwr, .music .media-sources { display: none; }
 .music-favs {
   border-radius: var(--r); background: var(--surface); border: var(--border-w) solid var(--border); padding: 0.65rem 0.7rem;
-  display: flex; flex-direction: column; justify-content: center; gap: 0.45rem;
+  display: flex; flex-direction: column; gap: 0.45rem;
 }
+/* the switch at the top, where it stays for a kind with none to show; the
+   strip, or the line in its place, in the middle of the rest */
+.music-favs > :last-child { margin-block: auto; }
 .music .fav-switch { align-self: flex-start; padding: 0.15rem; box-shadow: none; }
 .music .fav-switch button { height: 1.7rem; padding: 0 0.7rem; font-size: 0.75rem; }
 .music-strip { display: flex; gap: 0.5rem; overflow-x: auto; overscroll-behavior: contain; touch-action: pan-x; scroll-snap-type: x proximity; scrollbar-width: none; }
