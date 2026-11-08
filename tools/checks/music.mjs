@@ -1,6 +1,6 @@
 // Checks of a room's music card: the living room's, on the Echo Show 8 (1280×800), as Kiosk Satellite lays an Echo
 // Show 8 out (960×600), on the Show 5 and on the Echo Spot.
-import { check, openPage, mockReaches, mockSet, lastCall, RADIOS, PLAYLISTS, PODCASTS, has, load, changeRoom, setLibrary, sleep } from './harness.mjs';
+import { check, openPage, mockReaches, mockSet, lastCall, RADIOS, PLAYLISTS, PODCASTS, AUDIOBOOKS, has, load, changeRoom, setLibrary, sleep } from './harness.mjs';
 
 const names = (p) => p.eval(`[...document.querySelectorAll('.view.active .music-fav')].map((b) => b.getAttribute('aria-label')).join()`);
 const shown = (p, sel) => p.eval(`(() => { const e = document.querySelector('.view.active ' + ${JSON.stringify(sel)}); return !!e && !e.hidden && e.getBoundingClientRect().height > 0; })()`);
@@ -93,28 +93,34 @@ export async function musicShow8() {
   await x.close();
   await setLibrary(null);
 
-  // All four kinds: their names across the Show 8's card; in the Show 5's narrow column, where the names do not fit,
-  // their icons, named for a screen reader, inside the card. Podcasts brings the podcasts there.
-  const four = ['radio', 'playlist', 'album', 'podcast'];
+  // The kinds' names across the Show 8's card while they fit (four of them); five do not, even at 1280×800, nor
+  // four in the Show 5's narrow column: their icons there, named for a screen reader, inside the card. Podcasts and
+  // Audiobooks bring theirs.
+  const five = ['radio', 'playlist', 'album', 'podcast', 'audiobook'];
   const kindsSwitch = (p) => p.eval(`(() => { const s = document.querySelector('.view.active .music .fav-switch'), c = document.querySelector('.view.active .music-favs').getBoundingClientRect(), r = s.getBoundingClientRect();
     return { labels: [...s.children].map((b) => b.getAttribute('aria-label')).join(), names: [...s.children].map((b) => b.textContent).join(), icons: s.querySelectorAll('.icon').length, inside: r.left >= c.left && r.right <= c.right }; })()`);
-  const k8 = await openPage(960, 600);
-  await changeRoom(k8, 'living', { music: four });
-  await load(k8, 'device=Echo+Show+8+Living+Room');
-  await k8.waitFor(`document.querySelectorAll('.view.active .music-fav').length > 0`);
-  await sleep(300);
-  const s8 = await kindsSwitch(k8);
-  check(s8.names === 'Radios,Playlists,Albums,Podcasts' && s8.inside, `show 8: four kinds by name across the card (got ${s8.names})`);
-  await k8.close();
+  for (const [w, h, kinds] of [[960, 600, five.slice(0, 4)], [1280, 800, five], [960, 600, five]]) {
+    const k8 = await openPage(w, h), names = kinds.length < 5, labels = 'Radios,Playlists,Albums,Podcasts,Audiobooks'.split(',').slice(0, kinds.length).join();
+    await changeRoom(k8, 'living', { music: kinds, media: null });
+    await load(k8, 'device=Echo+Show+8+Living+Room');
+    await k8.waitFor(`document.querySelectorAll('.view.active .music-fav').length > 0`);
+    await sleep(300);
+    const s8 = await kindsSwitch(k8);
+    check(s8.labels === labels && s8.inside && (names ? s8.names === labels : s8.icons === 5),
+      `show 8 at ${w}×${h}: ${kinds.length} kinds ${names ? 'by name' : 'as icons'}, inside the card (got ${names ? s8.names : s8.icons + ' icons'})`);
+    await k8.close();
+  }
   const k5 = await openPage(960, 480);
-  await changeRoom(k5, 'bedroom', { music: four });
+  await changeRoom(k5, 'bedroom', { music: five });
   await load(k5, 'room=bedroom');
   await k5.waitFor(`document.querySelectorAll('.view.active .music-fav').length > 0`);
   await sleep(300);
   const s5 = await kindsSwitch(k5);
-  check(s5.labels === 'Radios,Playlists,Albums,Podcasts' && s5.icons === 4 && s5.inside, `show 5: four kinds in the narrow column, their icons named for a screen reader, inside the card (got ${s5.labels}, ${s5.icons} icons)`);
+  check(s5.labels === 'Radios,Playlists,Albums,Podcasts,Audiobooks' && s5.icons === 5 && s5.inside, `show 5: five kinds in the narrow column, their icons named for a screen reader, inside the card (got ${s5.labels}, ${s5.icons} icons)`);
   await k5.tapSel('.view.active .music .fav-switch button:nth-child(4)');
   check(await k5.waitFor(`${JSON.stringify(PODCASTS)} === [...document.querySelectorAll('.view.active .music-fav')].map((b) => b.getAttribute('aria-label')).join()`), 'show 5: Podcasts brings the favourite podcasts into the card');
+  await k5.tapSel('.view.active .music .fav-switch button:nth-child(5)');
+  check(await k5.waitFor(`${JSON.stringify(AUDIOBOOKS)} === [...document.querySelectorAll('.view.active .music-fav')].map((b) => b.getAttribute('aria-label')).join()`), 'show 5: Audiobooks brings the favourite audiobooks into the card');
   await k5.shot('show5-music-podcasts.png');
   await k5.close();
 

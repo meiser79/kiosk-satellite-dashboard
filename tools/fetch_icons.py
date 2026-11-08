@@ -27,7 +27,7 @@ monitor-shimmer lightning-bolt-outline circle-small desk account-voice cellphone
 shower toilet eyedropper-variant palette-outline snowflake
 book-open-page-variant-outline monitor gamepad-variant-outline image-filter-hdr
 water-outline cogs rocket-launch-outline pill weather-sunset information-outline
-door-open molecule-co2 calendar-blank-outline satellite-variant album
+door-open molecule-co2 calendar-blank-outline satellite-variant album book-music
 stop arrow-up arrow-down window-shutter window-shutter-open blinds blinds-open
 curtains curtains-closed roller-shade roller-shade-closed garage garage-open
 window-closed window-open door-closed gate gate-open awning-outline thermostat

@@ -80,7 +80,7 @@ What the page does, screen by screen. [Configuration](configuration.md) says how
   playing* shows only while Kiosk Satellite has something to play (its versions from
   October 2026 say so; with an older one the item stays).
 - **Music Assistant favourites.** A folder can hold your favourite radios, playlists,
-  albums and podcasts from Music Assistant (*Music*), shown with their covers, a switch at the top of
+  albums, podcasts and audiobooks from Music Assistant (*Music*), shown with their covers, a switch at the top of
   the screen between them. Picking one plays it on the speakers of the room the kiosk
   belongs to. The list comes from Music Assistant each time the folder opens, so a
   station you star there shows up the next time; the Spot's ring shows the first ten by

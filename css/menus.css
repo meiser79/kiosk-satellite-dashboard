@@ -165,6 +165,7 @@
 .fav-switch button.pressed { transform: scale(0.95); }
 .fav-switch.icons button { padding: 0 0.75rem; }   /* a switch of the kinds' icons: the Spot's with three or more, a narrow music card's */
 .fav-switch.icons .icon { font-size: 1.2rem; }
+.fav-switch.icons.many button { padding: 0 0.45rem; }   /* five kinds' icons: inside the Spot's rim, across a narrow music card */
 .fav-note { max-width: 18rem; font-size: 0.9rem; color: var(--muted); text-align: center; }
 /* round: across the top of the circle, the ring below it (js/menu.js keeps the
    ring short enough); a line alone sits where it would under the switch */

@@ -34,6 +34,10 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
   folder's `favorites` or a room's `music` in your `config.js`. A music card too narrow
   for the kinds' names (four of them on the Echo Show 5) shows their icons
   ([Music Assistant favourites](docs/configuration.md#music-assistant-favourites)).
+- **Audiobooks**: Music Assistant favourites can be audiobooks too: add `'audiobook'` to a
+  folder's `favorites` or a room's `music` in your `config.js`. Five kinds show as icons
+  on the Spot's switch and on the music card
+  ([Music Assistant favourites](docs/configuration.md#music-assistant-favourites)).
 - **Music card on the Echo Spot**: a room's `music` card sits at the end of the Spot's
   strip of tiles, in the media card's place and of its size, and steps aside while the
   media card shows, as on the Show: its dot, the last, brings it. While nothing plays,

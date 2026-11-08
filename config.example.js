@@ -60,9 +60,10 @@ window.KIOSK_CONFIG = {
   //              now shows faded. Until Kiosk Satellite has named them, and
   //              where this kiosk's intercom is off, the item opens the link.
   //   favorites  (a folder, before its items) your Music Assistant favourites:
-  //              'radio', 'playlist', 'album', 'podcast', or several, then with a switch at
-  //              the top of the screen. They play on the player of the room this
-  //              kiosk belongs to (the room's `player`, below) and show their covers.
+  //              'radio', 'playlist', 'album', 'podcast', 'audiobook', or several,
+  //              then with a switch at the top of the screen. They play on the
+  //              player of the room this kiosk belongs to (the room's `player`,
+  //              below) and show their covers.
   //              The Spot's ring shows the first ten by name.
   //   settings   true: Settings, a folder for the theme and following the light,
   //              set on the kiosk itself, which keeps them (over the theme
@@ -85,9 +86,9 @@ window.KIOSK_CONFIG = {
         { name: 'Sam', icon: 'cellphone', script: 'script.find_sam_phone' },     // <-- entity
       ] },
       // Music twice, one for each screen: radios and playlists on the Spot,
-      // albums, podcasts and the Music Assistant page on the Show.
+      // albums, podcasts, audiobooks and the Music Assistant page on the Show.
       { name: 'Music', icon: 'music', shape: 'round', favorites: ['radio', 'playlist'] },
-      { name: 'Music', icon: 'music', shape: 'wide', favorites: ['radio', 'playlist', 'album', 'podcast'], items: [
+      { name: 'Music', icon: 'music', shape: 'wide', favorites: ['radio', 'playlist', 'album', 'podcast', 'audiobook'], items: [
         { name: 'Music Assistant', icon: 'music-box-multiple', link: 'ks://music-assistant' },
       ] },
       { name: 'Settings', icon: 'cog-outline', settings: true },
@@ -163,7 +164,7 @@ window.KIOSK_CONFIG = {
   //                  the end of the strip of tiles on the Spot: while it plays,
   //                  what it plays; the rest of the time, your Music Assistant
   //                  favourites of these kinds ('radio', 'playlist', 'album',
-  //                  'podcast'), a tap to play one there
+  //                  'podcast', 'audiobook'), a tap to play one there
   // events           what the room's Home Assistant calendars hold: how many
   //                  events, a chip among the sensors ("3 today"; chip: false
   //                  leaves it out), and a list a swipe scrolls through, on the

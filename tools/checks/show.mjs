@@ -1,6 +1,6 @@
 // Checks on the Echo Show 5 (960×480) in the bedroom, the Echo Show 8 (1280×800) in the living room, and the light
 // tiles on an Echo Show 8 as Kiosk Satellite lays it out (960×600).
-import { sleep, check, openPage, mockStates, mockSet, lastCall, callLog, failCalls, ROOT_ITEMS, RADIOS, PLAYLISTS, ALBUMS, PODCASTS, text, has, activeRoom, lightsOn, onScreen, tapTab, load, setClock, changeRoom, addEvent } from './harness.mjs';
+import { sleep, check, openPage, mockStates, mockSet, lastCall, callLog, failCalls, ROOT_ITEMS, RADIOS, PLAYLISTS, ALBUMS, PODCASTS, AUDIOBOOKS, text, has, activeRoom, lightsOn, onScreen, tapTab, load, setClock, changeRoom, addEvent } from './harness.mjs';
 
 // 4. Bedroom Show (Echo Show 5, 960×480): rail on the right; light theme.
 export async function bedroomShow5() {
@@ -125,6 +125,8 @@ export async function bedroomShow5() {
   check(await p.waitFor(`${folderNames} === ${JSON.stringify(`Back,${ALBUMS},Music Assistant`)}`) && await p.eval(`document.querySelector('#folder-menu .fav-switch .on').textContent === 'Albums'`), 'show 5: Albums swaps them for the favourite albums');
   await p.tapSel('#folder-menu .fav-switch button:nth-child(4)');
   check(await p.waitFor(`${folderNames} === ${JSON.stringify(`Back,${PODCASTS},Music Assistant`)}`) && await p.eval(`document.querySelector('#folder-menu .fav-switch .on').textContent === 'Podcasts'`), 'show 5: Podcasts swaps them for the favourite podcasts');
+  await p.tapSel('#folder-menu .fav-switch button:nth-child(5)');
+  check(await p.waitFor(`${folderNames} === ${JSON.stringify(`Back,${AUDIOBOOKS},Music Assistant`)}`) && await p.eval(`document.querySelector('#folder-menu .fav-switch .on').textContent === 'Audiobooks'`), 'show 5: Audiobooks swaps them for the favourite audiobooks');
   const swr = await p.rect('#folder-menu .fav-switch');
   await p.tap(swr.l - 40, swr.y); await sleep(400);
   check(await p.eval(`document.getElementById('folder-menu').hidden`), 'a tap beside the switch closes the folder, as beside the cards');
@@ -164,6 +166,14 @@ export async function bedroomShow5() {
   fl = await lastCall();
   check(fl.domain === 'music_assistant' && fl.service === 'play_media' && fl.data.media_id === 'library://podcast/1' && fl.data.media_type === 'podcast' && await p.waitFor(`document.getElementById('toast').textContent === 'Music · Radiolab'`),
     `show 5: a podcast plays through Music Assistant, and a toast says which (got ${JSON.stringify(fl)})`);
+  await p.tapSel('#menu .menu-item[aria-label="Music"]');
+  await sleep(400);
+  await p.tapSel('#folder-menu .fav-switch button:nth-child(5)');
+  await p.waitFor(`${folderNames} === ${JSON.stringify(`Back,${AUDIOBOOKS},Music Assistant`)}`);
+  await p.tapSel('#folder-menu .room-card:nth-child(3) .room-go');
+  fl = await lastCall();
+  check(fl.domain === 'music_assistant' && fl.service === 'play_media' && fl.data.media_id === 'library://audiobook/1' && fl.data.media_type === 'audiobook' && await p.waitFor(`document.getElementById('toast').textContent === 'Music · The Hobbit'`),
+    `show 5: an audiobook plays through Music Assistant, and a toast says which (got ${JSON.stringify(fl)})`);
   bar = await box('.main .bar.group');
   const vw = await box('');
   check(bar.h > 250 && Math.abs((bar.l + bar.r) / 2 - (vw.l + vw.r) / 2) < 10 && !(await has(p, '.view.active .tile')), 'office: the ceiling light\'s dial alone, in the middle');
