@@ -245,11 +245,11 @@ export async function coversMore() {
   await load(sp, 'device=Echo+Spot+Living+Room');
   const pairs = () => sp.eval(`[...document.querySelectorAll('.view.active .lights > .tile:not([hidden])')].map((t) => (t.classList.contains('pair') ? '|' : '') + t.querySelector('.tile-name').textContent).join(' ') + ' dots ' + document.querySelectorAll('.view.active > .dots span').length`);
   let sPairs = await pairs();
-  check(sPairs === '|Living room Dining room |Kitchen TV strip |Shelf strip Shutter |Heating Ceiling fan dots 4', `showWhen, spot: the awning hidden, the strip pairs the tiles shown (got ${sPairs})`);
+  check(sPairs === '|Living room Dining room |Kitchen TV strip |Shelf strip Shutter |Heating Ceiling fan dots 5', `showWhen, spot: the awning hidden, the strip pairs the tiles shown, the music card's dot after them (got ${sPairs})`);
   await mockSet('input_boolean.projector', 'on');
   await sleep(600);
   sPairs = await pairs();
-  check(sPairs === '|Living room Dining room |Kitchen TV strip |Shelf strip Shutter |Awning Heating |Ceiling fan dots 6', `showWhen, spot: the awning back, paired again, the card's dot too (got ${sPairs})`);
+  check(sPairs === '|Living room Dining room |Kitchen TV strip |Shelf strip Shutter |Awning Heating |Ceiling fan dots 6', `showWhen, spot: the awning back, paired again, the media card's dot in the music card's place (got ${sPairs})`);
   await mockSet('input_boolean.projector', 'off');
   await sp.close();
 }

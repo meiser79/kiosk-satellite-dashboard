@@ -85,9 +85,10 @@ What the page does, screen by screen. [Configuration](configuration.md) says how
   belongs to. The list comes from Music Assistant each time the folder opens, so a
   station you star there shows up the next time; the Spot's ring shows the first ten by
   name. A script or a favourite says what it did in a short toast.
-- **Music card.** On the Show, a room can have a card under the dial for its speakers:
-  while they play nothing, the favourites in a strip, a tap to play one there; while they
-  play, the cover and title with pause, next and the volume.
+- **Music card.** A room can have a card for its speakers, under the dial on the Show, at
+  the end of the strip of tiles on the Spot: while they play nothing, the favourites in a
+  strip, a tap to play one there; while they play, the cover and title with pause, next
+  and the volume.
 - **Calling a kiosk.** A folder (*Intercom*) lists the other Echos on Kiosk Satellite's
   intercom, named after their rooms (or their areas in Home Assistant), and a tap calls
   one straight away, without Kiosk

@@ -155,25 +155,27 @@
         media.onvisibility = (v) => setClass(view, 'with-media', v); // the main card makes room
       }
     }
-    // the music card under the dial, on the wide screens (it steps aside for the media card)
-    const music = shape !== 'round' && K.musicOf(room);
-    if (music) controls.appendChild(rise(K.makeMusic(music)));
+    // the room's music card: on the wide screens under the dial, on the
+    // round one in the strip below; on both it steps aside for the media card
+    const musicCfg = K.musicOf(room), music = musicCfg && rise(K.makeMusic(musicCfg));
+    if (music && shape !== 'round') controls.appendChild(music);
     view.appendChild(controls);
 
     // the tiles, the lights' then the covers', the thermostats' and the fans': a grid,
-    // or on the round screen a strip of tiles (the media card at its end)
-    // that scrolls two tiles at a time
+    // or on the round screen a strip of tiles (the media card or the music
+    // card at its end, as on the wide screens) that scrolls two tiles at a time
     const lights = el('div', 'lights');
     const tiles = [...(room.lights || []).map(makeTile), ...(room.covers || []).map(makeCoverTile), ...(room.climate || []).map(makeClimateTile), ...(room.fans || []).map(makeFanTile)].map(rise);
     if (shape === 'round') {
       lights.append(...tiles);
       if (media) lights.appendChild(media);
+      if (music) lights.appendChild(music);
       // The tiles shown, in pairs: the first of each marked; a last one
-      // without a pair comes to rest beside the one before it, not beside the
+      // without a pair comes to rest beside the one before it, not beside a
       // card. Again whenever a tile's showWhen shows or hides it.
       const pairUp = () => {
         const shown = tiles.filter((t) => !t.hidden);
-        tiles.forEach((t) => { setClass(t, 'pair', shown.indexOf(t) % 2 === 0); setClass(t, 'alone', !!media && shown.length % 2 === 1 && t === shown[shown.length - 1]); });
+        tiles.forEach((t) => { setClass(t, 'pair', shown.indexOf(t) % 2 === 0); setClass(t, 'alone', !!(media || music) && shown.length % 2 === 1 && t === shown[shown.length - 1]); });
         requestAnimationFrame(() => updateDots());
       };
       // A dot for each place the strip comes to rest: each pair of tiles
@@ -207,7 +209,8 @@
         near = rests.reduce((b, x, j) => (Math.abs(x - lights.scrollLeft) < Math.abs(rests[b] - lights.scrollLeft) ? j : b), 0);
         [...dots.children].forEach((d, j) => setClass(d, 'on', j === near));
       };
-      if (media) media.onvisibility = () => requestAnimationFrame(updateDots);
+      // the music card steps aside while the media card shows, as on the wide screens
+      if (media) media.onvisibility = (v) => { if (music) music.hidden = v; requestAnimationFrame(updateDots); };
       pairUp();
       new MutationObserver(pairUp).observe(lights, { attributes: true, attributeFilter: ['hidden'], subtree: true });
       let t = null;

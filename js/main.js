@@ -48,7 +48,7 @@
       if (r.media) { ids.push(r.media.entity); if (r.media.showWhen) ids.push(r.media.showWhen.entity); }
       const events = eventsOf(r);
       if (events) ids.push(...events.calendars.map((c) => c.entity));
-      const music = K.shape !== 'round' && musicOf(r);
+      const music = musicOf(r);
       if (music) ids.push(music.player);
     }
     return ids.filter(Boolean);
@@ -89,7 +89,7 @@
 
     HA.start(entityIds());
     // Music Assistant's favourites, there before a folder of them opens and for the music cards; the rooms' events.
-    const cards = shape !== 'round' ? musicKinds(rooms) : [];
+    const cards = musicKinds(rooms);
     HA.onStatus((s) => { if (!s) { loadFavorites([...new Set([...menuFavoriteKinds(), ...cards])]); loadEvents(); } });
 
     // Kiosk Satellite tells the page when the screensaver ends: start from a clean view.

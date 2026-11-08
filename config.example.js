@@ -159,10 +159,11 @@ window.KIOSK_CONFIG = {
   // media            a player card, shown while showWhen holds (or always)
   // player           the Music Assistant player (or group of players) the menu's
   //                  favourites play on, for the kiosks that belong to this room
-  // music            on the Show, a card under the dial for the room's player: while
-  //                  it plays, what it plays; the rest of the time, your Music
-  //                  Assistant favourites of these kinds, 'radio', 'playlist' or both,
-  //                  a tap to play one there
+  // music            a card for the room's player, under the dial on the Show, at
+  //                  the end of the strip of tiles on the Spot: while it plays,
+  //                  what it plays; the rest of the time, your Music Assistant
+  //                  favourites of these kinds ('radio', 'playlist', 'album',
+  //                  'podcast'), a tap to play one there
   // events           what the room's Home Assistant calendars hold: how many
   //                  events, a chip among the sensors ("3 today"; chip: false
   //                  leaves it out), and a list a swipe scrolls through, on the

@@ -110,6 +110,24 @@
 .shape-round .lights > .tile.pair { scroll-snap-align: start; }   /* the first of each pair (js/view.js) */
 .shape-round .lights > .tile.alone { scroll-snap-align: end; }   /* a last one alone, before the card: with the one before it */
 .shape-round .lights > .media { flex: none; width: calc(60% + var(--gap)); margin-top: 0.6rem; scroll-snap-align: center; }
+/* the room's music card after it, in the media card's place and of its
+   size: the media card's face when the room's player plays, else smaller
+   covers with their names and the switch in the middle. It steps aside
+   while the media card shows (js/view.js). */
+.shape-round .lights > .music { flex: none; width: calc(60% + var(--gap)); margin-top: 0.6rem; scroll-snap-align: center; }
+.shape-round .lights > :is(.media, .music) { height: calc(5.3rem + 2 * var(--border-w)); }
+.shape-round .music-favs { padding: 0.3rem 0.55rem; gap: 0.2rem; }
+.shape-round .music .fav-switch { align-self: center; padding: 0; }
+.shape-round .music .fav-switch button { height: 1.3rem; padding: 0 0.6rem; font-size: 0.66rem; }
+/* the strip a cover and a line of names tall, and the line that says there
+   are none (or that they are on their way) as tall in its place: the card
+   keeps its height whatever kind is picked */
+.shape-round .music { --favs: calc(2.3rem + 0.1rem + 0.58rem * 1.2); }
+.shape-round .music-strip { gap: 0.4rem; height: var(--favs); }
+.shape-round .music-fav { width: 2.3rem; gap: 0.1rem; }
+.shape-round .music-cover { width: 2.3rem; height: 2.3rem; font-size: 1.1rem; }
+.shape-round .music-name { font-size: 0.58rem; line-height: 1.2; }
+.shape-round .music-note { height: var(--favs); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; text-align: center; }
 .shape-round .lights > :where(.tile) { padding: 0.65rem 0.55rem; column-gap: 0.45rem; touch-action: none; }   /* a drag across sets its level */
 .shape-round .lights > .tile .tile-icon { width: 2rem; height: 2rem; font-size: 1.1rem; }
 .shape-round .lights > .tile .tile-name { font-size: 0.8rem; }

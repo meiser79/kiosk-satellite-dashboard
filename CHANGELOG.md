@@ -34,6 +34,11 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
   folder's `favorites` or a room's `music` in your `config.js`. A music card too narrow
   for the kinds' names (four of them on the Echo Show 5) shows their icons
   ([Music Assistant favourites](docs/configuration.md#music-assistant-favourites)).
+- **Music card on the Echo Spot**: a room's `music` card sits at the end of the Spot's
+  strip of tiles, in the media card's place and of its size, and steps aside while the
+  media card shows, as on the Show: its dot, the last, brings it. While nothing plays,
+  the favourites; while they play, what plays with pause and next
+  ([The music card](docs/configuration.md#the-music-card)).
 - **Covers and thermostats**: a room's `covers` (shutters, blinds, awnings, curtains, a
   garage door) and `climate` (a heating, an air conditioner) in your `config.js` are tiles
   after the lights: a tap opens, closes or stops a cover, or turns a thermostat on or off;

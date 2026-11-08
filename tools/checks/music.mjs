@@ -1,6 +1,6 @@
-// Checks of a room's music card: the living room's, on the Echo Show 8 (1280×800) and as Kiosk Satellite lays an Echo
-// Show 8 out (960×600).
-import { check, openPage, mockReaches, lastCall, RADIOS, PLAYLISTS, PODCASTS, has, load, changeRoom, setLibrary, sleep } from './harness.mjs';
+// Checks of a room's music card: the living room's, on the Echo Show 8 (1280×800), as Kiosk Satellite lays an Echo
+// Show 8 out (960×600), on the Show 5 and on the Echo Spot.
+import { check, openPage, mockReaches, mockSet, lastCall, RADIOS, PLAYLISTS, PODCASTS, has, load, changeRoom, setLibrary, sleep } from './harness.mjs';
 
 const names = (p) => p.eval(`[...document.querySelectorAll('.view.active .music-fav')].map((b) => b.getAttribute('aria-label')).join()`);
 const shown = (p, sel) => p.eval(`(() => { const e = document.querySelector('.view.active ' + ${JSON.stringify(sel)}); return !!e && !e.hidden && e.getBoundingClientRect().height > 0; })()`);
@@ -8,7 +8,7 @@ const box = (p, sel) => p.eval(`(() => { const r = document.querySelector('.view
 
 // 21. The living room's music card under the dial: its favourites while the player plays nothing, a tap plays one there,
 //     then what plays, with pause, next and the volume; pausing brings the favourites back. It steps aside for the
-//     media card, and the Spot has none.
+//     media card. On the Spot, a place of its own in the strip.
 export async function musicShow8() {
   const p = await openPage(1280, 800);
   await load(p, 'device=Echo+Show+8+Living+Room');
@@ -118,11 +118,66 @@ export async function musicShow8() {
   await k5.shot('show5-music-podcasts.png');
   await k5.close();
 
-  // The Spot has no music card; a room's music without a player is left out.
+  // The Spot: the card at the end of the strip, in the media card's place and of its size, hidden while the media card
+  // shows; inside the rim and clear of the dots, its last dot brings it. The favourites as on the Show; while one
+  // plays, the compact media card in their place (no volume), pausing brings them back.
   const s = await openPage(480, 480);
   await load(s, 'device=Echo+Spot+Living+Room');
-  check(!(await has(s, '.music')), 'spot: no music card');
+  check(await s.waitFor(`document.querySelectorAll('.view.active .lights > .music .music-fav').length === 7`) && await s.eval(`document.querySelector('.view.active .lights > :last-child').classList.contains('music')`) && (await names(s)) === RADIOS,
+    `spot: the music card at the end of the strip, the favourite radios in it (got ${await names(s)})`);
+  await s.eval(`(() => { const d = document.querySelectorAll('.view.active > .dots span'); d[d.length - 1].click(); return true; })()`);
+  await sleep(800);
+  const sc = await s.eval(`(() => { const v = document.querySelector('.view.active'), m = v.querySelector('.lights > .music'), r = m.getBoundingClientRect(), k = parseFloat(getComputedStyle(m.querySelector('.music-favs')).borderTopLeftRadius), o = k * (1 - Math.SQRT1_2);
+    const pts = [[r.left, r.top + k], [r.left + o, r.top + o], [r.left + k, r.top], [r.left, r.bottom - k], [r.left + o, r.bottom - o], [r.left + k, r.bottom]].flatMap(([x, y]) => [[x, y], [480 - x, y]]);
+    const d = v.querySelector(':scope > .dots span.on').getBoundingClientRect(), dots = v.querySelectorAll(':scope > .dots span');
+    return { rim: pts.every(([x, y]) => Math.hypot(x - 240, y - 240) < 240 * (50 - 3.6) / 50), mid: Math.abs(r.left + r.width / 2 - 240) < 2, clear: r.bottom <= d.top, last: dots[dots.length - 1].classList.contains('on'), sw: [...m.querySelectorAll('.fav-switch button')].map((b) => b.textContent).join() }; })()`);
+  check(sc.rim && sc.mid && sc.clear && sc.last && sc.sw === 'Radios,Playlists', `spot: its dot brings the card to the middle, inside the rim, clear of the dots, the switch by name (${JSON.stringify(sc)})`);
+  await s.shot('spot-music.png');
+  const cardBox = () => s.eval(`(() => { const r = document.querySelector('.view.active .lights > :is(.media, .music):not([hidden])').getBoundingClientRect(); return { t: r.top, b: r.bottom, l: r.left, r: r.right }; })()`);
+  const musicBox = await cardBox();
+  await mockSet('input_boolean.projector', 'on');
+  check(await s.waitFor(`document.querySelector('.view.active .lights > .music').hidden && !document.querySelector('.view.active .lights > .media').hidden`), 'spot: the music card steps aside while the media card shows');
+  await s.eval(`(() => { const d = document.querySelectorAll('.view.active > .dots span'); d[d.length - 1].click(); return true; })()`);
+  await sleep(800);
+  const mediaBox = await cardBox();
+  check(['t', 'b', 'l', 'r'].every((k) => Math.abs(mediaBox[k] - musicBox[k]) < 1), `spot: the media card in the music card's place, of its size (${JSON.stringify(musicBox)}, ${JSON.stringify(mediaBox)})`);
+  await mockSet('input_boolean.projector', 'off');
+  check(await s.waitFor(`!document.querySelector('.view.active .lights > .music').hidden && document.querySelector('.view.active .lights > .media').hidden`), 'spot: and back once it goes');
+  await s.eval(`(() => { const d = document.querySelectorAll('.view.active > .dots span'); d[d.length - 1].click(); return true; })()`);
+  await sleep(800);
+  await s.tapSel('.view.active .music .fav-switch button:nth-child(2)');
+  check(await s.waitFor(`document.querySelector('.view.active .music .fav-switch .on').textContent === 'Playlists'`) && (await names(s)) === PLAYLISTS, `spot: Playlists shows the playlists (got ${await names(s)})`);
+  await s.tapSel('.view.active .music .fav-switch button:nth-child(1)');
+  await s.waitFor(`document.querySelector('.view.active .music .fav-switch .on').textContent === 'Radios'`);
+  await s.tapSel('.view.active .music-fav:nth-child(2)');
+  const sCall = await lastCall();
+  check(sCall.service === 'play_media' && sCall.target.entity_id === 'media_player.living_room_speakers' && sCall.data.media_id === 'library://radio/1'
+    && await s.waitFor(`(document.querySelector('.view.active .music .media-title') || {}).textContent === 'FIP'`) && !(await shown(s, '.music-favs')),
+    `spot: a tap on FIP plays it on the living room's player, the card shows what plays (got ${JSON.stringify(sCall)})`);
+  check(await s.eval(`document.querySelector('.view.active .music .media').classList.contains('compact')`) && await shown(s, '.music .media-btn.play') && !(await shown(s, '.music .media-volume'))
+    && await s.eval(`(() => { const m = document.querySelector('.view.active .lights > .music').getBoundingClientRect(), d = document.querySelector('.view.active > .dots span').getBoundingClientRect(); return m.bottom <= d.top; })()`),
+    'spot: while it plays, the compact media card, pause and next, no volume, still clear of the dots');
+  await s.shot('spot-music-playing.png');
+  await s.tapSel('.view.active .music .media-btn.play');
+  check(await mockReaches((st) => st['media_player.living_room_speakers'].s === 'paused') && await s.waitFor(`!document.querySelector('.view.active .music-favs').hidden`), 'spot: pause, and the favourites come back');
   await s.close();
+
+  // No favourite podcasts: the line that says so in the strip's place, the card as tall as with the radios.
+  await setLibrary({ podcast: [] });
+  const np = await openPage(480, 480);
+  await changeRoom(np, 'living', { music: ['radio', 'podcast'] });
+  await load(np, 'device=Echo+Spot+Living+Room');
+  await np.waitFor(`document.querySelectorAll('.view.active .lights > .music .music-fav').length === 7`);
+  const cardH = () => np.eval(`document.querySelector('.view.active .lights > .music').getBoundingClientRect().height`);
+  await np.eval(`(() => { const d = document.querySelectorAll('.view.active > .dots span'); d[d.length - 1].click(); return true; })()`);
+  await sleep(800);
+  const withRadios = await cardH();
+  await np.tapSel('.view.active .music .fav-switch button:nth-child(2)');
+  check(await np.waitFor(`(document.querySelector('.view.active .music .music-note') || {}).textContent === 'No favourite podcasts in Music Assistant'`) && Math.abs(await cardH() - withRadios) < 1,
+    `spot: no favourite podcasts, a line in the strip's place, the card as tall as with the radios (${withRadios.toFixed(0)}px, then ${(await cardH()).toFixed(0)}px)`);
+  await np.shot('spot-music-none.png');
+  await np.close();
+  await setLibrary(null);
   const n = await openPage(1280, 800);
   await changeRoom(n, 'living', { player: null });
   await load(n, 'device=Echo+Show+8+Living+Room');

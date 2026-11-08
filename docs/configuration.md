@@ -111,7 +111,7 @@ The order of `rooms` is the order in the room menu. Each room has:
 | `fans` | Tiles after the thermostats for fans: a tap turns it on or off; a drag across the tile sets its speed, in the fan's own steps (all the way left turns it off), its preset mode after it. Long-press opens a panel with Off and On, the speed, and chips for its preset modes, oscillation and direction, those it has |
 | `media` | A media player card, shown while `showWhen` matches (or always) |
 | `player` | The Music Assistant player (or group of players) the menu's favourites play on, for the kiosks that belong to this room |
-| `music` | On the Show, a card under the dial for the room's `player`: what it plays, or your favourites to play there (see [The music card](#the-music-card)) |
+| `music` | A card for the room's `player`, under the dial on the Show, at the end of the strip of tiles on the Spot: what it plays, or your favourites to play there (see [The music card](#the-music-card)) |
 | `events` | What the room's Home Assistant calendars hold: how many among the sensors, and a list (see [Events](#events)) |
 | `background`, `fade` | The room's own picture or colour behind it, and how far it fades, over the theme's (see [Theme](#theme)) |
 
@@ -276,7 +276,8 @@ screen with `shape`, as `config.example.js` does:
 
 ### The music card
 
-A room's `music` puts a card under the dial on the Show, for the room's `player`:
+A room's `music` puts a card for the room's `player` under the dial on the Show, and at the
+end of the strip of tiles on the Spot:
 
 ```js
 player: 'media_player.kitchen_speakers',
@@ -288,12 +289,12 @@ music: ['radio', 'playlist'],     // or one of them, or with 'album' and 'podcas
   kinds above it with more than one: their names, or their icons where the names do not
   fit across the card (four kinds on the Show 5). A tap plays one on the room's `player`, the
   room on screen (the menu's play on the kiosk's own room's).
-- **While it plays**, what it plays: the cover, the title, pause, next and the volume.
-  Pausing it brings the favourites back.
-- The dial makes room for it. While the room's `media` card shows, the music card steps
-  aside.
-- It needs the room's `player`; without one there is no card. The Spot has none: its
-  menu's favourites do the same.
+- **While it plays**, what it plays: the cover, the title, pause, next and the volume
+  (on the Spot, its buttons). Pausing it brings the favourites back.
+- On the Show the dial makes room for it. On the Spot it sits at the end of the strip of
+  tiles, in the `media` card's place and of its size: its dot, the last, brings it.
+- On both, while the room's `media` card shows, the music card steps aside.
+- It needs the room's `player`; without one there is no card.
 
 ### Calling a kiosk
 

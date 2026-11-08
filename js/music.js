@@ -1,5 +1,6 @@
 /* Kiosk dashboard: a room's music card, on the wide screens under the
- * dial, for a room with `music` and a `player`. While the player plays,
+ * dial and on the round one in the strip of tiles, for a room with `music`
+ * and a `player`. While the player plays,
  * what it plays: the media card, its cover, title, pause, next and volume.
  * The rest of the time, the room's kinds of Music Assistant favourites
  * (js/favorites.js), their covers and names in a strip a swipe scrolls
@@ -33,7 +34,7 @@
     const folder = { favorites: music.kinds, items: [] };
     const node = el('div', 'music');
     const favs = el('div', 'music-favs');
-    const now = makeMedia({ entity: music.player, icon: 'music', showWhen: { state: ['playing', 'buffering'] } }, false);
+    const now = makeMedia({ entity: music.player, icon: 'music', showWhen: { state: ['playing', 'buffering'] } }, K.shape === 'round');
     node.append(favs, now);
     // The favourites of the kind picked, redrawn when Music Assistant or the
     // switch changes them; the same kind where the strip was scrolled to.
