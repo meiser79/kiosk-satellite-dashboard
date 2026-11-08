@@ -60,7 +60,7 @@ window.KIOSK_CONFIG = {
   //              now shows faded. Until Kiosk Satellite has named them, and
   //              where this kiosk's intercom is off, the item opens the link.
   //   favorites  (a folder, before its items) your Music Assistant favourites:
-  //              'radio', 'playlist', 'album', or several, then with a switch at
+  //              'radio', 'playlist', 'album', 'podcast', or several, then with a switch at
   //              the top of the screen. They play on the player of the room this
   //              kiosk belongs to (the room's `player`, below) and show their covers.
   //              The Spot's ring shows the first ten by name.
@@ -85,9 +85,9 @@ window.KIOSK_CONFIG = {
         { name: 'Sam', icon: 'cellphone', script: 'script.find_sam_phone' },     // <-- entity
       ] },
       // Music twice, one for each screen: radios and playlists on the Spot,
-      // albums too and the Music Assistant page on the Show.
+      // albums, podcasts and the Music Assistant page on the Show.
       { name: 'Music', icon: 'music', shape: 'round', favorites: ['radio', 'playlist'] },
-      { name: 'Music', icon: 'music', shape: 'wide', favorites: ['radio', 'playlist', 'album'], items: [
+      { name: 'Music', icon: 'music', shape: 'wide', favorites: ['radio', 'playlist', 'album', 'podcast'], items: [
         { name: 'Music Assistant', icon: 'music-box-multiple', link: 'ks://music-assistant' },
       ] },
       { name: 'Settings', icon: 'cog-outline', settings: true },

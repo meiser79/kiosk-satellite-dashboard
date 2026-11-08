@@ -175,8 +175,8 @@ function getEvents(c, m) {
   c.send({ id: m.id, type: 'result', success: true, result: { context: { id: 'mock' }, response } });
 }
 // Music Assistant: the players it brings to Home Assistant, and its library.
-// Every radio but one, every playlist and every album but one is a
-// favourite. KEXP has no cover, Radio Paradise's does not load: both keep
+// Every radio but one, every playlist, every album but one and every
+// podcast but one is a favourite. KEXP has no cover, Radio Paradise's does not load: both keep
 // their icon.
 const MA_ENTRY = 'mock-music-assistant';   // the config entry of its integration
 const MA_PLAYERS = ['media_player.bedroom_speakers', 'media_player.living_room_speakers', 'media_player.office_speakers'];
@@ -225,6 +225,12 @@ const LIBRARY = () => ({
     libItem('album', 'library://album/2', 'Abbey Road'),
     libItem('album', 'spotify://album/mock-random-access-memories', 'Random Access Memories'),
     libItem('album', 'library://album/4', 'Blue Train', cover('Blue Train'), false),
+  ],
+  podcast: [
+    libItem('podcast', 'library://podcast/1', 'Radiolab'),
+    libItem('podcast', 'library://podcast/2', 'The Daily'),
+    libItem('podcast', 'library://podcast/3', '99% Invisible'),
+    libItem('podcast', 'library://podcast/4', 'Hardcore History', cover('Hardcore History'), false),
   ],
 });
 let library = LIBRARY();
@@ -527,7 +533,7 @@ const server = http.createServer((req, res) => {
     return;
   }
   if (url.pathname === '/__calls') { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(calls)); return; }
-  if (url.pathname === '/__library' && req.method === 'POST') { // test hook: {radio?: [...], playlist?: [...], album?: [...]}, items as in LIBRARY; null: as it was
+  if (url.pathname === '/__library' && req.method === 'POST') { // test hook: {radio?: [...], playlist?: [...], album?: [...], podcast?: [...]}, items as in LIBRARY; null: as it was
     let body = '';
     req.on('data', (d) => { body += d; });
     req.on('end', () => { const lib = JSON.parse(body); library = lib ? { ...library, ...lib } : LIBRARY(); res.writeHead(200); res.end('ok'); });

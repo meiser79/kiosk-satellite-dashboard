@@ -238,7 +238,7 @@ ring of buttons on the Spot. Each item has a `name`, an `icon` and one of:
 | `link: 'https://...'` | Any other web page |
 | `script: 'script.find_my_phone'` | Runs the Home Assistant script, and says so in a toast |
 | `items: [...]` | A folder of items, one level deep. On the Spot it opens as a ring of its own, *Back* in the middle; on the Show as a grid of cards, *Back* first |
-| `favorites: ['radio', 'playlist', 'album']` | (on a folder) Your Music Assistant favourites, before the folder's own items |
+| `favorites: ['radio', 'playlist', 'album', 'podcast']` | (on a folder) Your Music Assistant favourites, before the folder's own items |
 | `settings: true` | Settings: the theme and following the light, set on the kiosk itself (see [Settings](#settings)) |
 | `link: 'ks://intercom', items: true` | A folder of the other kiosks on Kiosk Satellite's intercom, a tap calling one (see [Calling a kiosk](#calling-a-kiosk)) |
 
@@ -251,10 +251,10 @@ ring of buttons on the Spot. Each item has a `name`, an `icon` and one of:
 
 ### Music Assistant favourites
 
-A folder with `favorites` lists your favourite radios, playlists and albums in Music
-Assistant (the heart on a station, a playlist or an album), with their covers and, with
-more than one kind, a switch between them: their names, or on the Spot, with three kinds,
-their icons. They play on the room's `player`: the `media_player` entity Music Assistant
+A folder with `favorites` lists your favourite radios, playlists, albums and podcasts in
+Music Assistant (the heart on a station, a playlist, an album or a podcast), with their
+covers and, with more than one kind, a switch between them: their names, or on the Spot,
+with three kinds or more, their icons. They play on the room's `player`: the `media_player` entity Music Assistant
 creates for the group of speakers in that room (the kiosk itself is one of them once its
 Sendspin player is on). The page finds your Music Assistant instance from that player.
 
@@ -263,7 +263,7 @@ screen with `shape`, as `config.example.js` does:
 
 ```js
 { name: 'Music', icon: 'music', shape: 'round', favorites: ['radio', 'playlist'] },
-{ name: 'Music', icon: 'music', shape: 'wide', favorites: ['radio', 'playlist', 'album'], items: [
+{ name: 'Music', icon: 'music', shape: 'wide', favorites: ['radio', 'playlist', 'album', 'podcast'], items: [
   { name: 'Music Assistant', icon: 'music-box-multiple', link: 'ks://music-assistant' },
 ] },
 ```
@@ -280,12 +280,13 @@ A room's `music` puts a card under the dial on the Show, for the room's `player`
 
 ```js
 player: 'media_player.kitchen_speakers',
-music: ['radio', 'playlist'],     // or one of them
+music: ['radio', 'playlist'],     // or one of them, or with 'album' and 'podcast'
 ```
 
 - **While the player plays nothing**, your Music Assistant favourites of those kinds, as in
-  the menu: their covers and names in a strip a swipe scrolls through, the switch between
-  radios and playlists above it with both. A tap plays one on the room's `player`, the
+  the menu: their covers and names in a strip a swipe scrolls through, the switch between the
+  kinds above it with more than one: their names, or their icons where the names do not
+  fit across the card (four kinds on the Show 5). A tap plays one on the room's `player`, the
   room on screen (the menu's play on the kiosk's own room's).
 - **While it plays**, what it plays: the cover, the title, pause, next and the volume.
   Pausing it brings the favourites back.

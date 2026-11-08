@@ -30,6 +30,10 @@ zip of the files to copy to Home Assistant ([Updating](docs/setup.md#updating)).
   `favorites` in your `config.js` (`favorites: ['radio', 'playlist', 'album']`). With three
   kinds the Spot's switch shows their icons ([Music Assistant
   favourites](docs/configuration.md#music-assistant-favourites)).
+- **Podcasts**: Music Assistant favourites can be podcasts too: add `'podcast'` to a
+  folder's `favorites` or a room's `music` in your `config.js`. A music card too narrow
+  for the kinds' names (four of them on the Echo Show 5) shows their icons
+  ([Music Assistant favourites](docs/configuration.md#music-assistant-favourites)).
 - **Covers and thermostats**: a room's `covers` (shutters, blinds, awnings, curtains, a
   garage door) and `climate` (a heating, an air conditioner) in your `config.js` are tiles
   after the lights: a tap opens, closes or stops a cover, or turns a thermostat on or off;

@@ -1,6 +1,6 @@
 // Checks of a room's music card: the living room's, on the Echo Show 8 (1280×800) and as Kiosk Satellite lays an Echo
 // Show 8 out (960×600).
-import { check, openPage, mockReaches, lastCall, RADIOS, PLAYLISTS, has, load, changeRoom, setLibrary, sleep } from './harness.mjs';
+import { check, openPage, mockReaches, lastCall, RADIOS, PLAYLISTS, PODCASTS, has, load, changeRoom, setLibrary, sleep } from './harness.mjs';
 
 const names = (p) => p.eval(`[...document.querySelectorAll('.view.active .music-fav')].map((b) => b.getAttribute('aria-label')).join()`);
 const shown = (p, sel) => p.eval(`(() => { const e = document.querySelector('.view.active ' + ${JSON.stringify(sel)}); return !!e && !e.hidden && e.getBoundingClientRect().height > 0; })()`);
@@ -92,6 +92,31 @@ export async function musicShow8() {
     `show 8: the events' tile as tall with the card as without (${a.events.h.toFixed(0)}px, ${b.events.h.toFixed(0)}px without)`);
   await x.close();
   await setLibrary(null);
+
+  // All four kinds: their names across the Show 8's card; in the Show 5's narrow column, where the names do not fit,
+  // their icons, named for a screen reader, inside the card. Podcasts brings the podcasts there.
+  const four = ['radio', 'playlist', 'album', 'podcast'];
+  const kindsSwitch = (p) => p.eval(`(() => { const s = document.querySelector('.view.active .music .fav-switch'), c = document.querySelector('.view.active .music-favs').getBoundingClientRect(), r = s.getBoundingClientRect();
+    return { labels: [...s.children].map((b) => b.getAttribute('aria-label')).join(), names: [...s.children].map((b) => b.textContent).join(), icons: s.querySelectorAll('.icon').length, inside: r.left >= c.left && r.right <= c.right }; })()`);
+  const k8 = await openPage(960, 600);
+  await changeRoom(k8, 'living', { music: four });
+  await load(k8, 'device=Echo+Show+8+Living+Room');
+  await k8.waitFor(`document.querySelectorAll('.view.active .music-fav').length > 0`);
+  await sleep(300);
+  const s8 = await kindsSwitch(k8);
+  check(s8.names === 'Radios,Playlists,Albums,Podcasts' && s8.inside, `show 8: four kinds by name across the card (got ${s8.names})`);
+  await k8.close();
+  const k5 = await openPage(960, 480);
+  await changeRoom(k5, 'bedroom', { music: four });
+  await load(k5, 'room=bedroom');
+  await k5.waitFor(`document.querySelectorAll('.view.active .music-fav').length > 0`);
+  await sleep(300);
+  const s5 = await kindsSwitch(k5);
+  check(s5.labels === 'Radios,Playlists,Albums,Podcasts' && s5.icons === 4 && s5.inside, `show 5: four kinds in the narrow column, their icons named for a screen reader, inside the card (got ${s5.labels}, ${s5.icons} icons)`);
+  await k5.tapSel('.view.active .music .fav-switch button:nth-child(4)');
+  check(await k5.waitFor(`${JSON.stringify(PODCASTS)} === [...document.querySelectorAll('.view.active .music-fav')].map((b) => b.getAttribute('aria-label')).join()`), 'show 5: Podcasts brings the favourite podcasts into the card');
+  await k5.shot('show5-music-podcasts.png');
+  await k5.close();
 
   // The Spot has no music card; a room's music without a player is left out.
   const s = await openPage(480, 480);

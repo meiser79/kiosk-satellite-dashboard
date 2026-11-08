@@ -181,6 +181,7 @@ const ROOT_ITEMS = 'Now playing,Screensaver,Intercom,Cameras,Find my phone,Music
 const RADIOS = 'BBC Radio 6 Music,FIP,France Inter,KEXP,Radio Nova,Radio Paradise,TSF Jazz';   // the mock's favourites, by name
 const PLAYLISTS = 'Dinner jazz,Discover Weekly,Focus,Morning coffee,Sunday vinyl';
 const ALBUMS = 'Abbey Road,Kind of Blue,Random Access Memories';
+const PODCASTS = '99% Invisible,Radiolab,The Daily';
 // on the Spot's ring of favourites: every button inside the rim, none touching another, every name on two lines
 // at most (a longer one ends in an ellipsis) inside its round button
 const RING_FITS = `(() => { const cs = [...document.querySelectorAll('#menu .ring-item')].map((e) => { const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, d: r.width, e }; });
@@ -253,6 +254,6 @@ async function finish() {
 }
 
 export {
-  check, openPage, failPictures, pictureReferers, ROOT_ITEMS, has, menuOpen, load, sleep, text, insideRim, mockStates, mockReaches, activeRoom, mockSet, lastCall, RADIOS, PLAYLISTS, ALBUMS, lightsOn, onScreen, tapTab, BASE, connected, callLog, setLibrary, RING_FITS, SWITCH_GAP, POP_PARTS, reset, finish,
+  check, openPage, failPictures, pictureReferers, ROOT_ITEMS, has, menuOpen, load, sleep, text, insideRim, mockStates, mockReaches, activeRoom, mockSet, lastCall, RADIOS, PLAYLISTS, ALBUMS, PODCASTS, lightsOn, onScreen, tapTab, BASE, connected, callLog, setLibrary, RING_FITS, SWITCH_GAP, POP_PARTS, reset, finish,
   failCalls, slowFile, tokenLife, dropConnections, authLog, setClock, changeRoom, addEvent, noEvents,
 };

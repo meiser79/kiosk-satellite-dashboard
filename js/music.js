@@ -37,10 +37,12 @@
     node.append(favs, now);
     // The favourites of the kind picked, redrawn when Music Assistant or the
     // switch changes them; the same kind where the strip was scrolled to.
-    let drawn = null, kind = null;
+    // The kinds' names where they fit across the card, their icons where not
+    // (four kinds in the Show 5's narrow column).
+    let drawn = null, kind = null, icons = false, namesWidth = 0;
     const draw = () => {
-      const items = folderItems(folder), note = favoritesNote(folder), sw = favoritesSwitch(folder, draw);
-      const picked = sw && sw.querySelector('.on').textContent, key = JSON.stringify([picked, note, items.map((it) => [it.name, it.cover])]);
+      const items = folderItems(folder), note = favoritesNote(folder), sw = favoritesSwitch(folder, draw, icons);
+      const picked = sw && sw.querySelector('.on').getAttribute('aria-label'), key = JSON.stringify([picked, icons, note, items.map((it) => [it.name, it.cover])]);
       if (key === drawn) return;
       drawn = key;
       const strip = el('div', 'music-strip');
@@ -59,6 +61,13 @@
     };
     onFavorites(draw);
     draw();
+    new ResizeObserver(() => {
+      const sw = favs.querySelector('.fav-switch'), cs = getComputedStyle(favs);
+      const room = favs.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      if (!sw || room <= 0) return;
+      if (!icons) namesWidth = sw.offsetWidth;
+      if (icons !== namesWidth > room) { icons = !icons; draw(); }
+    }).observe(favs);
     // the favourites while nothing plays, asked for again as it stops
     now.onvisibility = (playing) => {
       favs.hidden = playing;

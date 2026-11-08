@@ -55,9 +55,9 @@ export async function germanSpot() {
 
   await p.close();
 
-  // A Spot whose Music item has all three kinds: a switch of their icons, named in German for a screen reader,
-  // inside the rim; Alben brings the albums.
-  const m = await withConfig(480, 480, `c.menu.items.find((i) => i.name === 'Music' && i.shape === 'round').favorites = ['radio', 'playlist', 'album']`);
+  // A Spot whose Music item has all four kinds: a switch of their icons, named in German for a screen reader,
+  // inside the rim; Alben brings the albums, Podcasts the podcasts.
+  const m = await withConfig(480, 480, `c.menu.items.find((i) => i.name === 'Music' && i.shape === 'round').favorites = ['radio', 'playlist', 'album', 'podcast']`);
   await load(m, 'device=Echo+Spot+Living+Room&lang=de');
   await m.tapSel('#menu-handle');
   await m.waitFor(`document.getElementById('menu').classList.contains('open')`);
@@ -66,11 +66,13 @@ export async function germanSpot() {
   await m.waitFor(`!!document.querySelector('#menu .fav-switch')`);
   await sleep(350);
   const kinds = await m.eval(`[...document.querySelectorAll('#menu .fav-switch button')].map((b) => b.getAttribute('aria-label') + (b.textContent ? '!' : '')).join()`);
-  check(kinds === 'Radiosender,Playlists,Alben' && await m.eval(`document.querySelectorAll('#menu .fav-switch button .icon').length === 3`) && await insideRim(m, '#menu .fav-switch'),
-    `german, spot: three kinds, a switch of their icons named in German, inside the rim (got ${kinds})`);
+  check(kinds === 'Radiosender,Playlists,Alben,Podcasts' && await m.eval(`document.querySelectorAll('#menu .fav-switch button .icon').length === 4`) && await insideRim(m, '#menu .fav-switch'),
+    `german, spot: four kinds, a switch of their icons named in German, inside the rim (got ${kinds})`);
   await m.tapSel('#menu .fav-switch button:nth-child(3)');
   check(await m.waitFor(`[...document.querySelectorAll('#menu .ring-item')].map((e) => e.textContent).join() === 'Abbey Road,Kind of Blue,Random Access Memories'`) && await m.eval(RING_FITS), 'german, spot: Alben brings the favourite albums, inside the rim');
   await m.shot('spot-german-albums.png');
+  await m.tapSel('#menu .fav-switch button:nth-child(4)');
+  check(await m.waitFor(`[...document.querySelectorAll('#menu .ring-item')].map((e) => e.textContent).join() === '99% Invisible,Radiolab,The Daily'`) && await m.eval(RING_FITS), 'german, spot: Podcasts brings the favourite podcasts, inside the rim');
   await m.close();
 }
 

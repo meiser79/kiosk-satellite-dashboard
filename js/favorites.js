@@ -2,9 +2,8 @@
  * are the Music Assistant favourites of those kinds, played on the player of
  * the room this kiosk belongs to. They come first in the folder, before its
  * own items, their covers for icons; the Spot's ring takes as many as it has
- * room for, the first by name. With more than one kind
- * (radios, playlists, albums), a switch at the top of the
- * screen picks the one shown, and the page remembers it. A room's music
+ * room for, the first by name. With more than one kind (radios,
+ * playlists, albums, podcasts), a switch at the top of the screen picks the one shown, and the page remembers it. A room's music
  * card (js/music.js) shows them too, and plays them on that room's player.
  * Home Assistant hands them over (Music Assistant's Get library action, on
  * the instance the room's player comes from) once connected, and again
@@ -20,6 +19,7 @@
     radio: { name: t('radios'), icon: 'radio', none: t('noRadios') },
     playlist: { name: t('playlists'), icon: 'playlist-music', none: t('noPlaylists') },
     album: { name: t('albums'), icon: 'album', none: t('noAlbums') },
+    podcast: { name: t('podcasts'), icon: 'podcast', none: t('noPodcasts') },
   };
   const favorites = {};   // kind -> { items } as Music Assistant last said, or { failed: true }
   const shown = new Set();   // the music cards' redraws, for new favourites or another kind picked
@@ -30,7 +30,7 @@
   const libraryPlayer = () => homePlayer() || (Object.values(CFG.rooms || {}).find((r) => r.music && r.player) || {}).player || '';
   function favoriteKinds(folder) {
     const kinds = [].concat(folder.favorites || []);
-    for (const k of kinds) if (!Object.hasOwn(FAVORITES, k)) console.warn(`config.js: favorites can be 'radio', 'playlist' and 'album'; "${k}" is left out`);
+    for (const k of kinds) if (!Object.hasOwn(FAVORITES, k)) console.warn(`config.js: favorites can be 'radio', 'playlist', 'album' and 'podcast'; "${k}" is left out`);
     return [...new Set(kinds.filter((k) => Object.hasOwn(FAVORITES, k)))];
   }
   const kindIn = (folder) => (folder.favorites.includes(favKind) ? favKind : folder.favorites[0]);
@@ -45,10 +45,11 @@
   // The switch between the kinds, when there are more than one. Picking
   // another kind redraws the folder, and the music cards. Three kinds' names
   // do not fit at the top of the Spot's round screen: there the switch shows
-  // their icons.
-  function favoritesSwitch(folder, redraw) {
+  // their icons, as it does where its caller asks (a music card too narrow
+  // for the names).
+  function favoritesSwitch(folder, redraw, icons = K.shape === 'round' && folder.favorites.length > 2) {
     if (folder.favorites.length < 2) return null;
-    const kind = kindIn(folder), icons = K.shape === 'round' && folder.favorites.length > 2;
+    const kind = kindIn(folder);
     const sw = el('div', 'fav-switch' + (icons ? ' icons' : ''));
     for (const k of folder.favorites) {
       const b = el('button', k === kind ? 'on' : '', icons ? icon(FAVORITES[k].icon) : esc(FAVORITES[k].name));
